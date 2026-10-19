@@ -1,0 +1,185 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Student or Admin user profile",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "fullName": { "type": "string", "maxLength": 100, "minLength": 2 },
+        "email": { "type": "string", "maxLength": 120, "format": "email" },
+        "phoneNumber": { "type": "string", "maxLength": 25, "minLength": 7 },
+        "academicLevel": { "type": "string", "maxLength": 50 },
+        "studentId": { "type": "string", "maxLength": 50 },
+        "role": { "type": "string", "enum": ["student", "admin"] },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected", "suspended"] },
+        "rejectionReason": { "type": "string", "maxLength": 500 },
+        "membershipStatus": { "type": "string", "enum": ["unpaid", "pending", "active", "expired"] },
+        "membershipExpiresAt": { "type": "string", "format": "date-time" },
+        "registeredAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "fullName", "email", "phoneNumber", "academicLevel", "role", "status"]
+    },
+    "PaymentRequest": {
+      "title": "PaymentRequest",
+      "description": "Student manual fee payment submission for annual membership verification",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "studentUid": { "type": "string", "maxLength": 128 },
+        "studentName": { "type": "string", "maxLength": 100 },
+        "studentEmail": { "type": "string", "maxLength": 120 },
+        "amount": { "type": "number" },
+        "currency": { "type": "string", "maxLength": 10 },
+        "paymentMethod": { "type": "string", "enum": ["easypaisa", "jazzcash", "bank_transfer"] },
+        "transactionReference": { "type": "string", "maxLength": 80, "minLength": 4 },
+        "receiptUrl": { "type": "string", "maxLength": 1000000 },
+        "submittedAt": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "reviewedAt": { "type": "string", "format": "date-time" },
+        "reviewedBy": { "type": "string", "maxLength": 128 },
+        "rejectionReason": { "type": "string", "maxLength": 500 }
+      },
+      "required": ["studentUid", "amount", "currency", "paymentMethod", "transactionReference", "status", "submittedAt"]
+    },
+    "Course": {
+      "title": "Course",
+      "description": "Educational course subject curriculum",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "title": { "type": "string", "maxLength": 150, "minLength": 3 },
+        "subject": { "type": "string", "maxLength": 60 },
+        "academicLevel": { "type": "string", "maxLength": 60 },
+        "instructor": { "type": "string", "maxLength": 100 },
+        "description": { "type": "string", "maxLength": 2000 },
+        "thumbnailUrl": { "type": "string", "maxLength": 500 },
+        "isPublished": { "type": "boolean" },
+        "totalLessons": { "type": "number" },
+        "duration": { "type": "string", "maxLength": 50 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "subject", "academicLevel", "instructor", "isPublished"]
+    },
+    "Lesson": {
+      "title": "Lesson",
+      "description": "Lecture video and notes content",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "courseId": { "type": "string", "maxLength": 64 },
+        "chapterTitle": { "type": "string", "maxLength": 120 },
+        "title": { "type": "string", "maxLength": 180, "minLength": 2 },
+        "description": { "type": "string", "maxLength": 3000 },
+        "videoUrl": { "type": "string", "maxLength": 500 },
+        "videoProvider": { "type": "string", "enum": ["youtube", "vimeo", "direct", "storage"] },
+        "durationMinutes": { "type": "number" },
+        "order": { "type": "number" },
+        "pdfNotesUrl": { "type": "string", "maxLength": 500 },
+        "isPublished": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["courseId", "chapterTitle", "title", "videoUrl", "isPublished", "order"]
+    },
+    "LessonProgress": {
+      "title": "LessonProgress",
+      "description": "Student lesson watch completion progress",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "courseId": { "type": "string", "maxLength": 64 },
+        "lessonId": { "type": "string", "maxLength": 64 },
+        "completed": { "type": "boolean" },
+        "lastWatchedSeconds": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "courseId", "lessonId", "completed"]
+    },
+    "Announcement": {
+      "title": "Announcement",
+      "description": "Portal circular, exam schedule, or notification",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "title": { "type": "string", "maxLength": 150 },
+        "content": { "type": "string", "maxLength": 2000 },
+        "priority": { "type": "string", "enum": ["normal", "urgent", "info"] },
+        "isActive": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "content", "priority", "isActive"]
+    },
+    "SiteSettings": {
+      "title": "SiteSettings",
+      "description": "Global configuration and portal details",
+      "type": "object",
+      "properties": {
+        "portalName": { "type": "string", "maxLength": 100 },
+        "supportPhone": { "type": "string", "maxLength": 30 },
+        "supportEmail": { "type": "string", "maxLength": 100 },
+        "announcementBanner": { "type": "string", "maxLength": 300 },
+        "allowPublicRegistration": { "type": "boolean" },
+        "annualMembershipFee": { "type": "number" },
+        "membershipDurationDays": { "type": "number" },
+        "easypaisaTitle": { "type": "string", "maxLength": 100 },
+        "easypaisaNumber": { "type": "string", "maxLength": 50 },
+        "jazzcashTitle": { "type": "string", "maxLength": 100 },
+        "jazzcashNumber": { "type": "string", "maxLength": 50 },
+        "bankName": { "type": "string", "maxLength": 100 },
+        "bankTitle": { "type": "string", "maxLength": 100 },
+        "bankIban": { "type": "string", "maxLength": 60 },
+        "paymentInstructions": { "type": "string", "maxLength": 2000 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["portalName", "supportPhone", "supportEmail"]
+    },
+    "AdminRecord": {
+      "title": "AdminRecord",
+      "description": "Privileged administrator registration",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 120 },
+        "role": { "type": "string", "enum": ["admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Student and user profiles containing registration approval and membership status"
+    },
+    "/paymentRequests/{requestId}": {
+      "schema": { "$ref": "#/entities/PaymentRequest" },
+      "description": "Student payment receipts and manual verification submissions"
+    },
+    "/courses/{courseId}": {
+      "schema": { "$ref": "#/entities/Course" },
+      "description": "Courses with subject, level, instructor, and publication state"
+    },
+    "/lessons/{lessonId}": {
+      "schema": { "$ref": "#/entities/Lesson" },
+      "description": "Lectures and video materials linked to courses"
+    },
+    "/users/{userId}/progress/{lessonId}": {
+      "schema": { "$ref": "#/entities/LessonProgress" },
+      "description": "User specific lesson completion tracking"
+    },
+    "/announcements/{announcementId}": {
+      "schema": { "$ref": "#/entities/Announcement" },
+      "description": "Portal wide announcements and noticeboard"
+    },
+    "/siteSettings/{settingsId}": {
+      "schema": { "$ref": "#/entities/SiteSettings" },
+      "description": "Global portal configurations including payment accounts and pricing"
+    },
+    "/admins/{adminId}": {
+      "schema": { "$ref": "#/entities/AdminRecord" },
+      "description": "Authorized administrators list"
+    }
+  }
+}

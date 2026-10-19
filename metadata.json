@@ -1,0 +1,6 @@
+{
+  "name": "Meraj Learning Portal",
+  "description": "Complete online learning platform with student registration & approval workflow, video lectures, course progress tracking, and an admin management dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

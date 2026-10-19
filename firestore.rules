@@ -1,0 +1,183 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        request.auth.token.email == "itxmerajkhan3109@gmail.com"
+      );
+    }
+
+    function isApprovedStudent() {
+      return isSignedIn() && (
+        isAdmin() ||
+        (
+          exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.status == 'approved'
+        )
+      );
+    }
+
+    function hasActiveMembership() {
+      return isSignedIn() && (
+        isAdmin() ||
+        (
+          exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.status == 'approved' &&
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.membershipStatus == 'active'
+        )
+      );
+    }
+
+    // Validation functions
+    function isValidUserCreate(data) {
+      return data.uid == request.auth.uid
+        && data.role == 'student'
+        && data.status == 'pending'
+        && data.fullName is string && data.fullName.size() >= 2 && data.fullName.size() <= 100
+        && data.email is string && data.email.size() <= 120
+        && data.phoneNumber is string && data.phoneNumber.size() >= 7 && data.phoneNumber.size() <= 25
+        && data.academicLevel is string && data.academicLevel.size() <= 50;
+    }
+
+    function isValidCourse(data) {
+      return data.title is string && data.title.size() >= 3 && data.title.size() <= 150
+        && data.subject is string && data.subject.size() <= 60
+        && data.academicLevel is string && data.academicLevel.size() <= 60
+        && data.instructor is string && data.instructor.size() <= 100
+        && data.isPublished is bool;
+    }
+
+    function isValidLesson(data) {
+      return data.courseId is string && data.courseId.size() <= 64
+        && data.chapterTitle is string && data.chapterTitle.size() <= 120
+        && data.title is string && data.title.size() >= 2 && data.title.size() <= 180
+        && data.videoUrl is string && data.videoUrl.size() <= 500
+        && data.isPublished is bool;
+    }
+
+    function isValidProgress(data) {
+      return data.userId == request.auth.uid
+        && data.courseId is string && data.courseId.size() <= 64
+        && data.lessonId is string && data.lessonId.size() <= 64
+        && data.completed is bool;
+    }
+
+    function isValidPaymentRequest(data) {
+      return data.studentUid == request.auth.uid
+        && data.status == 'pending'
+        && data.currency == 'PKR'
+        && data.amount is number && data.amount > 0
+        && (data.paymentMethod == 'easypaisa' || data.paymentMethod == 'jazzcash' || data.paymentMethod == 'bank_transfer')
+        && data.transactionReference is string && data.transactionReference.size() >= 4 && data.transactionReference.size() <= 80
+        && data.receiptUrl is string && data.receiptUrl.size() <= 1000000;
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      
+      allow create: if isOwner(userId) && isValidUserCreate(incoming()) && (
+        incoming().keys().hasAll(['uid', 'fullName', 'email', 'phoneNumber', 'academicLevel', 'role', 'status'])
+      );
+
+      // Student can only update their profile info; cannot change role, status, membershipStatus, or expiry
+      // Admin can update status, rejectionReason, role, membershipStatus, membershipExpiresAt, or student details
+      allow update: if (
+        (isOwner(userId) && (
+          incoming().diff(existing()).affectedKeys().hasOnly(['fullName', 'phoneNumber', 'academicLevel', 'studentId', 'updatedAt'])
+          && incoming().role == existing().role
+          && incoming().status == existing().status
+          && incoming().uid == existing().uid
+        )) ||
+        isAdmin()
+      );
+
+      allow delete: if isAdmin();
+
+      // Progress subcollection
+      match /progress/{lessonId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow create, update: if (isOwner(userId) || isAdmin()) && isValidProgress(incoming());
+        allow delete: if isOwner(userId) || isAdmin();
+      }
+    }
+
+    // Payment Requests collection
+    match /paymentRequests/{requestId} {
+      allow get: if (isSignedIn() && resource.data.studentUid == request.auth.uid) || isAdmin();
+      allow list: if (isSignedIn() && resource.data.studentUid == request.auth.uid) || isAdmin();
+      allow create: if isSignedIn() && isValidPaymentRequest(incoming()) && (
+        incoming().keys().hasAll(['studentUid', 'amount', 'currency', 'paymentMethod', 'transactionReference', 'status', 'submittedAt'])
+      );
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Courses collection
+    match /courses/{courseId} {
+      allow get: if resource.data.isPublished == true || isAdmin();
+      allow list: if resource.data.isPublished == true || isAdmin();
+      allow create, update: if isAdmin() && isValidCourse(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Lessons collection
+    match /lessons/{lessonId} {
+      // List metadata allowed for signed-in users if published (or admin)
+      allow list: if (isSignedIn() && resource.data.isPublished == true) || isAdmin();
+      // Protected get: must have active membership (or admin)
+      allow get: if ((resource.data.isPublished == true) && hasActiveMembership()) || isAdmin();
+      allow create, update: if isAdmin() && isValidLesson(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Announcements
+    match /announcements/{announcementId} {
+      allow get, list: if resource.data.isActive == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Site settings
+    match /siteSettings/{settingsId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Admins registry
+    match /admins/{adminId} {
+      allow get, list: if isSignedIn();
+      allow create, update, delete: if isAdmin() || (
+        request.auth.token.email == "itxmerajkhan3109@gmail.com"
+      );
+    }
+  }
+}
