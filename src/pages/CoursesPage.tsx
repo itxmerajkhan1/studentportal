@@ -13,6 +13,11 @@ import {
   CheckCircle,
 } from 'lucide-react';
 
+import physicsImg from '../assets/images/subject_physics_lab_1792790230100.jpg';
+import chemImg from '../assets/images/subject_chemistry_bench_1792790230471.jpg';
+import mathImg from '../assets/images/subject_math_geometry_1792790230632.jpg';
+import heroImg from '../assets/images/hero_academic_study_1792790229058.jpg';
+
 interface CoursesPageProps {
   courses: Course[];
   navigate: (route: string) => void;
@@ -24,7 +29,7 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ courses, navigate }) =
   const [selectedSubject, setSelectedSubject] = useState('all');
   const [selectedLevel, setSelectedLevel] = useState('all');
 
-  const subjects = ['all', 'Physics', 'Mathematics', 'Chemistry', 'Biology'];
+  const subjects = ['all', 'Physics', 'Mathematics', 'Chemistry', 'English', 'Computer Science', 'NET Preparation'];
   const levels = [
     'all',
     'FSc Part 2 (Class 12)',
@@ -32,6 +37,14 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ courses, navigate }) =
     'Matriculation Class 10',
     'Matriculation Class 9',
   ];
+
+  const getFallbackImage = (subject: string) => {
+    const sub = subject.toLowerCase();
+    if (sub.includes('phys')) return physicsImg;
+    if (sub.includes('chem')) return chemImg;
+    if (sub.includes('math') || sub.includes('calcu')) return mathImg;
+    return heroImg;
+  };
 
   const filteredCourses = useMemo(() => {
     return courses.filter((c) => {
@@ -99,17 +112,17 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ courses, navigate }) =
           </div>
 
           {/* Filters */}
-          <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
-            <div className="flex items-center gap-1 bg-slate-950/80 p-1 rounded-xl border border-slate-800 text-xs">
+          <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+            <div className="flex items-center gap-1 bg-slate-950/80 p-1 rounded-xl border border-slate-800 text-xs shrink-0">
               <span className="px-2 text-slate-400 font-medium">Subject:</span>
               {subjects.map((sub) => (
                 <button
                   key={sub}
                   onClick={() => setSelectedSubject(sub)}
-                  className={`px-2.5 py-1 rounded-lg font-medium capitalize transition cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition cursor-pointer min-h-[36px] flex items-center ${
                     selectedSubject === sub
-                      ? 'bg-cyan-500 text-slate-950 font-bold'
-                      : 'text-slate-300 hover:text-white'
+                      ? 'bg-cyan-500 text-slate-950 font-bold shadow-sm'
+                      : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
                   }`}
                 >
                   {sub}
@@ -133,7 +146,7 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ courses, navigate }) =
                 setSelectedSubject('all');
                 setSelectedLevel('all');
               }}
-              className="mt-2 px-4 py-2 rounded-xl bg-slate-800 text-xs font-semibold text-cyan-400 hover:bg-slate-700"
+              className="mt-2 px-4 py-2 rounded-xl bg-slate-800 text-xs font-semibold text-cyan-400 hover:bg-slate-700 cursor-pointer"
             >
               Reset Filters
             </button>
@@ -144,12 +157,15 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ courses, navigate }) =
               <div
                 key={course.id}
                 onClick={() => navigate(`/courses/${course.id}`)}
-                className="bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-2xl overflow-hidden transition duration-200 cursor-pointer flex flex-col group shadow-xl"
+                className="bg-slate-900/80 border border-slate-800 hover:border-slate-700/80 rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer flex flex-col group shadow-lg hover:shadow-cyan-950/20"
               >
                 {/* Thumbnail Header */}
                 <div className="relative aspect-video overflow-hidden bg-slate-800">
                   <img
-                    src={course.thumbnailUrl}
+                    src={course.thumbnailUrl || getFallbackImage(course.subject)}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = getFallbackImage(course.subject);
+                    }}
                     alt={course.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     loading="lazy"

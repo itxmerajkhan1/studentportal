@@ -101,6 +101,15 @@ export const Footer: React.FC<FooterProps> = ({
                   Check Admission Approval Status
                 </button>
               </li>
+              <li>
+                <button
+                  onClick={() => navigate('/admin-login')}
+                  className="hover:text-cyan-400 cursor-pointer flex items-center gap-1.5 text-slate-400"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5 text-cyan-500" />
+                  <span>Administrator Portal</span>
+                </button>
+              </li>
             </ul>
           </div>
 
@@ -135,9 +144,17 @@ export const Footer: React.FC<FooterProps> = ({
 
         <div className="border-t border-slate-900 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-3">
           <p>© {new Date().getFullYear()} Meraj Learning Portal. All rights reserved.</p>
-          <p className="text-[11px] text-slate-400">
-            Dedicated online learning platform for Pakistani students.
-          </p>
+          <div className="flex items-center gap-4 text-[11px] text-slate-400">
+            <span>Dedicated online learning platform for Pakistani students.</span>
+            <span className="text-slate-700">•</span>
+            <button
+              onClick={() => navigate('/admin-login')}
+              className="hover:text-cyan-400 text-slate-400 transition cursor-pointer flex items-center gap-1"
+            >
+              <ShieldCheck className="w-3 h-3 text-cyan-500/80" />
+              <span>Admin Gateway</span>
+            </button>
+          </div>
         </div>
       </div>
     </footer>

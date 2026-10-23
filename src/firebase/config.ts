@@ -24,7 +24,7 @@ import {
   onSnapshot,
 } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
-import { UserProfile, Course, Lesson, LessonProgress, Announcement, SiteSettings, PaymentRequest, MembershipStatus } from '../types';
+import { UserProfile, Course, Lesson, LessonProgress, Announcement, SiteSettings, PaymentRequest, MembershipStatus, Subject, Chapter } from '../types';
 
 export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
@@ -175,6 +175,23 @@ export async function bootstrapAdminDocument(user: User): Promise<void> {
   }
 }
 
+// Verify if a user UID has an administrator record in Firestore
+export async function checkIsAdminInFirestore(uid: string): Promise<boolean> {
+  try {
+    const adminDoc = await getDoc(doc(db, 'admins', uid));
+    if (adminDoc.exists()) {
+      return true;
+    }
+    const userDoc = await getDoc(doc(db, 'users', uid));
+    if (userDoc.exists() && userDoc.data()?.role === 'admin') {
+      return true;
+    }
+  } catch (err) {
+    console.warn('Admin Firestore check notice:', err);
+  }
+  return false;
+}
+
 // Course Operations
 export async function fetchPublishedCourses(): Promise<Course[]> {
   const path = 'courses';
@@ -218,6 +235,94 @@ export async function deleteCourseDoc(courseId: string): Promise<void> {
   const path = `courses/${courseId}`;
   try {
     await deleteDoc(doc(db, 'courses', courseId));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, path);
+  }
+}
+
+// Subject Operations
+export async function fetchSubjects(publishedOnly = false): Promise<Subject[]> {
+  const path = 'subjects';
+  try {
+    let q = query(collection(db, 'subjects'));
+    if (publishedOnly) {
+      q = query(collection(db, 'subjects'), where('isPublished', '==', true));
+    }
+    const snap = await getDocs(q);
+    const subjects = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Subject, 'id'>) }));
+    return subjects.sort((a, b) => (a.order || 0) - (b.order || 0));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.LIST, path);
+  }
+}
+
+export async function saveSubject(subject: Omit<Subject, 'id'> & { id?: string }): Promise<string> {
+  const subjectId = subject.id || `subj_${Date.now()}`;
+  const path = `subjects/${subjectId}`;
+  try {
+    const payload = {
+      ...subject,
+      id: subjectId,
+      updatedAt: new Date().toISOString(),
+      createdAt: subject.createdAt || new Date().toISOString(),
+    };
+    await setDoc(doc(db, 'subjects', subjectId), payload);
+    return subjectId;
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, path);
+  }
+}
+
+export async function deleteSubjectDoc(subjectId: string): Promise<void> {
+  const path = `subjects/${subjectId}`;
+  try {
+    await deleteDoc(doc(db, 'subjects', subjectId));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, path);
+  }
+}
+
+// Chapter Operations
+export async function fetchChapters(subjectId?: string, publishedOnly = false): Promise<Chapter[]> {
+  const path = 'chapters';
+  try {
+    let q = query(collection(db, 'chapters'));
+    if (subjectId && publishedOnly) {
+      q = query(collection(db, 'chapters'), where('subjectId', '==', subjectId), where('isPublished', '==', true));
+    } else if (subjectId) {
+      q = query(collection(db, 'chapters'), where('subjectId', '==', subjectId));
+    } else if (publishedOnly) {
+      q = query(collection(db, 'chapters'), where('isPublished', '==', true));
+    }
+    const snap = await getDocs(q);
+    const chapters = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Chapter, 'id'>) }));
+    return chapters.sort((a, b) => (a.order || 0) - (b.order || 0));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.LIST, path);
+  }
+}
+
+export async function saveChapter(chapter: Omit<Chapter, 'id'> & { id?: string }): Promise<string> {
+  const chapterId = chapter.id || `chap_${Date.now()}`;
+  const path = `chapters/${chapterId}`;
+  try {
+    const payload = {
+      ...chapter,
+      id: chapterId,
+      updatedAt: new Date().toISOString(),
+      createdAt: chapter.createdAt || new Date().toISOString(),
+    };
+    await setDoc(doc(db, 'chapters', chapterId), payload);
+    return chapterId;
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, path);
+  }
+}
+
+export async function deleteChapterDoc(chapterId: string): Promise<void> {
+  const path = `chapters/${chapterId}`;
+  try {
+    await deleteDoc(doc(db, 'chapters', chapterId));
   } catch (error) {
     handleFirestoreError(error, OperationType.DELETE, path);
   }
@@ -285,7 +390,9 @@ export async function saveLessonProgress(
   courseId: string,
   lessonId: string,
   completed: boolean,
-  lastWatchedSeconds = 0
+  lastWatchedSeconds = 0,
+  subjectId?: string,
+  chapterId?: string
 ): Promise<void> {
   const path = `users/${userId}/progress/${lessonId}`;
   try {
@@ -295,6 +402,8 @@ export async function saveLessonProgress(
       lessonId,
       completed,
       lastWatchedSeconds,
+      ...(subjectId ? { subjectId } : {}),
+      ...(chapterId ? { chapterId } : {}),
       updatedAt: new Date().toISOString(),
     };
     await setDoc(doc(db, 'users', userId, 'progress', lessonId), payload);

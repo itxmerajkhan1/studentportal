@@ -38,6 +38,32 @@ export interface PaymentRequest {
   rejectionReason?: string | null;
 }
 
+export interface Subject {
+  id: string;
+  name: string;
+  code?: string;
+  academicLevel: string;
+  iconName: string;
+  description: string;
+  colorTheme: string;
+  order: number;
+  isPublished: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Chapter {
+  id: string;
+  subjectId: string;
+  chapterNumber: number;
+  title: string;
+  description?: string;
+  order: number;
+  isPublished: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface Course {
   id: string;
   title: string;
@@ -56,6 +82,8 @@ export interface Course {
 export interface Lesson {
   id: string;
   courseId: string;
+  subjectId?: string;
+  chapterId?: string;
   chapterTitle: string;
   title: string;
   description: string;
@@ -66,11 +94,14 @@ export interface Lesson {
   pdfNotesUrl?: string;
   isPublished: boolean;
   createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface LessonProgress {
   userId: string;
   courseId: string;
+  subjectId?: string;
+  chapterId?: string;
   lessonId: string;
   completed: boolean;
   lastWatchedSeconds?: number;

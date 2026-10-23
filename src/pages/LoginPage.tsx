@@ -206,6 +206,19 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate }) => {
             Register for admission
           </button>
         </p>
+
+        {/* Administrator Portal Access Link */}
+        <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+          <span className="text-slate-400">Portal Administrator?</span>
+          <button
+            type="button"
+            onClick={() => navigate('/admin-login')}
+            className="text-cyan-400 hover:text-cyan-300 font-semibold cursor-pointer flex items-center gap-1.5 py-1.5 px-3 rounded-xl bg-cyan-950/50 hover:bg-cyan-900/60 border border-cyan-800/50 transition group"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform" />
+            <span>Admin Login →</span>
+          </button>
+        </div>
       </div>
     </div>
   );

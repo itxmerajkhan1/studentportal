@@ -9,16 +9,15 @@ import {
   FileText,
   BookOpen,
   Download,
-  Share2,
-  ShieldAlert,
-  Clock,
-  Sparkles,
-  ChevronRight,
-  Menu,
-  X,
   Lock,
   CreditCard,
-  ShieldCheck,
+  ChevronDown,
+  ChevronUp,
+  Layers,
+  Clock,
+  Menu,
+  X,
+  PlayCircle,
 } from 'lucide-react';
 
 interface LearnPageProps {
@@ -39,8 +38,8 @@ export const LearnPage: React.FC<LearnPageProps> = ({
   navigate,
 }) => {
   const { user, isApproved, isAdmin, isPending, hasActiveMembership, membershipStatus } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'notes' | 'curriculum'>('overview');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'overview' | 'notes' | 'playlist'>('overview');
+  const [mobilePlaylistOpen, setMobilePlaylistOpen] = useState(false);
   const [savingProgress, setSavingProgress] = useState(false);
 
   // If student is not authorized to stream, redirect
@@ -57,9 +56,21 @@ export const LearnPage: React.FC<LearnPageProps> = ({
   const currentLesson = lessons.find((l) => l.id === lessonId);
   const course = currentLesson ? courses.find((c) => c.id === currentLesson.courseId) : null;
 
-  // Filter lessons for this course
+  // Filter lessons for playlist: group by chapter or subject if available
   const courseLessons = useMemo(() => {
     if (!currentLesson) return [];
+    if (currentLesson.chapterId) {
+      const inChapter = lessons
+        .filter((l) => l.chapterId === currentLesson.chapterId && (l.isPublished || isAdmin))
+        .sort((a, b) => a.order - b.order);
+      if (inChapter.length > 0) return inChapter;
+    }
+    if (currentLesson.subjectId) {
+      const inSubject = lessons
+        .filter((l) => l.subjectId === currentLesson.subjectId && (l.isPublished || isAdmin))
+        .sort((a, b) => a.order - b.order);
+      if (inSubject.length > 0) return inSubject;
+    }
     return lessons
       .filter((l) => l.courseId === currentLesson.courseId && (l.isPublished || isAdmin))
       .sort((a, b) => a.order - b.order);
@@ -78,10 +89,20 @@ export const LearnPage: React.FC<LearnPageProps> = ({
     setSavingProgress(true);
     try {
       const newStatus = !isCompleted;
-      await saveLessonProgress(user.uid, currentLesson.courseId, currentLesson.id, newStatus, 0);
+      await saveLessonProgress(
+        user.uid,
+        currentLesson.courseId || '',
+        currentLesson.id,
+        newStatus,
+        0,
+        currentLesson.subjectId,
+        currentLesson.chapterId
+      );
       onProgressUpdated({
         userId: user.uid,
-        courseId: currentLesson.courseId,
+        courseId: currentLesson.courseId || '',
+        subjectId: currentLesson.subjectId,
+        chapterId: currentLesson.chapterId,
         lessonId: currentLesson.id,
         completed: newStatus,
         updatedAt: new Date().toISOString(),
@@ -96,13 +117,15 @@ export const LearnPage: React.FC<LearnPageProps> = ({
   if (!currentLesson) {
     return (
       <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-6">
-        <div className="text-center space-y-4">
+        <div className="text-center space-y-4 max-w-sm">
+          <BookOpen className="w-10 h-10 text-slate-600 mx-auto" />
           <h2 className="text-xl font-bold">Lecture Not Found</h2>
+          <p className="text-xs text-slate-400">The requested lecture does not exist or has been moved.</p>
           <button
-            onClick={() => navigate('/courses')}
-            className="px-4 py-2 rounded-xl bg-cyan-500 text-slate-950 font-bold text-xs"
+            onClick={() => navigate('/subjects')}
+            className="px-4 py-2 rounded-xl bg-cyan-400 text-slate-950 font-bold text-xs"
           >
-            ← Return to Courses
+            ← Back to Subjects
           </button>
         </div>
       </div>
@@ -112,47 +135,48 @@ export const LearnPage: React.FC<LearnPageProps> = ({
   return (
     <div className="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
       {/* Top Classroom Bar */}
-      <div className="bg-slate-900 border-b border-slate-800 px-4 sm:px-6 py-3 flex items-center justify-between z-20">
-        <div className="flex items-center gap-3">
+      <div className="bg-slate-900 border-b border-slate-800 px-4 sm:px-6 py-3 flex items-center justify-between gap-3 z-20">
+        <div className="flex items-center gap-3 min-w-0 flex-1">
           <button
-            onClick={() => navigate(course ? `/courses/${course.id}` : '/courses')}
-            className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white font-medium transition cursor-pointer"
+            onClick={() => navigate('/subjects')}
+            className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white font-medium transition cursor-pointer shrink-0 touch-target"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span className="hidden sm:inline">Back to Course</span>
+            <span className="hidden sm:inline">Subjects</span>
           </button>
-          <div className="h-4 w-px bg-slate-800" />
-          <div className="truncate max-w-sm sm:max-w-xl">
-            <span className="text-[11px] text-cyan-400 font-semibold uppercase tracking-wider block">
-              {course?.subject || 'Curriculum'} • {currentLesson.chapterTitle}
+          <div className="h-4 w-px bg-slate-800 shrink-0" />
+          <div className="min-w-0 truncate">
+            <span className="text-[10px] text-cyan-400 font-semibold uppercase tracking-wider block truncate">
+              {course?.subject || 'Curriculum'} • {currentLesson.chapterTitle || 'Chapter'}
             </span>
-            <h1 className="text-sm sm:text-base font-bold text-white truncate">
+            <h1 className="text-xs sm:text-sm md:text-base font-bold text-white truncate">
               {currentLesson.title}
             </h1>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           {/* Mobile drawer toggle */}
           <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="lg:hidden p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white"
+            onClick={() => setMobilePlaylistOpen(!mobilePlaylistOpen)}
+            className="lg:hidden p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white flex items-center gap-1.5 text-xs font-semibold touch-target"
             aria-label="Toggle Lecture Playlist"
           >
-            <Menu className="w-5 h-5" />
+            <Layers className="w-4 h-4 text-cyan-400" />
+            <span className="hidden xs:inline">Lectures</span>
           </button>
 
           <button
             onClick={handleToggleComplete}
             disabled={savingProgress}
-            className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
+            className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer touch-target ${
               isCompleted
                 ? 'bg-emerald-950 text-emerald-300 border border-emerald-600'
                 : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
             }`}
           >
-            <CheckCircle2 className={`w-4 h-4 ${isCompleted ? 'text-emerald-400' : 'text-slate-400'}`} />
-            <span>{isCompleted ? 'Marked Completed' : 'Mark Complete'}</span>
+            <CheckCircle2 className={`w-3.5 h-3.5 ${isCompleted ? 'text-emerald-400' : 'text-slate-400'}`} />
+            <span>{isCompleted ? 'Completed' : 'Mark Complete'}</span>
           </button>
         </div>
       </div>
@@ -175,47 +199,43 @@ export const LearnPage: React.FC<LearnPageProps> = ({
               hasNext={!!nextLesson}
             />
           ) : (
-            <div className="w-full aspect-video bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-10 flex flex-col items-center justify-center text-center shadow-2xl relative overflow-hidden">
+            <div className="w-full aspect-video bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-10 flex flex-col items-center justify-center text-center shadow-xl relative overflow-hidden">
               <div className="max-w-md space-y-4">
-                <div className="w-14 h-14 rounded-2xl bg-cyan-950/80 border border-cyan-700/60 flex items-center justify-center text-cyan-400 mx-auto shadow-lg shadow-cyan-500/20">
-                  <Lock className="w-7 h-7" />
+                <div className="w-12 h-12 rounded-xl bg-cyan-950 border border-cyan-800 flex items-center justify-center text-cyan-400 mx-auto">
+                  <Lock className="w-6 h-6" />
                 </div>
                 <div className="space-y-1">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400 bg-cyan-950/60 px-2.5 py-0.5 rounded-full border border-cyan-800">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400 bg-cyan-950/60 px-2.5 py-0.5 rounded border border-cyan-800">
                     Protected Academic Content
                   </span>
-                  <h3 className="text-xl sm:text-2xl font-extrabold text-white">
+                  <h2 className="text-xl sm:text-2xl font-extrabold text-white">
                     Annual Membership Required
-                  </h3>
+                  </h2>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Full video lecture streaming and chapter-wise study notes require an active annual student membership.
+                    Full lecture streaming and PDF notes require an active annual membership pass (Rs. 1,000 / year).
                   </p>
                 </div>
 
                 {membershipStatus === 'pending' ? (
                   <div className="p-3 bg-amber-950/60 border border-amber-800 rounded-xl text-xs text-amber-200 flex items-center justify-center gap-2">
                     <Clock className="w-4 h-4 animate-spin text-amber-400 shrink-0" />
-                    <span>Your payment verification is currently in progress (Usually 2–6 hours).</span>
-                  </div>
-                ) : membershipStatus === 'expired' ? (
-                  <div className="p-3 bg-rose-950/60 border border-rose-800 rounded-xl text-xs text-rose-200">
-                    Your previous annual membership has expired. Please renew to resume streaming.
+                    <span>Your payment verification is in progress (usually 2–6 hours).</span>
                   </div>
                 ) : null}
 
                 <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
                   <button
                     onClick={() => navigate('/membership')}
-                    className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-bold text-xs shadow-lg shadow-cyan-500/25 transition cursor-pointer flex items-center justify-center gap-2"
+                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-xs shadow-md transition cursor-pointer flex items-center justify-center gap-2 touch-target"
                   >
                     <CreditCard className="w-4 h-4" />
-                    <span>View Membership & Activate (Rs. 1,000)</span>
+                    <span>Activate Membership (Rs. 1,000)</span>
                   </button>
                   <button
-                    onClick={() => navigate('/courses')}
-                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold"
+                    onClick={() => navigate('/subjects')}
+                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold touch-target"
                   >
-                    Back to Catalog
+                    Back to Subjects
                   </button>
                 </div>
               </div>
@@ -227,9 +247,9 @@ export const LearnPage: React.FC<LearnPageProps> = ({
             <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
               <button
                 onClick={() => setActiveTab('overview')}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer touch-target ${
                   activeTab === 'overview'
-                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+                    ? 'bg-cyan-400 text-slate-950'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -237,30 +257,41 @@ export const LearnPage: React.FC<LearnPageProps> = ({
               </button>
               <button
                 onClick={() => setActiveTab('notes')}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 touch-target ${
                   activeTab === 'notes'
-                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+                    ? 'bg-cyan-400 text-slate-950'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
                 <FileText className="w-3.5 h-3.5" />
                 <span>PDF Handouts & Notes</span>
               </button>
+              <button
+                onClick={() => setActiveTab('playlist')}
+                className={`lg:hidden px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 touch-target ${
+                  activeTab === 'playlist'
+                    ? 'bg-cyan-400 text-slate-950'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <Layers className="w-3.5 h-3.5" />
+                <span>Chapter Lectures</span>
+              </button>
             </div>
 
             {/* Tab: Overview */}
             {activeTab === 'overview' && (
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 space-y-4 shadow-lg">
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
-                    <h2 className="text-lg font-bold text-white">{currentLesson.title}</h2>
+                    <h2 className="text-base sm:text-lg font-bold text-white">{currentLesson.title}</h2>
                     <p className="text-xs text-slate-400 mt-0.5">
                       {currentLesson.chapterTitle} • Duration: {currentLesson.durationMinutes} Minutes
                     </p>
                   </div>
                   {course && (
-                    <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 border border-slate-700">
-                      Instructor: {course.instructor}
+                    <span className="text-xs text-slate-400">
+                      Instructor: <strong className="text-slate-200">{course.instructor}</strong>
                     </span>
                   )}
                 </div>
@@ -270,14 +301,12 @@ export const LearnPage: React.FC<LearnPageProps> = ({
                 </div>
 
                 {/* Conceptual points */}
-                <div className="p-4 bg-slate-950/60 border border-slate-800 rounded-xl space-y-2 text-xs">
-                  <h4 className="font-bold text-cyan-400 flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4" /> Exam Focus & Learning Objectives
-                  </h4>
+                <div className="p-4 bg-slate-950/70 border border-slate-800 rounded-xl space-y-2 text-xs">
+                  <h3 className="font-bold text-cyan-400">Board Exam Preparation Objectives</h3>
                   <ul className="list-disc list-inside space-y-1 text-slate-300 text-xs">
-                    <li>Understand fundamental physical definitions and mathematical derivations.</li>
-                    <li>Examine board exam past paper problems solved in this session.</li>
-                    <li>Review accompanying downloadable formula sheet before attempting self-assessment tests.</li>
+                    <li>Master fundamental physical definitions and mathematical derivations.</li>
+                    <li>Examine solved past paper problems from Punjab and Federal examination boards.</li>
+                    <li>Download formula summary sheets prior to attempting practice questions.</li>
                   </ul>
                 </div>
               </div>
@@ -285,26 +314,26 @@ export const LearnPage: React.FC<LearnPageProps> = ({
 
             {/* Tab: Notes */}
             {activeTab === 'notes' && (
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-lg">
-                <h3 className="text-sm font-bold text-white">Study Resources & Handouts</h3>
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
+                <h2 className="text-sm font-bold text-white">Study Resources & Downloadable Handouts</h2>
                 {currentLesson.pdfNotesUrl ? (
-                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2.5 rounded-lg bg-cyan-950 text-cyan-400 border border-cyan-800">
+                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="p-2.5 rounded-lg bg-cyan-950 text-cyan-400 border border-cyan-800 shrink-0">
                         <FileText className="w-5 h-5" />
                       </div>
-                      <div>
-                        <h4 className="text-xs font-bold text-white">{currentLesson.title} — Lecture Handout</h4>
-                        <p className="text-[11px] text-slate-400">Official instructor notes, key diagrams & solved numericals</p>
+                      <div className="min-w-0">
+                        <h3 className="text-xs font-bold text-white truncate">{currentLesson.title} — Lecture Notes</h3>
+                        <p className="text-[11px] text-slate-400">Official instructor notes, key derivations & solved numericals</p>
                       </div>
                     </div>
                     <a
                       href={currentLesson.pdfNotesUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="px-3.5 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 transition"
+                      className="px-4 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 transition shrink-0 touch-target"
                     >
-                      <Download className="w-3.5 h-3.5" />
+                      <Download className="w-3.5 h-3.5 text-slate-950" />
                       <span>Download PDF</span>
                     </a>
                   </div>
@@ -316,32 +345,60 @@ export const LearnPage: React.FC<LearnPageProps> = ({
                 )}
               </div>
             )}
+
+            {/* Tab: Mobile Inline Playlist */}
+            {activeTab === 'playlist' && (
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-sm divide-y divide-slate-800">
+                <div className="p-4 bg-slate-950/60 font-bold text-xs text-slate-300">
+                  Chapter Lectures ({courseLessons.length})
+                </div>
+                {courseLessons.map((l, index) => {
+                  const active = l.id === lessonId;
+                  const completed = userProgress.some((p) => p.lessonId === l.id && p.completed);
+                  return (
+                    <button
+                      key={l.id}
+                      onClick={() => navigate(`/learn/${l.id}`)}
+                      className={`w-full text-left p-3.5 flex items-start gap-3 transition cursor-pointer ${
+                        active ? 'bg-cyan-950/60' : 'hover:bg-slate-850'
+                      }`}
+                    >
+                      <div className="mt-0.5 shrink-0">
+                        {completed ? (
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                        ) : (
+                          <span
+                            className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                              active ? 'bg-cyan-400 text-slate-950' : 'bg-slate-800 text-slate-400'
+                            }`}
+                          >
+                            {index + 1}
+                          </span>
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className={`text-xs font-semibold leading-tight truncate ${active ? 'text-cyan-300' : 'text-slate-200'}`}>
+                          {l.title}
+                        </p>
+                        <p className="text-[10px] text-slate-400 mt-0.5">{l.durationMinutes} mins</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Right: Course Playlist Sidebar */}
-        <aside
-          className={`fixed lg:static top-0 right-0 h-full w-80 bg-slate-900 border-l border-slate-800 z-30 transition-transform duration-300 flex flex-col ${
-            sidebarOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'
-          }`}
-        >
-          {/* Header */}
-          <div className="p-4 border-b border-slate-800 flex items-center justify-between">
-            <div>
-              <h3 className="text-xs uppercase font-bold text-slate-400 tracking-wider">Course Lectures</h3>
-              <p className="text-xs text-cyan-300 font-semibold truncate max-w-[200px]">
-                {course?.title || 'Syllabus'}
-              </p>
-            </div>
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-white"
-            >
-              <X className="w-4 h-4" />
-            </button>
+        {/* Right Desktop Sidebar: Course Playlist */}
+        <aside className="hidden lg:flex flex-col w-80 bg-slate-900 border-l border-slate-800 shrink-0">
+          <div className="p-4 border-b border-slate-800">
+            <h2 className="text-xs uppercase font-bold text-slate-400 tracking-wider">Chapter Lectures</h2>
+            <p className="text-xs text-cyan-300 font-semibold truncate max-w-[240px] mt-0.5">
+              {currentLesson.chapterTitle || course?.title || 'Curriculum Sequence'}
+            </p>
           </div>
 
-          {/* List of Lectures */}
           <div className="flex-1 overflow-y-auto divide-y divide-slate-800/80">
             {courseLessons.map((l, index) => {
               const active = l.id === lessonId;
@@ -349,12 +406,9 @@ export const LearnPage: React.FC<LearnPageProps> = ({
               return (
                 <button
                   key={l.id}
-                  onClick={() => {
-                    setSidebarOpen(false);
-                    navigate(`/learn/${l.id}`);
-                  }}
+                  onClick={() => navigate(`/learn/${l.id}`)}
                   className={`w-full text-left p-3.5 flex items-start gap-3 transition cursor-pointer ${
-                    active ? 'bg-cyan-950/50 border-l-4 border-cyan-400' : 'hover:bg-slate-850'
+                    active ? 'bg-cyan-950/50' : 'hover:bg-slate-850'
                   }`}
                 >
                   <div className="mt-0.5 shrink-0">
@@ -388,6 +442,67 @@ export const LearnPage: React.FC<LearnPageProps> = ({
             })}
           </div>
         </aside>
+
+        {/* Mobile Flyout Drawer for Playlist */}
+        {mobilePlaylistOpen && (
+          <div className="lg:hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex justify-end">
+            <div className="w-80 max-w-[85vw] h-full bg-slate-900 border-l border-slate-800 flex flex-col shadow-2xl animate-fade-in">
+              <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+                <div>
+                  <h2 className="text-xs uppercase font-bold text-slate-400 tracking-wider">Chapter Playlist</h2>
+                  <p className="text-xs text-cyan-300 font-semibold truncate max-w-[180px]">
+                    {currentLesson.chapterTitle || 'Lectures'}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setMobilePlaylistOpen(false)}
+                  className="p-2 rounded-lg text-slate-400 hover:text-white touch-target"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto divide-y divide-slate-800/80">
+                {courseLessons.map((l, index) => {
+                  const active = l.id === lessonId;
+                  const completed = userProgress.some((p) => p.lessonId === l.id && p.completed);
+                  return (
+                    <button
+                      key={l.id}
+                      onClick={() => {
+                        setMobilePlaylistOpen(false);
+                        navigate(`/learn/${l.id}`);
+                      }}
+                      className={`w-full text-left p-3.5 flex items-start gap-3 transition cursor-pointer touch-target ${
+                        active ? 'bg-cyan-950/60' : 'hover:bg-slate-850'
+                      }`}
+                    >
+                      <div className="mt-0.5 shrink-0">
+                        {completed ? (
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                        ) : (
+                          <span
+                            className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                              active ? 'bg-cyan-400 text-slate-950' : 'bg-slate-800 text-slate-400'
+                            }`}
+                          >
+                            {index + 1}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-xs font-semibold leading-tight line-clamp-2 ${active ? 'text-cyan-300' : 'text-slate-200'}`}>
+                          {l.title}
+                        </p>
+                        <p className="text-[10px] text-slate-400 mt-1">{l.durationMinutes} mins</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

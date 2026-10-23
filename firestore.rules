@@ -75,17 +75,27 @@ service cloud.firestore {
         && data.isPublished is bool;
     }
 
+    function isValidSubject(data) {
+      return data.name is string && data.name.size() >= 2 && data.name.size() <= 100
+        && data.academicLevel is string && data.academicLevel.size() <= 60
+        && data.isPublished is bool;
+    }
+
+    function isValidChapter(data) {
+      return data.subjectId is string && data.subjectId.size() <= 64
+        && data.title is string && data.title.size() >= 2 && data.title.size() <= 150
+        && data.chapterNumber is number
+        && data.isPublished is bool;
+    }
+
     function isValidLesson(data) {
-      return data.courseId is string && data.courseId.size() <= 64
-        && data.chapterTitle is string && data.chapterTitle.size() <= 120
+      return (data.courseId is string || data.subjectId is string)
         && data.title is string && data.title.size() >= 2 && data.title.size() <= 180
-        && data.videoUrl is string && data.videoUrl.size() <= 500
         && data.isPublished is bool;
     }
 
     function isValidProgress(data) {
       return data.userId == request.auth.uid
-        && data.courseId is string && data.courseId.size() <= 64
         && data.lessonId is string && data.lessonId.size() <= 64
         && data.completed is bool;
     }
@@ -139,6 +149,20 @@ service cloud.firestore {
         incoming().keys().hasAll(['studentUid', 'amount', 'currency', 'paymentMethod', 'transactionReference', 'status', 'submittedAt'])
       );
       allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Subjects collection
+    match /subjects/{subjectId} {
+      allow get, list: if resource.data.isPublished == true || isAdmin();
+      allow create, update: if isAdmin() && isValidSubject(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Chapters collection
+    match /chapters/{chapterId} {
+      allow get, list: if resource.data.isPublished == true || isAdmin();
+      allow create, update: if isAdmin() && isValidChapter(incoming());
       allow delete: if isAdmin();
     }
 

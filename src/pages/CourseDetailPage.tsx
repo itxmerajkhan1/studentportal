@@ -16,6 +16,11 @@ import {
   ChevronUp,
 } from 'lucide-react';
 
+import physicsImg from '../assets/images/subject_physics_lab_1792790230100.jpg';
+import chemImg from '../assets/images/subject_chemistry_bench_1792790230471.jpg';
+import mathImg from '../assets/images/subject_math_geometry_1792790230632.jpg';
+import heroImg from '../assets/images/hero_academic_study_1792790229058.jpg';
+
 interface CourseDetailPageProps {
   courseId: string;
   courses: Course[];
@@ -33,6 +38,14 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({
 }) => {
   const { isApproved, isAdmin, isPending, user } = useAuth();
   const [openChapters, setOpenChapters] = useState<Record<string, boolean>>({});
+
+  const getFallbackImage = (subject: string) => {
+    const sub = subject.toLowerCase();
+    if (sub.includes('phys')) return physicsImg;
+    if (sub.includes('chem')) return chemImg;
+    if (sub.includes('math') || sub.includes('calcu')) return mathImg;
+    return heroImg;
+  };
 
   const course = courses.find((c) => c.id === courseId);
   const courseLessons = useMemo(() => {
@@ -203,7 +216,10 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({
           {/* Thumbnail */}
           <div className="relative aspect-video lg:aspect-auto h-full bg-slate-800 overflow-hidden border-t lg:border-t-0 lg:border-l border-slate-800">
             <img
-              src={course.thumbnailUrl}
+              src={course.thumbnailUrl || getFallbackImage(course.subject)}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = getFallbackImage(course.subject);
+              }}
               alt={course.title}
               className="w-full h-full object-cover"
             />

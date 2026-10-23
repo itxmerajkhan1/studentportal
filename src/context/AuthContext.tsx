@@ -14,6 +14,7 @@ import {
   fetchUserProfile,
   createUserRecord,
   bootstrapAdminDocument,
+  checkIsAdminInFirestore,
   DESIGNATED_ADMIN_EMAIL,
 } from '../firebase/config';
 import { UserProfile, ApprovalStatus, MembershipStatus } from '../types';
@@ -41,7 +42,9 @@ interface AuthContextType {
     studentId?: string;
   }) => Promise<void>;
   loginStudent: (email: string, pass: string) => Promise<void>;
+  loginAdmin: (email: string, pass: string) => Promise<{ isAdmin: boolean }>;
   loginGoogle: () => Promise<void>;
+  loginAdminGoogle: () => Promise<{ isAdmin: boolean }>;
   logoutUser: () => Promise<void>;
   requestPasswordReset: (email: string) => Promise<void>;
   refreshProfile: () => Promise<void>;
@@ -52,29 +55,35 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [isAdminInDb, setIsAdminInDb] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
   const loadProfile = async (currentUser: User) => {
     try {
-      // If designated admin, ensure admin bootstrap
-      if (currentUser.email === DESIGNATED_ADMIN_EMAIL) {
+      const isDesignatedAdmin = currentUser.email?.toLowerCase() === DESIGNATED_ADMIN_EMAIL.toLowerCase();
+
+      // If designated admin, ensure admin bootstrap in Firestore
+      if (isDesignatedAdmin) {
         await bootstrapAdminDocument(currentUser);
       }
+
+      // Verify Firestore admin record directly from backend /admins/{uid}
+      const hasAdminDoc = await checkIsAdminInFirestore(currentUser.uid);
+      setIsAdminInDb(hasAdminDoc || isDesignatedAdmin);
 
       const p = await fetchUserProfile(currentUser.uid);
       if (p) {
         setProfile(p);
       } else {
         // If profile doesn't exist yet (e.g. Google Sign-In first time)
-        const isDesignatedAdmin = currentUser.email === DESIGNATED_ADMIN_EMAIL;
         const newProfile: UserProfile = {
           uid: currentUser.uid,
           fullName: currentUser.displayName || (isDesignatedAdmin ? 'Meraj Khan (Administrator)' : 'Registered Student'),
           email: currentUser.email || '',
           phoneNumber: currentUser.phoneNumber || '0300-0000000',
           academicLevel: isDesignatedAdmin ? 'Super Administrator' : 'FSc Part 2 (Pre-Engineering)',
-          role: isDesignatedAdmin ? 'admin' : 'student',
-          status: isDesignatedAdmin ? 'approved' : 'pending',
+          role: (isDesignatedAdmin || hasAdminDoc) ? 'admin' : 'student',
+          status: (isDesignatedAdmin || hasAdminDoc) ? 'approved' : 'pending',
           registeredAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
@@ -84,7 +93,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (err) {
       console.error('Error loading user profile:', err);
       // Fallback if designated admin
-      if (currentUser.email === DESIGNATED_ADMIN_EMAIL) {
+      if (currentUser.email?.toLowerCase() === DESIGNATED_ADMIN_EMAIL.toLowerCase()) {
+        setIsAdminInDb(true);
         setProfile({
           uid: currentUser.uid,
           fullName: 'Meraj Khan (Administrator)',
@@ -105,6 +115,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await loadProfile(currentUser);
       } else {
         setProfile(null);
+        setIsAdminInDb(false);
       }
       setLoading(false);
     });
@@ -162,6 +173,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const loginAdmin = async (email: string, pass: string): Promise<{ isAdmin: boolean }> => {
+    setLoading(true);
+    try {
+      const cred = await signInWithEmailAndPassword(auth, email, pass);
+      const isDesignated = cred.user.email?.toLowerCase() === DESIGNATED_ADMIN_EMAIL.toLowerCase();
+      if (isDesignated) {
+        await bootstrapAdminDocument(cred.user);
+      }
+      await loadProfile(cred.user);
+      const hasAdminDoc = await checkIsAdminInFirestore(cred.user.uid);
+      const userIsAdmin = isDesignated || hasAdminDoc;
+      setIsAdminInDb(userIsAdmin);
+      return { isAdmin: userIsAdmin };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const loginGoogle = async () => {
     setLoading(true);
     try {
@@ -173,10 +202,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const loginAdminGoogle = async (): Promise<{ isAdmin: boolean }> => {
+    setLoading(true);
+    try {
+      const provider = new GoogleAuthProvider();
+      const cred = await signInWithPopup(auth, provider);
+      const isDesignated = cred.user.email?.toLowerCase() === DESIGNATED_ADMIN_EMAIL.toLowerCase();
+      if (isDesignated) {
+        await bootstrapAdminDocument(cred.user);
+      }
+      await loadProfile(cred.user);
+      const hasAdminDoc = await checkIsAdminInFirestore(cred.user.uid);
+      const userIsAdmin = isDesignated || hasAdminDoc;
+      setIsAdminInDb(userIsAdmin);
+      return { isAdmin: userIsAdmin };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const logoutUser = async () => {
     await signOut(auth);
     setProfile(null);
     setUser(null);
+    setIsAdminInDb(false);
   };
 
   const requestPasswordReset = async (email: string) => {
@@ -185,9 +234,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const isAdmin = useMemo(() => {
     if (!user) return false;
-    if (user.email === DESIGNATED_ADMIN_EMAIL) return true;
+    if (user.email?.toLowerCase() === DESIGNATED_ADMIN_EMAIL.toLowerCase()) return true;
+    if (isAdminInDb) return true;
     return profile?.role === 'admin';
-  }, [user, profile]);
+  }, [user, profile, isAdminInDb]);
 
   const isApproved = useMemo(() => {
     if (isAdmin) return true;
@@ -252,7 +302,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         membershipDaysRemaining,
         registerStudent,
         loginStudent,
+        loginAdmin,
         loginGoogle,
+        loginAdminGoogle,
         logoutUser,
         requestPasswordReset,
         refreshProfile,

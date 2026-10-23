@@ -1,12 +1,12 @@
 import { db } from './config';
 import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
-import { Course, Lesson, SiteSettings } from '../types';
+import { Subject, Chapter, Course, Lesson, SiteSettings } from '../types';
 
 export const INITIAL_SETTINGS: SiteSettings = {
   portalName: 'Meraj Learning Portal',
   supportPhone: '+92 300 1234567',
   supportEmail: 'support@merajlearning.pk',
-  announcementBanner: '📢 Mid-Term Exam Series & MDCAT Mock Tests commencing from next Monday. Ensure all pending chapters are completed!',
+  announcementBanner: '📢 Mid-Term Exam Series & MDCAT/NET Mock Tests commencing soon. Ensure all chapter-wise lectures and notes are reviewed!',
   allowPublicRegistration: true,
   annualMembershipFee: 1000,
   membershipDurationDays: 365,
@@ -20,6 +20,365 @@ export const INITIAL_SETTINGS: SiteSettings = {
   paymentInstructions: 'Send Rs. 1,000 via Easypaisa, JazzCash, or online bank transfer. After sending, upload a clear screenshot of the payment receipt and enter the Transaction ID / TRX ID below. Our administration verifies payments and activates your 365-day membership.',
 };
 
+export const INITIAL_SUBJECTS: Subject[] = [
+  {
+    id: 'subj-physics',
+    name: 'Physics',
+    code: 'PHY-12',
+    academicLevel: 'Class 12 / HSSC-II',
+    iconName: 'Atom',
+    description: 'Comprehensive physics curriculum spanning Electrostatics, Current Electricity, Electromagnetism, Induction, and AC Circuits aligned with Punjab, Federal and Entrance Exam boards.',
+    colorTheme: 'sky',
+    order: 1,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'subj-chemistry',
+    name: 'Chemistry',
+    code: 'CHM-12',
+    academicLevel: 'Class 12 / HSSC-II',
+    iconName: 'FlaskConical',
+    description: 'Master Inorganic trends, s-Block & p-Block elements, and deep reaction mechanisms in Organic Chemistry with systematic formula breakdowns.',
+    colorTheme: 'emerald',
+    order: 2,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'subj-mathematics',
+    name: 'Mathematics',
+    code: 'MTH-12',
+    academicLevel: 'Class 12 / HSSC-II',
+    iconName: 'Calculator',
+    description: 'Rigorous mathematical instruction covering Functions & Limits, Differentiation, Integration, Differential Equations, and Analytical Conic Geometry.',
+    colorTheme: 'blue',
+    order: 3,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'subj-english',
+    name: 'English',
+    code: 'ENG-12',
+    academicLevel: 'Class 12 & Entry Test',
+    iconName: 'BookOpen',
+    description: 'Advanced board grammar, sentence correction, reading comprehension, vocabulary building, and precis writing techniques.',
+    colorTheme: 'amber',
+    order: 4,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'subj-computer-science',
+    name: 'Computer Science',
+    code: 'CS-12',
+    academicLevel: 'Class 12 / ICS',
+    iconName: 'Cpu',
+    description: 'Database management foundations, entity-relationship diagrams, structured C / C++ programming syntax, arrays, loops, and modular functions.',
+    colorTheme: 'purple',
+    order: 5,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'subj-net-architecture',
+    name: 'NET Architecture',
+    code: 'NET-ARCH',
+    academicLevel: 'NUST / Entry Test',
+    iconName: 'Building',
+    description: 'Specialized NUST & Engineering entrance preparation: architectural drawing, 2D/3D orthographic projections, spatial aptitude, and aesthetic principles.',
+    colorTheme: 'rose',
+    order: 6,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+];
+
+export const INITIAL_CHAPTERS: Chapter[] = [
+  // Physics Chapters
+  {
+    id: 'chap-phy-1',
+    subjectId: 'subj-physics',
+    chapterNumber: 1,
+    title: 'Chapter 1: Electrostatics',
+    description: 'Electric charge properties, Coulomb’s law in vacuum and medium, electric field intensity, flux, Gauss’s law and electric potential.',
+    order: 1,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'chap-phy-2',
+    subjectId: 'subj-physics',
+    chapterNumber: 2,
+    title: 'Chapter 2: Current Electricity',
+    description: 'Current mechanisms, Ohm’s law, resistivity, temperature coefficient of resistance, Kirchhoff’s laws and potentiometer.',
+    order: 2,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'chap-phy-3',
+    subjectId: 'subj-physics',
+    chapterNumber: 3,
+    title: 'Chapter 3: Electromagnetism',
+    description: 'Magnetic field of steady current, Ampere’s circuital law, force on current carrying conductor, and galvanometer mechanics.',
+    order: 3,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'chap-phy-4',
+    subjectId: 'subj-physics',
+    chapterNumber: 4,
+    title: 'Chapter 4: Electromagnetic Induction',
+    description: 'Induced EMF, Faraday’s laws, Lenz’s law, motional EMF, mutual induction, self induction, AC generator and electrical transformers.',
+    order: 4,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'chap-phy-5',
+    subjectId: 'subj-physics',
+    chapterNumber: 5,
+    title: 'Chapter 5: Alternating Current',
+    description: 'Sinusoidal alternating quantities, AC through resistor, inductor, capacitor, RLC series resonance circuit and power in AC circuits.',
+    order: 5,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+
+  // Mathematics Chapters
+  {
+    id: 'chap-math-1',
+    subjectId: 'subj-mathematics',
+    chapterNumber: 1,
+    title: 'Chapter 1: Functions and Limits',
+    description: 'Types of functions, domain & range, composition of functions, algebraic limits evaluation and theorems on limits.',
+    order: 1,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'chap-math-2',
+    subjectId: 'subj-mathematics',
+    chapterNumber: 2,
+    title: 'Chapter 2: Differentiation',
+    description: 'Derivative from first principles, power rule, product rule, quotient rule, chain rule, implicit differentiation and higher derivatives.',
+    order: 2,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'chap-math-3',
+    subjectId: 'subj-mathematics',
+    chapterNumber: 3,
+    title: 'Chapter 3: Integration',
+    description: 'Indefinite integrals, integration by substitution, integration by parts, partial fractions, and definite integrals applications.',
+    order: 3,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'chap-math-4',
+    subjectId: 'subj-mathematics',
+    chapterNumber: 4,
+    title: 'Chapter 4: Differential Equations',
+    description: 'Order and degree of differential equations, separable variables method, and first order linear differential equations.',
+    order: 4,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'chap-math-5',
+    subjectId: 'subj-mathematics',
+    chapterNumber: 5,
+    title: 'Chapter 5: Analytical Geometry',
+    description: 'Straight lines, distance formulas, slopes, angle between two lines, conic sections (parabola, ellipse, hyperbola).',
+    order: 5,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+
+  // Chemistry Chapters
+  {
+    id: 'chap-chem-1',
+    subjectId: 'subj-chemistry',
+    chapterNumber: 1,
+    title: 'Chapter 1: Periodic Classification',
+    description: 'Modern periodic table, electronic configuration, atomic radii, ionization energy, electron affinity, and electronegativity trends.',
+    order: 1,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'chap-chem-2',
+    subjectId: 'subj-chemistry',
+    chapterNumber: 2,
+    title: 'Chapter 2: s-Block Elements',
+    description: 'Alkali and alkaline earth metals, chemical reactivities, flame test observations, commercial production of sodium and caustic soda.',
+    order: 2,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'chap-chem-3',
+    subjectId: 'subj-chemistry',
+    chapterNumber: 3,
+    title: 'Chapter 3: Group IIIA and IVA Elements',
+    description: 'Boron family, diagonal relationships, carbon-silicon chemistry, silicates, and semiconductor grade silicon.',
+    order: 3,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'chap-chem-4',
+    subjectId: 'subj-chemistry',
+    chapterNumber: 4,
+    title: 'Chapter 4: Organic Chemistry',
+    description: 'Structural isomerism, orbital hybridization of carbon, IUPAC nomenclature, reaction mechanisms of hydrocarbons and functional groups.',
+    order: 4,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'chap-chem-5',
+    subjectId: 'subj-chemistry',
+    chapterNumber: 5,
+    title: 'Chapter 5: Environmental Chemistry',
+    description: 'Atmospheric layers, acid rain chemistry, ozone depletion dynamics, industrial wastewater treatments and green chemistry.',
+    order: 5,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+
+  // English Chapters
+  {
+    id: 'chap-eng-1',
+    subjectId: 'subj-english',
+    chapterNumber: 1,
+    title: 'Chapter 1: Reading Comprehension & Vocabulary',
+    description: 'Contextual inference techniques, tone analysis, root word identification, synonyms and antonyms for entrance test preparation.',
+    order: 1,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'chap-eng-2',
+    subjectId: 'subj-english',
+    chapterNumber: 2,
+    title: 'Chapter 2: Grammar Rules & Subject-Verb Agreement',
+    description: 'Syntactic structures, subject-verb concord, pronoun reference errors, dangling modifiers, and parallelism rules.',
+    order: 2,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'chap-eng-3',
+    subjectId: 'subj-english',
+    chapterNumber: 3,
+    title: 'Chapter 3: Direct and Indirect Speech',
+    description: 'Tense shifts, pronoun conversions, interrogative and imperative sentences reporting with comprehensive board exercises.',
+    order: 3,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'chap-eng-4',
+    subjectId: 'subj-english',
+    chapterNumber: 4,
+    title: 'Chapter 4: Essay and Precis Composition',
+    description: 'Thesis statement formulation, paragraph coherence, one-third summarization techniques, and formal academic writing.',
+    order: 4,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+
+  // Computer Science Chapters
+  {
+    id: 'chap-cs-1',
+    subjectId: 'subj-computer-science',
+    chapterNumber: 1,
+    title: 'Chapter 1: Data Basics and Database Management Systems',
+    description: 'Data vs Information, relational data models, primary and foreign keys, ER diagrams, normalization forms 1NF to 3NF.',
+    order: 1,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'chap-cs-2',
+    subjectId: 'subj-computer-science',
+    chapterNumber: 2,
+    title: 'Chapter 2: Basic Concepts of C / C++ Programming',
+    description: 'Compiler vs Interpreter, basic program structure, variables, constant qualifiers, formatted I/O (printf/scanf, cin/cout).',
+    order: 2,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'chap-cs-3',
+    subjectId: 'subj-computer-science',
+    chapterNumber: 3,
+    title: 'Chapter 3: Control Structures & Conditional Statements',
+    description: 'Relational and logical operators, if-else chains, nested condition branches, and multi-branch switch statements.',
+    order: 3,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'chap-cs-4',
+    subjectId: 'subj-computer-science',
+    chapterNumber: 4,
+    title: 'Chapter 4: Functions, Arrays & Pointers',
+    description: 'User-defined modular functions, pass by value vs reference, one-dimensional & 2D arrays, pointer address arithmetic.',
+    order: 4,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+
+  // NET Architecture Chapters
+  {
+    id: 'chap-arch-1',
+    subjectId: 'subj-net-architecture',
+    chapterNumber: 1,
+    title: 'Chapter 1: Architectural Drawing & Perspective Projection',
+    description: 'One-point and two-point perspective views, vanishing points, eye-level horizon, horizon line placement, and scale reduction.',
+    order: 1,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'chap-arch-2',
+    subjectId: 'subj-net-architecture',
+    chapterNumber: 2,
+    title: 'Chapter 2: Spatial Visualization & 3D Geometry',
+    description: 'Isometric drawings, unfolding 3D solids into 2D nets, cross-sections of geometrical solids, and plan-elevation reconstruction.',
+    order: 2,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'chap-arch-3',
+    subjectId: 'subj-net-architecture',
+    chapterNumber: 3,
+    title: 'Chapter 3: History of Pakistani & Global Architecture',
+    description: 'Indus Valley civilization, Mughal architectural hallmarks (Badshahi Mosque, Shalimar Gardens), and modern landmark designs.',
+    order: 3,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'chap-arch-4',
+    subjectId: 'subj-net-architecture',
+    chapterNumber: 4,
+    title: 'Chapter 4: Aesthetic Sensitivity and Color Theory',
+    description: 'Visual balance, rhythm, contrast, proportion, color wheels, complementary hues, and emotional impact of architectural lighting.',
+    order: 4,
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+];
+
 export const INITIAL_COURSES: Course[] = [
   {
     id: 'course-phy-12',
@@ -30,7 +389,7 @@ export const INITIAL_COURSES: Course[] = [
     description: 'Comprehensive lecture series covering Electromagnetism, Magnetic Induction, Alternating Currents, and Modern Physics according to Punjab, Federal & Sindh Board curricula.',
     thumbnailUrl: 'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?auto=format&fit=crop&w=800&q=80',
     isPublished: true,
-    totalLessons: 4,
+    totalLessons: 7,
     duration: '18 Hours',
     createdAt: new Date().toISOString(),
   },
@@ -43,7 +402,7 @@ export const INITIAL_COURSES: Course[] = [
     description: 'Deep conceptual breakdown of Function Limits, Differentiation, Integration techniques, and Conic Sections with past-paper board problem solving.',
     thumbnailUrl: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=800&q=80',
     isPublished: true,
-    totalLessons: 3,
+    totalLessons: 4,
     duration: '22 Hours',
     createdAt: new Date().toISOString(),
   },
@@ -61,25 +420,144 @@ export const INITIAL_COURSES: Course[] = [
     createdAt: new Date().toISOString(),
   },
   {
-    id: 'course-phy-11',
-    title: 'Physics Class 11: Mechanics, Vectors & Work Energy',
-    subject: 'Physics',
-    academicLevel: 'FSc Part 1 (Class 11)',
-    instructor: 'Sir Meraj Alam (Senior Educator)',
-    description: 'Clear intuitive explanations of physical quantities, vectors, projectile motion, work energy theorem, and circular dynamics.',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=800&q=80',
+    id: 'course-cs-12',
+    title: 'Computer Science Class 12: Databases & C Programming',
+    subject: 'Computer Science',
+    academicLevel: 'ICS Part 2 (Class 12)',
+    instructor: 'Engr. Zeeshan Haider (Software Architect)',
+    description: 'Complete hands-on curriculum covering database normalization, relational keys, C language syntax, control structures, and array logic.',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
     isPublished: true,
     totalLessons: 2,
-    duration: '14 Hours',
+    duration: '15 Hours',
     createdAt: new Date().toISOString(),
   },
 ];
 
 export const INITIAL_LESSONS: Lesson[] = [
+  // --- PHYSICS: Chapter 1 (Electrostatics) ---
+  {
+    id: 'lesson-phy-ch1-1',
+    courseId: 'course-phy-12',
+    subjectId: 'subj-physics',
+    chapterId: 'chap-phy-1',
+    chapterTitle: 'Chapter 1: Electrostatics',
+    title: 'Lecture 1: Electric Charge & Quantization Principles',
+    description: 'Fundamental properties of electric charges, law of conservation of charge, quantization proof, and comparison between gravitational and electrostatic forces.',
+    videoUrl: 'https://www.youtube.com/embed/gQyqM2wW-gU',
+    videoProvider: 'youtube',
+    durationMinutes: 26,
+    order: 1,
+    pdfNotesUrl: 'https://portal.physikomatics.com/demo-notes-electrostatics.pdf',
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'lesson-phy-ch1-2',
+    courseId: 'course-phy-12',
+    subjectId: 'subj-physics',
+    chapterId: 'chap-phy-1',
+    chapterTitle: 'Chapter 1: Electrostatics',
+    title: 'Lecture 2: Coulomb’s Law & Effect of Dielectric Medium',
+    description: 'Mathematical formulation of Coulomb’s law in vector form, definition of relative permittivity (dielectric constant), and test problem walkthroughs.',
+    videoUrl: 'https://www.youtube.com/embed/gQyqM2wW-gU',
+    videoProvider: 'youtube',
+    durationMinutes: 32,
+    order: 2,
+    pdfNotesUrl: '',
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'lesson-phy-ch1-3',
+    courseId: 'course-phy-12',
+    subjectId: 'subj-physics',
+    chapterId: 'chap-phy-1',
+    chapterTitle: 'Chapter 1: Electrostatics',
+    title: 'Lecture 3: Electric Field Lines & Point Charge Intensity',
+    description: 'Visualising electric flux, field line characteristics, electric field intensity formula derivation, and superposition principle.',
+    videoUrl: 'https://www.youtube.com/embed/gQyqM2wW-gU',
+    videoProvider: 'youtube',
+    durationMinutes: 35,
+    order: 3,
+    pdfNotesUrl: '',
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'lesson-phy-ch1-4',
+    courseId: 'course-phy-12',
+    subjectId: 'subj-physics',
+    chapterId: 'chap-phy-1',
+    chapterTitle: 'Chapter 1: Electrostatics',
+    title: 'Lecture 4: Electric Potential & Potential Difference',
+    description: 'Definition of volt, potential difference between two points, potential gradient relationship E = -dV/dr, and Millikan’s oil drop experiment review.',
+    videoUrl: 'https://www.youtube.com/embed/gQyqM2wW-gU',
+    videoProvider: 'youtube',
+    durationMinutes: 38,
+    order: 4,
+    pdfNotesUrl: 'https://portal.physikomatics.com/demo-notes-potential.pdf',
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+
+  // --- PHYSICS: Chapter 2 (Current Electricity) ---
+  {
+    id: 'lesson-phy-ch2-1',
+    courseId: 'course-phy-12',
+    subjectId: 'subj-physics',
+    chapterId: 'chap-phy-2',
+    chapterTitle: 'Chapter 2: Current Electricity',
+    title: 'Lecture 1: Electric Current & Electron Drift Velocity',
+    description: 'Current carriers in metals, gases and electrolytes, quantitative expression for drift velocity, and steady state currents.',
+    videoUrl: 'https://www.youtube.com/embed/gQyqM2wW-gU',
+    videoProvider: 'youtube',
+    durationMinutes: 30,
+    order: 1,
+    pdfNotesUrl: '',
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'lesson-phy-ch2-2',
+    courseId: 'course-phy-12',
+    subjectId: 'subj-physics',
+    chapterId: 'chap-phy-2',
+    chapterTitle: 'Chapter 2: Current Electricity',
+    title: 'Lecture 2: Ohm’s Law & Limitations of Ohmic Materials',
+    description: 'Physical meaning of Ohm’s law, microscopic interpretation, V-I graphs for ohmic and non-ohmic conductors like filaments and thermistors.',
+    videoUrl: 'https://www.youtube.com/embed/gQyqM2wW-gU',
+    videoProvider: 'youtube',
+    durationMinutes: 28,
+    order: 2,
+    pdfNotesUrl: '',
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'lesson-phy-ch2-3',
+    courseId: 'course-phy-12',
+    subjectId: 'subj-physics',
+    chapterId: 'chap-phy-2',
+    chapterTitle: 'Chapter 2: Current Electricity',
+    title: 'Lecture 3: Resistance, Resistivity & Color Code Standards',
+    description: 'Factors affecting resistance (length, cross-sectional area, temperature), resistivity and conductivity units, carbon resistor color bands.',
+    videoUrl: 'https://www.youtube.com/embed/gQyqM2wW-gU',
+    videoProvider: 'youtube',
+    durationMinutes: 33,
+    order: 3,
+    pdfNotesUrl: 'https://portal.physikomatics.com/demo-notes-resistance.pdf',
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+
+  // --- PHYSICS: Chapter 4 (Electromagnetic Induction) ---
   {
     id: 'lesson-phy-12-1',
     courseId: 'course-phy-12',
-    chapterTitle: 'Chapter 14: Magnetic Induction',
+    subjectId: 'subj-physics',
+    chapterId: 'chap-phy-4',
+    chapterTitle: 'Chapter 4: Electromagnetic Induction',
     title: 'Lecture 1: Magnetic Flux & Faraday’s Laws of Electromagnetic Induction',
     description: 'Introduction to magnetic flux definition, dot product interpretation, and experimental verification of Faraday’s Law of induced electromotive force (EMF).',
     videoUrl: 'https://www.youtube.com/embed/gQyqM2wW-gU',
@@ -93,7 +571,9 @@ export const INITIAL_LESSONS: Lesson[] = [
   {
     id: 'lesson-phy-12-2',
     courseId: 'course-phy-12',
-    chapterTitle: 'Chapter 14: Magnetic Induction',
+    subjectId: 'subj-physics',
+    chapterId: 'chap-phy-4',
+    chapterTitle: 'Chapter 4: Electromagnetic Induction',
     title: 'Lecture 2: Lenz’s Law and Direction of Induced Current',
     description: 'Physical understanding of Lenz’s law as conservation of energy, right-hand grip rule, and problem walkthrough for board exams.',
     videoUrl: 'https://www.youtube.com/embed/gQyqM2wW-gU',
@@ -105,36 +585,28 @@ export const INITIAL_LESSONS: Lesson[] = [
     createdAt: new Date().toISOString(),
   },
   {
-    id: 'lesson-phy-12-3',
-    courseId: 'course-phy-12',
-    chapterTitle: 'Chapter 14: Magnetic Induction',
-    title: 'Lecture 3: Mutual Induction & Self-Induction Mechanisms',
-    description: 'Detailed analysis of transformer action, coefficient of mutual induction, Henry unit definition, and back-emf in motors.',
-    videoUrl: 'https://www.youtube.com/embed/gQyqM2wW-gU',
-    videoProvider: 'youtube',
-    durationMinutes: 38,
-    order: 3,
-    pdfNotesUrl: '',
-    isPublished: true,
-    createdAt: new Date().toISOString(),
-  },
-  {
     id: 'lesson-phy-12-4',
     courseId: 'course-phy-12',
-    chapterTitle: 'Chapter 15: Alternating Current',
-    title: 'Lecture 4: AC Circuits, Peak vs RMS Values, and Phase Lag',
+    subjectId: 'subj-physics',
+    chapterId: 'chap-phy-5',
+    chapterTitle: 'Chapter 5: Alternating Current',
+    title: 'Lecture 1: AC Circuits, Peak vs RMS Values, and Phase Lag',
     description: 'Sinusoidal alternating voltage generation, phase lead and lag in resistive, capacitive and inductive circuits.',
     videoUrl: 'https://www.youtube.com/embed/gQyqM2wW-gU',
     videoProvider: 'youtube',
     durationMinutes: 42,
-    order: 4,
+    order: 1,
     pdfNotesUrl: '',
     isPublished: true,
     createdAt: new Date().toISOString(),
   },
+
+  // --- MATHEMATICS: Chapter 1 & 2 ---
   {
     id: 'lesson-math-12-1',
     courseId: 'course-math-12',
+    subjectId: 'subj-mathematics',
+    chapterId: 'chap-math-1',
     chapterTitle: 'Chapter 1: Functions and Limits',
     title: 'Lecture 1: Evaluation of Algebraic Limits & The Squeeze Theorem',
     description: 'Standard limits proofs including limit as theta approaches 0 of sin(theta)/theta = 1 and algebraic factorization techniques.',
@@ -142,44 +614,72 @@ export const INITIAL_LESSONS: Lesson[] = [
     videoProvider: 'youtube',
     durationMinutes: 36,
     order: 1,
-    pdfNotesUrl: '',
+    pdfNotesUrl: 'https://portal.physikomatics.com/demo-notes-limits.pdf',
     isPublished: true,
     createdAt: new Date().toISOString(),
   },
   {
     id: 'lesson-math-12-2',
     courseId: 'course-math-12',
+    subjectId: 'subj-mathematics',
+    chapterId: 'chap-math-2',
     chapterTitle: 'Chapter 2: Differentiation',
-    title: 'Lecture 2: Derivatives from First Principle (ab-initio method)',
+    title: 'Lecture 1: Derivatives from First Principle (ab-initio method)',
     description: 'Step-by-step 4-step algorithm for finding derivatives of polynomials, trigonometric and exponential functions from scratch.',
     videoUrl: 'https://www.youtube.com/embed/7K1g52u0Wio',
     videoProvider: 'youtube',
     durationMinutes: 44,
-    order: 2,
+    order: 1,
     pdfNotesUrl: '',
     isPublished: true,
     createdAt: new Date().toISOString(),
   },
+
+  // --- CHEMISTRY: Chapter 4 ---
   {
     id: 'lesson-chem-12-1',
     courseId: 'course-chem-12',
-    chapterTitle: 'Chapter 7: Fundamental Principles of Organic Chemistry',
+    subjectId: 'subj-chemistry',
+    chapterId: 'chap-chem-4',
+    chapterTitle: 'Chapter 4: Organic Chemistry',
     title: 'Lecture 1: Hybridization of Carbon (sp3, sp2, sp) & Bond Angles',
     description: 'Tetrahedral geometry in methane, planar shape of ethene, and triple-bond overlap in ethyne with orbital diagrams.',
     videoUrl: 'https://www.youtube.com/embed/gQyqM2wW-gU',
     videoProvider: 'youtube',
     durationMinutes: 30,
     order: 1,
+    pdfNotesUrl: 'https://portal.physikomatics.com/demo-notes-hybridization.pdf',
+    isPublished: true,
+    createdAt: new Date().toISOString(),
+  },
+
+  // --- COMPUTER SCIENCE: Chapter 1 & 2 ---
+  {
+    id: 'lesson-cs-12-1',
+    courseId: 'course-cs-12',
+    subjectId: 'subj-computer-science',
+    chapterId: 'chap-cs-1',
+    chapterTitle: 'Chapter 1: Data Basics and Database Management Systems',
+    title: 'Lecture 1: Relational Schema, Primary Keys & Normalization Fundamentals',
+    description: 'Conceptual breakdown of relational databases, relational tuples, attributes, candidate keys, and avoiding insertion anomalies through normalization.',
+    videoUrl: 'https://www.youtube.com/embed/7K1g52u0Wio',
+    videoProvider: 'youtube',
+    durationMinutes: 32,
+    order: 1,
     pdfNotesUrl: '',
     isPublished: true,
     createdAt: new Date().toISOString(),
   },
+
+  // --- NET ARCHITECTURE: Chapter 1 ---
   {
-    id: 'lesson-phy-11-1',
-    courseId: 'course-phy-11',
-    chapterTitle: 'Chapter 2: Vectors & Equilibrium',
-    title: 'Lecture 1: Addition of Vectors by Rectangular Components',
-    description: 'Resolving vectors into orthogonal components (Ax, Ay) and determining magnitude and direction of resultant vector in all four quadrants.',
+    id: 'lesson-arch-1',
+    courseId: 'course-phy-12', // compatibility
+    subjectId: 'subj-net-architecture',
+    chapterId: 'chap-arch-1',
+    chapterTitle: 'Chapter 1: Architectural Drawing & Perspective Projection',
+    title: 'Lecture 1: Fundamentals of 2-Point Perspective & Vanishing Lines',
+    description: 'Establishing station points, horizon height, picture plane interactions, and sketching architectural volumes in realistic 2-point perspective.',
     videoUrl: 'https://www.youtube.com/embed/gQyqM2wW-gU',
     videoProvider: 'youtube',
     durationMinutes: 35,
@@ -192,19 +692,66 @@ export const INITIAL_LESSONS: Lesson[] = [
 
 export async function seedInitialPortalDataIfEmpty(): Promise<void> {
   try {
-    const coursesSnap = await getDocs(collection(db, 'courses'));
-    if (coursesSnap.empty) {
-      console.log('Seeding initial curriculum courses & lessons...');
-      for (const course of INITIAL_COURSES) {
-        await setDoc(doc(db, 'courses', course.id), course);
+    // 1. Seed site settings if missing
+    try {
+      const snap = await getDocs(collection(db, 'siteSettings'));
+      if (snap.empty) {
+        await setDoc(doc(db, 'siteSettings', 'portal'), INITIAL_SETTINGS);
       }
-      for (const lesson of INITIAL_LESSONS) {
-        await setDoc(doc(db, 'lessons', lesson.id), lesson);
+    } catch {
+      // Ignored
+    }
+
+    // 2. Seed Subjects if missing
+    try {
+      const subjectsSnap = await getDocs(collection(db, 'subjects'));
+      if (subjectsSnap.empty) {
+        console.log('Seeding initial subjects...');
+        for (const subj of INITIAL_SUBJECTS) {
+          await setDoc(doc(db, 'subjects', subj.id), subj);
+        }
       }
-      await setDoc(doc(db, 'siteSettings', 'portal'), INITIAL_SETTINGS);
-      console.log('Curriculum seeded successfully.');
+    } catch {
+      // Ignored
+    }
+
+    // 3. Seed Chapters if missing
+    try {
+      const chaptersSnap = await getDocs(collection(db, 'chapters'));
+      if (chaptersSnap.empty) {
+        console.log('Seeding initial chapters...');
+        for (const chap of INITIAL_CHAPTERS) {
+          await setDoc(doc(db, 'chapters', chap.id), chap);
+        }
+      }
+    } catch {
+      // Ignored
+    }
+
+    // 4. Seed Courses if missing
+    try {
+      const coursesSnap = await getDocs(collection(db, 'courses'));
+      if (coursesSnap.empty) {
+        for (const course of INITIAL_COURSES) {
+          await setDoc(doc(db, 'courses', course.id), course);
+        }
+      }
+    } catch {
+      // Ignored
+    }
+
+    // 5. Seed Lessons if missing
+    try {
+      const lessonsSnap = await getDocs(collection(db, 'lessons'));
+      if (lessonsSnap.empty) {
+        for (const lesson of INITIAL_LESSONS) {
+          await setDoc(doc(db, 'lessons', lesson.id), lesson);
+        }
+      }
+    } catch {
+      // Ignored
     }
   } catch (error) {
-    console.warn('Initial seeding skipped (permission or already populated):', error);
+    console.warn('Initial seeding skipped:', error);
   }
 }
