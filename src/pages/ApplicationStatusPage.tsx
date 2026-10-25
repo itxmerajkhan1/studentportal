@@ -13,15 +13,19 @@ import {
   ShieldCheck,
   GraduationCap,
 } from 'lucide-react';
+import { IlmoraLogo } from '../components/IlmoraLogo';
+import { OFFICIAL_CONTACT_PHONE, PUBLIC_CONTACT_EMAIL } from '../config/constants';
 
 interface ApplicationStatusPageProps {
   navigate: (route: string) => void;
   supportPhone?: string;
+  supportEmail?: string;
 }
 
 export const ApplicationStatusPage: React.FC<ApplicationStatusPageProps> = ({
   navigate,
-  supportPhone = '+92 300 1234567',
+  supportPhone = OFFICIAL_CONTACT_PHONE,
+  supportEmail = PUBLIC_CONTACT_EMAIL,
 }) => {
   const { user, profile, isAdmin, isApproved, isPending, isRejected, isSuspended, refreshProfile, logoutUser } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
@@ -66,8 +70,12 @@ export const ApplicationStatusPage: React.FC<ApplicationStatusPageProps> = ({
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
       <div className="max-w-xl w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl space-y-6">
-        {/* Status Header Icon & Title */}
-        <div className="text-center space-y-3">
+        {/* Brand Logo & Status Header */}
+        <div className="text-center space-y-4">
+          <div className="flex justify-center">
+            <IlmoraLogo variant="full" theme="light" size="md" />
+          </div>
+
           {isAdmin ? (
             <div className="w-16 h-16 rounded-2xl bg-cyan-950 text-cyan-400 border border-cyan-700/60 flex items-center justify-center mx-auto shadow-lg shadow-cyan-950/50">
               <ShieldCheck className="w-9 h-9" />
@@ -226,6 +234,10 @@ export const ApplicationStatusPage: React.FC<ApplicationStatusPageProps> = ({
               <span>Sign Out</span>
             </button>
           </div>
+
+          <p className="text-[11px] text-center text-slate-400 pt-2 border-t border-slate-800/80">
+            Admissions helpline: <a href={`mailto:${supportEmail}`} className="text-cyan-400 hover:underline">{supportEmail}</a> • <a href={`https://wa.me/${supportPhone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer" className="text-cyan-400 hover:underline">{supportPhone}</a>
+          </p>
         </div>
       </div>
     </div>

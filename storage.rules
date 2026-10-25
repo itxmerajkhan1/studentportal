@@ -1,0 +1,44 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == "itxmerajkhan3109@gmail.com" ||
+        firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isApprovedStudent() {
+      return isSignedIn() && (
+        isAdmin() ||
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.status == 'approved'
+      );
+    }
+
+    // Lecture PDF notes - uploaded and managed exclusively by administrator
+    match /lecture_notes/{allPaths=**} {
+      // Approved students and admin can download/read lecture PDF handouts
+      allow read: if isApprovedStudent();
+      
+      // Only authenticated admin can upload or replace lecture PDFs (must be PDF <= 25MB)
+      allow write: if isAdmin()
+        && request.resource.contentType == 'application/pdf'
+        && request.resource.size <= 25 * 1024 * 1024;
+        
+      // Only authenticated admin can delete lecture PDFs
+      allow delete: if isAdmin();
+    }
+
+    // Payment receipts uploaded by students for verification
+    match /receipts/{allPaths=**} {
+      allow create: if isSignedIn() && request.resource.size <= 5 * 1024 * 1024;
+      allow read: if isSignedIn();
+      allow delete: if isAdmin();
+    }
+  }
+}

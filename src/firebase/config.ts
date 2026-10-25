@@ -23,14 +23,37 @@ import {
   getDocs,
   onSnapshot,
 } from 'firebase/firestore';
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+  deleteObject,
+} from 'firebase/storage';
 import firebaseConfig from '../../firebase-applet-config.json';
 import { UserProfile, Course, Lesson, LessonProgress, Announcement, SiteSettings, PaymentRequest, MembershipStatus, Subject, Chapter } from '../types';
+import {
+  ADMIN_AUTH_EMAIL,
+  PUBLIC_CONTACT_EMAIL,
+  OFFICIAL_CONTACT_PHONE,
+  OFFICIAL_WHATSAPP_URL,
+  OFFICIAL_PAYMENT_ACCOUNTS,
+} from '../config/constants';
+
+export {
+  ADMIN_AUTH_EMAIL,
+  PUBLIC_CONTACT_EMAIL,
+  OFFICIAL_CONTACT_PHONE,
+  OFFICIAL_WHATSAPP_URL,
+  OFFICIAL_PAYMENT_ACCOUNTS,
+};
 
 export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
+export const storage = getStorage(app, firebaseConfig.storageBucket);
 
-export const DESIGNATED_ADMIN_EMAIL = 'itxmerajkhan3109@gmail.com';
+export const DESIGNATED_ADMIN_EMAIL = ADMIN_AUTH_EMAIL;
 
 // Test connection on boot per Firebase guidelines
 export async function testConnection() {
@@ -381,6 +404,86 @@ export async function deleteLessonDoc(lessonId: string): Promise<void> {
     await deleteDoc(doc(db, 'lessons', lessonId));
   } catch (error) {
     handleFirestoreError(error, OperationType.DELETE, path);
+  }
+}
+
+export interface UploadPdfResult {
+  downloadUrl: string;
+  storagePath: string;
+  fileName: string;
+  fileSize: number;
+}
+
+/**
+ * Uploads an actual PDF file to Firebase Storage under `lecture_notes/`
+ * with upload progress tracking, file validation, and metadata.
+ */
+export async function uploadLecturePdf(
+  file: File,
+  lessonId: string,
+  onProgress?: (progressPercent: number) => void
+): Promise<UploadPdfResult> {
+  if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+    throw new Error('Only PDF documents are accepted.');
+  }
+
+  // Max 25 MB file limit
+  const maxBytes = 25 * 1024 * 1024;
+  if (file.size > maxBytes) {
+    throw new Error('PDF file size exceeds the 25 MB limit.');
+  }
+
+  const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+  const storagePath = `lecture_notes/${lessonId || 'lecture'}_${Date.now()}_${cleanName}`;
+  const fileRef = ref(storage, storagePath);
+
+  const uploadTask = uploadBytesResumable(fileRef, file, {
+    contentType: 'application/pdf',
+    customMetadata: {
+      originalName: file.name,
+      uploadedAt: new Date().toISOString(),
+      uploadedBy: auth.currentUser?.email || 'admin',
+    },
+  });
+
+  return new Promise((resolve, reject) => {
+    uploadTask.on(
+      'state_changed',
+      (snapshot) => {
+        const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        if (onProgress) onProgress(progress);
+      },
+      (error) => {
+        console.error('Firebase Storage PDF upload failed:', error);
+        reject(error);
+      },
+      async () => {
+        try {
+          const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
+          resolve({
+            downloadUrl,
+            storagePath,
+            fileName: file.name,
+            fileSize: file.size,
+          });
+        } catch (err) {
+          reject(err);
+        }
+      }
+    );
+  });
+}
+
+/**
+ * Removes an uploaded PDF notes file from Firebase Storage
+ */
+export async function deleteLecturePdf(storagePath: string): Promise<void> {
+  if (!storagePath) return;
+  try {
+    const fileRef = ref(storage, storagePath);
+    await deleteObject(fileRef);
+  } catch (err) {
+    console.warn('Could not delete storage file at path:', storagePath, err);
   }
 }
 

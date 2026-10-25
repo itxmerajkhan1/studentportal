@@ -17,6 +17,7 @@ import {
   CreditCard,
   ShieldCheck,
 } from 'lucide-react';
+import { IlmoraLogo } from './IlmoraLogo';
 
 interface NavbarProps {
   currentRoute: string;
@@ -109,24 +110,23 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate, announce
 
       {/* Main Bar: Strict 3-zone contract */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-        {/* Zone 1: Single Brand Wordmark */}
+        {/* Zone 1: Official ILMORA Brand Wordmark & Emblem */}
         <div
           onClick={() => navigate('/')}
-          className="flex items-center gap-2.5 cursor-pointer group select-none shrink-0"
+          className="flex items-center cursor-pointer group select-none shrink-0"
         >
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center text-slate-950 shadow-md shadow-cyan-500/20 group-hover:scale-105 transition-transform">
-            <GraduationCap className="w-5 h-5 text-slate-950" />
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="font-bold text-base sm:text-lg tracking-tight text-white whitespace-nowrap">
-                Meraj Learning
-              </span>
-            </div>
-            <p className="text-[10px] text-slate-400 font-medium -mt-0.5 tracking-tight hidden sm:block">
-              Class 11, 12 & Entry Test Portal
-            </p>
-          </div>
+          <IlmoraLogo
+            variant="full"
+            theme="light"
+            size="md"
+            className="hidden sm:inline-flex"
+          />
+          <IlmoraLogo
+            variant="full"
+            theme="light"
+            size="sm"
+            className="sm:hidden"
+          />
         </div>
 
         {/* Zone 2: Desktop Navigation Links (single-line, clean text) */}
@@ -488,7 +488,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentRoute, navigate, announce
               </div>
             )}
             <p className="text-[10px] text-center text-slate-400">
-              © {new Date().getFullYear()} Meraj Learning Portal • All Rights Reserved
+              © {new Date().getFullYear()} ILMORA • Learn Today. Lead Tomorrow.
             </p>
           </div>
         </div>

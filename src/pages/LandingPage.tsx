@@ -105,9 +105,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ courses, navigate }) =
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
             {/* Left Content */}
             <div className="lg:col-span-7 space-y-6 text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-300 text-xs font-medium">
-                <span className="w-2 h-2 rounded-full bg-cyan-400" />
-                <span>Pakistani Board Curriculum • Class 11, 12 & Entrance Exams</span>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-cyan-800/50 text-slate-300 text-xs font-medium shadow-sm">
+                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                <span className="font-bold text-cyan-300">ILMORA</span>
+                <span className="text-slate-600">·</span>
+                <span>Learn Today. Lead Tomorrow.</span>
               </div>
 
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
@@ -165,7 +167,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ courses, navigate }) =
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4 p-4 rounded-xl bg-slate-950/80 backdrop-blur-md border border-slate-800 text-xs">
-                  <p className="font-bold text-white">Meraj Digital Classroom</p>
+                  <p className="font-bold text-white">ILMORA Digital Classroom</p>
                   <p className="text-slate-400 text-[11px] mt-0.5">
                     Concept-first lecture delivery with step-by-step problem derivations.
                   </p>
@@ -374,7 +376,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ courses, navigate }) =
             Rs. 1,000 / Year All-Access Membership
           </h2>
           <p className="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">
-            Unrestricted access to all Physics, Mathematics, Chemistry, English, and CS chapters, HD video lessons, and printable notes. Simple payment verification via Easypaisa, JazzCash, or Bank Transfer.
+            Unrestricted access to all Physics, Mathematics, Chemistry, English, and CS chapters, HD video lessons, and printable notes. Simple payment verification via Bank Transfer (Meezan Bank), SadaPay, or Easypaisa.
           </p>
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
             <button

@@ -18,7 +18,7 @@ export interface UserProfile {
   updatedAt?: string;
 }
 
-export type PaymentMethod = 'easypaisa' | 'jazzcash' | 'bank_transfer';
+export type PaymentMethod = 'bank_transfer' | 'sadapay' | 'easypaisa' | 'jazzcash';
 export type PaymentStatus = 'pending' | 'approved' | 'rejected';
 
 export interface PaymentRequest {
@@ -92,6 +92,9 @@ export interface Lesson {
   durationMinutes: number;
   order: number;
   pdfNotesUrl?: string;
+  pdfStoragePath?: string;
+  pdfFileName?: string;
+  pdfFileSize?: number;
   isPublished: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -125,13 +128,21 @@ export interface SiteSettings {
   allowPublicRegistration: boolean;
   annualMembershipFee: number;
   membershipDurationDays: number;
+  // Bank Details
+  bankName: string;
+  bankBranch?: string;
+  bankTitle: string;
+  bankAccountNumber?: string;
+  bankIban: string;
+  // SadaPay
+  sadapayTitle?: string;
+  sadapayNumber?: string;
+  // Easypaisa
   easypaisaTitle: string;
   easypaisaNumber: string;
-  jazzcashTitle: string;
-  jazzcashNumber: string;
-  bankName: string;
-  bankTitle: string;
-  bankIban: string;
+  // Jazzcash
+  jazzcashTitle?: string;
+  jazzcashNumber?: string;
   paymentInstructions?: string;
   updatedAt?: string;
 }

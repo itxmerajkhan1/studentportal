@@ -77,20 +77,32 @@ export function isMembershipActive(
 }
 
 /**
- * Access to paid lessons requires:
- * 1. Admin OR
- * 2. Admission status == 'approved' AND membershipStatus == 'active' AND unexpired
+/**
+ * Single trusted access-control policy for lecture videos and PDF notes:
+ * Access is granted to:
+ * 1. Administrator (role === 'admin')
+ * 2. Approved student (status === 'approved')
+ *
+ * Video access does NOT require a verified payment or active paid membership!
+ * Approved students can stream published videos even if unpaid.
+ * Suspended or rejected students remain blocked.
+ */
+export function canAccessLectureVideos(role?: string, approvalStatus?: string): boolean {
+  if (role === 'admin') return true;
+  return approvalStatus === 'approved';
+}
+
+/**
+ * Backward-compatible wrapper aliasing the single trusted video access function.
  */
 export function canAccessPaidLessons(
   role?: string,
   approvalStatus?: string,
-  membershipStatus?: string,
-  membershipExpiresAt?: string | null,
-  referenceTimestamp = Date.now()
+  _membershipStatus?: string,
+  _membershipExpiresAt?: string | null,
+  _referenceTimestamp = Date.now()
 ): boolean {
-  if (role === 'admin') return true;
-  if (approvalStatus !== 'approved') return false;
-  return isMembershipActive(membershipStatus, membershipExpiresAt, referenceTimestamp);
+  return canAccessLectureVideos(role, approvalStatus);
 }
 
 /**
@@ -124,8 +136,8 @@ export interface PaymentSubmissionInput {
 export function validatePaymentSubmission(input: PaymentSubmissionInput): ValidationResult {
   const errors: Record<string, string> = {};
 
-  if (!input.paymentMethod || !['easypaisa', 'jazzcash', 'bank_transfer'].includes(input.paymentMethod)) {
-    errors.paymentMethod = 'Please select a valid payment method (Easypaisa, JazzCash, or Bank Transfer).';
+  if (!input.paymentMethod || !['bank_transfer', 'sadapay', 'easypaisa', 'jazzcash'].includes(input.paymentMethod)) {
+    errors.paymentMethod = 'Please select a valid payment method (Bank Transfer, SadaPay, or Easypaisa).';
   }
 
   const txRef = (input.transactionReference || '').trim();

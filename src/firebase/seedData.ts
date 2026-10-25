@@ -2,22 +2,29 @@ import { db } from './config';
 import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
 import { Subject, Chapter, Course, Lesson, SiteSettings } from '../types';
 
+import { OFFICIAL_CONTACT_PHONE, PUBLIC_CONTACT_EMAIL, OFFICIAL_PAYMENT_ACCOUNTS } from '../config/constants';
+
 export const INITIAL_SETTINGS: SiteSettings = {
-  portalName: 'Meraj Learning Portal',
-  supportPhone: '+92 300 1234567',
-  supportEmail: 'support@merajlearning.pk',
+  portalName: 'ILMORA',
+  supportPhone: OFFICIAL_CONTACT_PHONE,
+  supportEmail: PUBLIC_CONTACT_EMAIL,
   announcementBanner: '📢 Mid-Term Exam Series & MDCAT/NET Mock Tests commencing soon. Ensure all chapter-wise lectures and notes are reviewed!',
   allowPublicRegistration: true,
   annualMembershipFee: 1000,
   membershipDurationDays: 365,
-  easypaisaTitle: 'Meraj Educational Portal',
-  easypaisaNumber: '0300-1234567',
-  jazzcashTitle: 'Meraj Educational Portal',
-  jazzcashNumber: '0301-7654321',
-  bankName: 'Meezan Bank Limited',
-  bankTitle: 'Meraj Learning Academy',
-  bankIban: 'PK36MEZN0001234567890123',
-  paymentInstructions: 'Send Rs. 1,000 via Easypaisa, JazzCash, or online bank transfer. After sending, upload a clear screenshot of the payment receipt and enter the Transaction ID / TRX ID below. Our administration verifies payments and activates your 365-day membership.',
+  // Bank Details
+  bankName: OFFICIAL_PAYMENT_ACCOUNTS.bank.bankName,
+  bankBranch: OFFICIAL_PAYMENT_ACCOUNTS.bank.branchLabel,
+  bankTitle: OFFICIAL_PAYMENT_ACCOUNTS.bank.accountTitle,
+  bankAccountNumber: OFFICIAL_PAYMENT_ACCOUNTS.bank.accountNumber,
+  bankIban: OFFICIAL_PAYMENT_ACCOUNTS.bank.iban,
+  // SadaPay
+  sadapayTitle: OFFICIAL_PAYMENT_ACCOUNTS.sadapay.accountHolder,
+  sadapayNumber: OFFICIAL_PAYMENT_ACCOUNTS.sadapay.paymentNumber,
+  // Easypaisa
+  easypaisaTitle: OFFICIAL_PAYMENT_ACCOUNTS.easypaisa.accountHolder,
+  easypaisaNumber: OFFICIAL_PAYMENT_ACCOUNTS.easypaisa.paymentNumber,
+  paymentInstructions: 'Send Rs. 1,000 via Bank Transfer (Meezan Bank), SadaPay, or Easypaisa using the official accounts below. After sending, upload a screenshot of your payment receipt and enter your transaction ID / TRX reference. Verified membership activates for 365 days.',
 };
 
 export const INITIAL_SUBJECTS: Subject[] = [

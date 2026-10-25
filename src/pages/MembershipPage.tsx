@@ -20,6 +20,7 @@ import {
   Printer,
   RefreshCw,
 } from 'lucide-react';
+import { IlmoraLogo } from '../components/IlmoraLogo';
 
 interface MembershipPageProps {
   siteSettings: SiteSettings;
@@ -69,7 +70,7 @@ export const MembershipPage: React.FC<MembershipPageProps> = ({ siteSettings, na
             <span>Annual Academic Membership</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Meraj Learning Portal Membership
+            ILMORA Academic Membership
           </h1>
           <p className="text-sm text-slate-400 max-w-2xl mx-auto">
             Comprehensive annual access for Class 11, Class 12, and MDCAT/ECAT students. Watch full HD lectures, access chapter-wise PDF notes, and track your board examination preparation.
@@ -316,17 +317,26 @@ export const MembershipPage: React.FC<MembershipPageProps> = ({ siteSettings, na
               </p>
 
               <div className="space-y-3 text-xs">
-                <div className="p-3 bg-slate-950 rounded-xl border border-emerald-950 flex items-center justify-between">
-                  <span className="font-bold text-emerald-400">Easypaisa</span>
-                  <span className="text-slate-400 text-[11px] font-mono">{siteSettings.easypaisaNumber}</span>
+                <div className="p-3 bg-slate-950 rounded-xl border border-cyan-950 flex items-center justify-between">
+                  <div>
+                    <span className="font-bold text-cyan-400 block">Bank Transfer</span>
+                    <span className="text-slate-400 text-[10px]">{siteSettings.bankBranch || 'MEEZAN DIGITAL CENTRE'}</span>
+                  </div>
+                  <span className="text-slate-300 text-[11px] font-mono">{siteSettings.bankAccountNumber || '00300116151367'}</span>
                 </div>
                 <div className="p-3 bg-slate-950 rounded-xl border border-amber-950 flex items-center justify-between">
-                  <span className="font-bold text-amber-400">JazzCash</span>
-                  <span className="text-slate-400 text-[11px] font-mono">{siteSettings.jazzcashNumber}</span>
+                  <div>
+                    <span className="font-bold text-amber-400 block">SadaPay</span>
+                    <span className="text-slate-400 text-[10px]">{siteSettings.sadapayTitle || 'Muhammad Mairaj Khan'}</span>
+                  </div>
+                  <span className="text-slate-300 text-[11px] font-mono">{siteSettings.sadapayNumber || '03323242608'}</span>
                 </div>
-                <div className="p-3 bg-slate-950 rounded-xl border border-cyan-950 flex items-center justify-between">
-                  <span className="font-bold text-cyan-400">Bank Transfer</span>
-                  <span className="text-slate-400 text-[11px]">{siteSettings.bankName}</span>
+                <div className="p-3 bg-slate-950 rounded-xl border border-emerald-950 flex items-center justify-between">
+                  <div>
+                    <span className="font-bold text-emerald-400 block">Easypaisa</span>
+                    <span className="text-slate-400 text-[10px]">{siteSettings.easypaisaTitle || 'Muhammad Mubeen Khan'}</span>
+                  </div>
+                  <span className="text-slate-300 text-[11px] font-mono">{siteSettings.easypaisaNumber || '03265877959'}</span>
                 </div>
               </div>
 
@@ -476,9 +486,9 @@ export const MembershipPage: React.FC<MembershipPageProps> = ({ siteSettings, na
             <div className="bg-slate-900 border border-slate-700 rounded-3xl p-8 max-w-xl w-full shadow-2xl space-y-6 text-slate-100 print:text-black print:bg-white print:border-none">
               {/* Slip Header */}
               <div className="text-center pb-4 border-b border-slate-800 print:border-slate-300 space-y-1">
-                <div className="inline-flex items-center gap-2 font-bold text-lg text-cyan-400 print:text-blue-800">
-                  <Award className="w-6 h-6" />
-                  <span>Meraj Learning Portal</span>
+                <div className="flex justify-center pb-2">
+                  <IlmoraLogo variant="full" theme="light" size="md" className="print:hidden" />
+                  <IlmoraLogo variant="full" theme="dark" size="md" className="hidden print:inline-flex" />
                 </div>
                 <h3 className="text-xl font-extrabold text-white print:text-black">
                   Official Student Membership Certificate & Slip
@@ -527,7 +537,7 @@ export const MembershipPage: React.FC<MembershipPageProps> = ({ siteSettings, na
               </div>
 
               <div className="text-[11px] text-slate-400 print:text-slate-600 text-center leading-relaxed">
-                This document certifies that the above-named student is actively enrolled with full academic curriculum privileges for Physics, Mathematics, and Chemistry at Meraj Learning Portal.
+                This document certifies that the above-named student is actively enrolled with full academic curriculum privileges for Physics, Mathematics, and Chemistry at ILMORA (Learn Today. Lead Tomorrow.).
               </div>
 
               {/* Action Buttons */}

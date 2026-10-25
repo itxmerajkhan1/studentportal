@@ -36,6 +36,7 @@ import {
   Chapter,
 } from '../types';
 import { filterStudents, calculateMembershipExpiry } from '../utils/portalLogic';
+import { PdfUploadField } from '../components/PdfUploadField';
 import {
   ShieldAlert,
   Users,
@@ -190,6 +191,12 @@ export const AdminPage: React.FC<AdminPageProps> = ({
   const [portalSettings, setPortalSettings] = useState<SiteSettings>(siteSettings);
   const [savingSettings, setSavingSettings] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (siteSettings) {
+      setPortalSettings(siteSettings);
+    }
+  }, [siteSettings]);
 
   const fetchStudentsList = async () => {
     if (!isAdmin) return;
@@ -544,6 +551,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({
         durationMinutes: Number(editingLesson.durationMinutes) || 30,
         order: Number(editingLesson.order) || 1,
         pdfNotesUrl: editingLesson.pdfNotesUrl || '',
+        pdfStoragePath: editingLesson.pdfStoragePath || '',
+        pdfFileName: editingLesson.pdfFileName || '',
+        pdfFileSize: editingLesson.pdfFileSize,
         isPublished: editingLesson.isPublished ?? true,
       });
       await onRefreshData();
@@ -742,6 +752,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({
         durationMinutes: Number(editingCurriculumLecture.durationMinutes) || 30,
         order: Number(editingCurriculumLecture.order) || 1,
         pdfNotesUrl: editingCurriculumLecture.pdfNotesUrl || '',
+        pdfStoragePath: editingCurriculumLecture.pdfStoragePath || '',
+        pdfFileName: editingCurriculumLecture.pdfFileName || '',
+        pdfFileSize: editingCurriculumLecture.pdfFileSize,
         isPublished: editingCurriculumLecture.isPublished ?? true,
       });
       await onRefreshData();
@@ -2014,72 +2027,223 @@ export const AdminPage: React.FC<AdminPageProps> = ({
 
         {/* TAB 6: SETTINGS */}
         {activeTab === 'settings' && (
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl max-w-2xl space-y-6">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl max-w-4xl space-y-8">
             <div>
-              <h2 className="text-lg font-bold text-white">Portal Configuration</h2>
-              <p className="text-xs text-slate-400">Branding, emergency announcement banners, and WhatsApp helpline</p>
+              <h2 className="text-xl font-bold text-white">Portal & Payment Configuration</h2>
+              <p className="text-xs text-slate-400">
+                Manage portal branding, WhatsApp helpline, public contact info, and official payment receiving accounts.
+              </p>
             </div>
 
-            <form onSubmit={handleSaveSettings} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Portal Brand Name
-                </label>
-                <input
-                  type="text"
-                  value={portalSettings.portalName}
-                  onChange={(e) => setPortalSettings({ ...portalSettings, portalName: e.target.value })}
-                  required
-                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white"
-                />
+            <form onSubmit={handleSaveSettings} className="space-y-8">
+              {/* SECTION 1: BRANDING & CONTACT */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-2">
+                  <span>General Brand & Support Helpline</span>
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                      Portal Brand Name
+                    </label>
+                    <input
+                      type="text"
+                      value={portalSettings.portalName || ''}
+                      onChange={(e) => setPortalSettings({ ...portalSettings, portalName: e.target.value })}
+                      required
+                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                      WhatsApp Support / Helpline Number
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="+92 321 2812203"
+                      value={portalSettings.supportPhone || ''}
+                      onChange={(e) => setPortalSettings({ ...portalSettings, supportPhone: e.target.value })}
+                      required
+                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white"
+                    />
+                    <p className="text-[10px] text-slate-500 mt-1">Official contact number used for student WhatsApp support</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                      Public Helpline Email
+                    </label>
+                    <input
+                      type="email"
+                      placeholder="itxmirajkhan@gmail.com"
+                      value={portalSettings.supportEmail || ''}
+                      onChange={(e) => setPortalSettings({ ...portalSettings, supportEmail: e.target.value })}
+                      required
+                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white"
+                    />
+                    <p className="text-[10px] text-slate-500 mt-1">Displayed to students and visitors (not admin auth email)</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                      Annual Membership Fee (PKR)
+                    </label>
+                    <input
+                      type="number"
+                      value={portalSettings.annualMembershipFee ?? 5000}
+                      onChange={(e) => setPortalSettings({ ...portalSettings, annualMembershipFee: Number(e.target.value) })}
+                      required
+                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    Header Announcement Banner Ticker
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="Admissions open for Batch 2025-2026..."
+                    value={portalSettings.announcementBanner || ''}
+                    onChange={(e) => setPortalSettings({ ...portalSettings, announcementBanner: e.target.value })}
+                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  WhatsApp Support Number
-                </label>
-                <input
-                  type="text"
-                  value={portalSettings.supportPhone}
-                  onChange={(e) => setPortalSettings({ ...portalSettings, supportPhone: e.target.value })}
-                  required
-                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white"
-                />
+              {/* SECTION 2: OFFICIAL PAYMENT ACCOUNTS */}
+              <div className="pt-4 border-t border-slate-800 space-y-6">
+                <div>
+                  <h3 className="text-sm font-bold text-cyan-400 uppercase tracking-wider">
+                    Official Payment Receiving Accounts
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Students will see these account details with Copy buttons on the Payment verification page.
+                  </p>
+                </div>
+
+                {/* 1. BANK TRANSFER */}
+                <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-3">
+                  <div className="flex items-center gap-2 text-xs font-bold text-sky-400">
+                    <Building className="w-4 h-4" />
+                    <span>1. Bank Transfer (Meezan Bank)</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-medium text-slate-400 mb-1">Bank Name</label>
+                      <input
+                        type="text"
+                        value={portalSettings.bankName || ''}
+                        onChange={(e) => setPortalSettings({ ...portalSettings, bankName: e.target.value })}
+                        className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-medium text-slate-400 mb-1">Branch / Centre Label</label>
+                      <input
+                        type="text"
+                        value={portalSettings.bankBranch || ''}
+                        onChange={(e) => setPortalSettings({ ...portalSettings, bankBranch: e.target.value })}
+                        className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-medium text-slate-400 mb-1">Account Title</label>
+                      <input
+                        type="text"
+                        value={portalSettings.bankTitle || ''}
+                        onChange={(e) => setPortalSettings({ ...portalSettings, bankTitle: e.target.value })}
+                        className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-medium text-slate-400 mb-1">Account Number</label>
+                      <input
+                        type="text"
+                        value={portalSettings.bankAccountNumber || ''}
+                        onChange={(e) => setPortalSettings({ ...portalSettings, bankAccountNumber: e.target.value })}
+                        className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono"
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="block text-[11px] font-medium text-slate-400 mb-1">IBAN</label>
+                      <input
+                        type="text"
+                        value={portalSettings.bankIban || ''}
+                        onChange={(e) => setPortalSettings({ ...portalSettings, bankIban: e.target.value })}
+                        className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. SADAPAY */}
+                <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-3">
+                  <div className="flex items-center gap-2 text-xs font-bold text-amber-400">
+                    <Smartphone className="w-4 h-4" />
+                    <span>2. SadaPay Wallet</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-medium text-slate-400 mb-1">Account Holder Name</label>
+                      <input
+                        type="text"
+                        value={portalSettings.sadapayTitle || ''}
+                        onChange={(e) => setPortalSettings({ ...portalSettings, sadapayTitle: e.target.value })}
+                        className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-medium text-slate-400 mb-1">Payment Number</label>
+                      <input
+                        type="text"
+                        value={portalSettings.sadapayNumber || ''}
+                        onChange={(e) => setPortalSettings({ ...portalSettings, sadapayNumber: e.target.value })}
+                        className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. EASYPAISA */}
+                <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-3">
+                  <div className="flex items-center gap-2 text-xs font-bold text-emerald-400">
+                    <Smartphone className="w-4 h-4" />
+                    <span>3. Easypaisa Wallet</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-medium text-slate-400 mb-1">Account Holder Name</label>
+                      <input
+                        type="text"
+                        value={portalSettings.easypaisaTitle || ''}
+                        onChange={(e) => setPortalSettings({ ...portalSettings, easypaisaTitle: e.target.value })}
+                        className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-medium text-slate-400 mb-1">Payment Number</label>
+                      <input
+                        type="text"
+                        value={portalSettings.easypaisaNumber || ''}
+                        onChange={(e) => setPortalSettings({ ...portalSettings, easypaisaNumber: e.target.value })}
+                        className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Helpline Email
-                </label>
-                <input
-                  type="email"
-                  value={portalSettings.supportEmail}
-                  onChange={(e) => setPortalSettings({ ...portalSettings, supportEmail: e.target.value })}
-                  required
-                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Header Announcement Banner Ticker
-                </label>
-                <textarea
-                  rows={2}
-                  value={portalSettings.announcementBanner || ''}
-                  onChange={(e) => setPortalSettings({ ...portalSettings, announcementBanner: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white"
-                />
-              </div>
-
-              <div className="flex justify-end pt-2">
+              <div className="flex justify-end pt-4 border-t border-slate-800">
                 <button
                   type="submit"
                   disabled={savingSettings}
                   className="px-6 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-xs shadow-md transition cursor-pointer flex items-center gap-1.5"
                 >
                   <Save className="w-4 h-4" />
-                  <span>{savingSettings ? 'Saving...' : 'Update Settings'}</span>
+                  <span>{savingSettings ? 'Saving...' : 'Save All Settings'}</span>
                 </button>
               </div>
             </form>
@@ -2201,8 +2365,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({
 
         {/* COURSE CREATE / EDIT MODAL */}
         {courseModalOpen && editingCourse && (
-          <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4">
+          <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4 my-auto max-h-[90vh] overflow-y-auto">
               <h3 className="font-bold text-white text-base">
                 {editingCourse.id ? 'Edit Course' : 'Create New Course'}
               </h3>
@@ -2322,8 +2486,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({
 
         {/* LESSON CREATE / EDIT MODAL */}
         {lessonModalOpen && editingLesson && (
-          <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4">
+          <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4 my-auto max-h-[90vh] overflow-y-auto">
               <h3 className="font-bold text-white text-base">
                 {editingLesson.id ? 'Edit Lecture' : 'Add New Lecture'}
               </h3>
@@ -2418,16 +2582,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                   </div>
                 </div>
 
-                <div>
-                  <label className="block font-semibold text-slate-300 mb-1">PDF Notes Download Link (Optional)</label>
-                  <input
-                    type="url"
-                    placeholder="https://..."
-                    value={editingLesson.pdfNotesUrl || ''}
-                    onChange={(e) => setEditingLesson({ ...editingLesson, pdfNotesUrl: e.target.value })}
-                    className="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white"
-                  />
-                </div>
+                <PdfUploadField
+                  pdfNotesUrl={editingLesson.pdfNotesUrl}
+                  pdfStoragePath={editingLesson.pdfStoragePath}
+                  pdfFileName={editingLesson.pdfFileName}
+                  pdfFileSize={editingLesson.pdfFileSize}
+                  lessonId={editingLesson.id}
+                  onChange={(meta) => setEditingLesson({ ...editingLesson, ...meta })}
+                />
 
                 <div>
                   <label className="block font-semibold text-slate-300 mb-1">Summary / Concept Notes</label>
@@ -2477,8 +2639,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({
 
         {/* ANNOUNCEMENT MODAL */}
         {announcementModalOpen && (
-          <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4">
+          <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 my-auto max-h-[90vh] overflow-y-auto">
               <h3 className="font-bold text-white text-base">Publish Portal Circular</h3>
 
               <form onSubmit={handleSaveAnnouncement} className="space-y-3 text-xs">
@@ -2875,28 +3037,26 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block font-semibold text-slate-300 mb-1">PDF Notes URL (Optional)</label>
-                    <input
-                      type="url"
-                      placeholder="https://..."
-                      value={editingCurriculumLecture.pdfNotesUrl || ''}
-                      onChange={(e) => setEditingCurriculumLecture({ ...editingCurriculumLecture, pdfNotesUrl: e.target.value })}
-                      className="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white"
-                    />
-                  </div>
+                <div>
+                  <label className="block font-semibold text-slate-300 mb-1">Lecture Order #</label>
+                  <input
+                    type="number"
+                    value={editingCurriculumLecture.order ?? 1}
+                    onChange={(e) => setEditingCurriculumLecture({ ...editingCurriculumLecture, order: Number(e.target.value) })}
+                    required
+                    className="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white"
+                  />
+                </div>
 
-                  <div>
-                    <label className="block font-semibold text-slate-300 mb-1">Lecture Order #</label>
-                    <input
-                      type="number"
-                      value={editingCurriculumLecture.order ?? 1}
-                      onChange={(e) => setEditingCurriculumLecture({ ...editingCurriculumLecture, order: Number(e.target.value) })}
-                      required
-                      className="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white"
-                    />
-                  </div>
+                <div>
+                  <PdfUploadField
+                    pdfNotesUrl={editingCurriculumLecture.pdfNotesUrl}
+                    pdfStoragePath={editingCurriculumLecture.pdfStoragePath}
+                    pdfFileName={editingCurriculumLecture.pdfFileName}
+                    pdfFileSize={editingCurriculumLecture.pdfFileSize}
+                    lessonId={editingCurriculumLecture.id}
+                    onChange={(meta) => setEditingCurriculumLecture({ ...editingCurriculumLecture, ...meta })}
+                  />
                 </div>
 
                 <div>

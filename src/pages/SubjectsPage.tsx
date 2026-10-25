@@ -42,7 +42,8 @@ export const SubjectsPage: React.FC<SubjectsPageProps> = ({
   userProgress,
   navigate,
 }) => {
-  const { user, isApproved, hasActiveMembership } = useAuth();
+  const { user, isApproved, isAdmin, isPending, isSuspended } = useAuth();
+  const canAccess = isAdmin || (isApproved && !isSuspended);
 
   // Search & Filter state
   const [searchQuery, setSearchQuery] = useState('');
@@ -334,23 +335,27 @@ export const SubjectsPage: React.FC<SubjectsPageProps> = ({
         </div>
       </div>
 
-      {/* Membership Warning Callout if needed */}
-      {user && !hasActiveMembership && (
+      {/* Admission Approval Notice if not yet approved */}
+      {user && !canAccess && (
         <div className="bg-slate-900 border border-amber-900/60 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs sm:text-sm">
           <div className="flex items-start gap-3">
             <ShieldAlert className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
             <div>
-              <p className="font-bold text-amber-300">Annual Membership Required for Protected Lecture Streaming</p>
+              <p className="font-bold text-amber-300">
+                {isSuspended ? 'Account Access Suspended' : 'Admission Approval Required for Lecture Streaming'}
+              </p>
               <p className="text-slate-300 text-xs mt-0.5 leading-relaxed">
-                Chapter lists and lesson titles are previewable. Activate your annual membership (Rs. 1,000 / year) to stream full HD video lessons and download lecture PDF notes.
+                {isSuspended
+                  ? 'Your student account has been suspended by administration. Please contact support to resolve access.'
+                  : 'Once your registration is approved by the administrator, video lectures and PDF study notes unlock immediately.'}
               </p>
             </div>
           </div>
           <button
-            onClick={() => navigate('/membership')}
+            onClick={() => navigate('/application-status')}
             className="px-4 py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold rounded-xl text-xs self-start sm:self-auto cursor-pointer shrink-0 transition touch-target"
           >
-            Activate Membership
+            Check Status
           </button>
         </div>
       )}
@@ -600,13 +605,13 @@ export const SubjectsPage: React.FC<SubjectsPageProps> = ({
                                             <span className="text-[11px] text-slate-500">
                                               Scheduled
                                             </span>
-                                          ) : !hasActiveMembership ? (
+                                          ) : !canAccess ? (
                                             <button
-                                              onClick={() => navigate('/membership')}
+                                              onClick={() => navigate(user ? '/application-status' : '/register')}
                                               className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-400/10 text-amber-300 border border-amber-500/30 hover:bg-amber-400/20 flex items-center gap-1.5 cursor-pointer transition touch-target"
                                             >
                                               <Lock className="w-3.5 h-3.5 text-amber-400" />
-                                              <span>Unlock</span>
+                                              <span>{isPending ? 'Pending Approval' : 'Approval Required'}</span>
                                             </button>
                                           ) : (
                                             <button

@@ -49,7 +49,7 @@ export const ProgressPage: React.FC<ProgressPageProps> = ({
 
   // Subject wise completion statistics
   const subjectStats = useMemo(() => {
-    const subjects = ['Physics', 'Mathematics', 'Chemistry', 'Biology'];
+    const subjects = ['Physics', 'Mathematics', 'Chemistry', 'English', 'Computer Science'];
     return subjects.map((sub) => {
       const subCourses = courses.filter((c) => c.subject.toLowerCase() === sub.toLowerCase());
       const subCourseIds = new Set(subCourses.map((c) => c.id));

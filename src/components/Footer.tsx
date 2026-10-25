@@ -1,5 +1,7 @@
 import React from 'react';
 import { GraduationCap, Phone, Mail, ShieldCheck, MapPin } from 'lucide-react';
+import { OFFICIAL_CONTACT_PHONE, PUBLIC_CONTACT_EMAIL, OFFICIAL_WHATSAPP_URL, BRAND_NAME, BRAND_TAGLINE } from '../config/constants';
+import { IlmoraLogo } from './IlmoraLogo';
 
 interface FooterProps {
   navigate: (route: string) => void;
@@ -9,8 +11,8 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({
   navigate,
-  supportPhone = '+92 300 1234567',
-  supportEmail = 'support@merajlearning.pk',
+  supportPhone = OFFICIAL_CONTACT_PHONE,
+  supportEmail = PUBLIC_CONTACT_EMAIL,
 }) => {
   return (
     <footer className="bg-slate-950 text-slate-400 border-t border-slate-800 text-sm">
@@ -20,15 +22,12 @@ export const Footer: React.FC<FooterProps> = ({
           <div className="space-y-4 md:col-span-1">
             <div
               onClick={() => navigate('/')}
-              className="flex items-center gap-3 cursor-pointer group"
+              className="flex items-center cursor-pointer group"
             >
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center text-white shadow-md shadow-cyan-500/20">
-                <GraduationCap className="w-5 h-5" />
-              </div>
-              <span className="font-bold text-lg text-white">Meraj Learning</span>
+              <IlmoraLogo variant="full" theme="light" size="md" />
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Premier digital educational portal delivering chapter-wise concept lectures, exam problem solving, and curated notes for Pakistani students.
+              Premier educational technology platform delivering chapter-wise concept lectures, exam problem solving, and curated notes. Learn Today. Lead Tomorrow.
             </p>
             <div className="flex items-center gap-2 text-xs text-cyan-400 bg-cyan-950/30 p-2.5 rounded-lg border border-cyan-800/40">
               <ShieldCheck className="w-4 h-4 shrink-0" />
@@ -124,7 +123,12 @@ export const Footer: React.FC<FooterProps> = ({
             <div className="space-y-2 text-xs">
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-cyan-400" />
-                <a href={`tel:${supportPhone}`} className="text-slate-200 hover:text-cyan-400 font-medium">
+                <a
+                  href={OFFICIAL_WHATSAPP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-slate-200 hover:text-cyan-400 font-medium"
+                >
                   {supportPhone} (WhatsApp Help)
                 </a>
               </div>
@@ -143,9 +147,9 @@ export const Footer: React.FC<FooterProps> = ({
         </div>
 
         <div className="border-t border-slate-900 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-3">
-          <p>© {new Date().getFullYear()} Meraj Learning Portal. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} ILMORA. All rights reserved.</p>
           <div className="flex items-center gap-4 text-[11px] text-slate-400">
-            <span>Dedicated online learning platform for Pakistani students.</span>
+            <span>ILMORA • Learn Today. Lead Tomorrow.</span>
             <span className="text-slate-700">•</span>
             <button
               onClick={() => navigate('/admin-login')}

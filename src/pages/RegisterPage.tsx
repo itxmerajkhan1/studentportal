@@ -348,6 +348,17 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ navigate }) => {
             Log in here
           </button>
         </p>
+
+        <p className="text-center text-[11px] text-slate-400 mt-4 pt-4 border-t border-slate-800">
+          Admissions inquiry:{' '}
+          <a href="mailto:itxmirajkhan@gmail.com" className="text-cyan-400 hover:underline">
+            itxmirajkhan@gmail.com
+          </a>{' '}
+          • WhatsApp{' '}
+          <a href="https://wa.me/923212812203" target="_blank" rel="noreferrer" className="text-cyan-400 hover:underline">
+            +92 321 2812203
+          </a>
+        </p>
       </div>
     </div>
   );

@@ -18,6 +18,7 @@ import {
   Menu,
   X,
   PlayCircle,
+  Eye,
 } from 'lucide-react';
 
 interface LearnPageProps {
@@ -37,10 +38,15 @@ export const LearnPage: React.FC<LearnPageProps> = ({
   onProgressUpdated,
   navigate,
 }) => {
-  const { user, isApproved, isAdmin, isPending, hasActiveMembership, membershipStatus } = useAuth();
+  const { user, isApproved, isAdmin, isPending, isSuspended, isRejected } = useAuth();
   const [activeTab, setActiveTab] = useState<'overview' | 'notes' | 'playlist'>('overview');
   const [mobilePlaylistOpen, setMobilePlaylistOpen] = useState(false);
   const [savingProgress, setSavingProgress] = useState(false);
+
+  // Single trusted video streaming access rule:
+  // Approved students (not suspended/rejected) or administrators can stream all videos.
+  // Video access does NOT require a paid membership!
+  const canStreamVideo = isAdmin || (isApproved && !isSuspended && !isRejected);
 
   // If student is not authorized to stream, redirect
   useEffect(() => {
@@ -185,8 +191,8 @@ export const LearnPage: React.FC<LearnPageProps> = ({
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
         {/* Left: Video Player & Lecture Notes Content */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6">
-          {/* Video Player or Membership Required Protection */}
-          {hasActiveMembership ? (
+          {/* Video Player or Approval Required Notice */}
+          {canStreamVideo ? (
             <VideoPlayer
               videoUrl={currentLesson.videoUrl}
               videoProvider={currentLesson.videoProvider || 'youtube'}
@@ -201,41 +207,37 @@ export const LearnPage: React.FC<LearnPageProps> = ({
           ) : (
             <div className="w-full aspect-video bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-10 flex flex-col items-center justify-center text-center shadow-xl relative overflow-hidden">
               <div className="max-w-md space-y-4">
-                <div className="w-12 h-12 rounded-xl bg-cyan-950 border border-cyan-800 flex items-center justify-center text-cyan-400 mx-auto">
+                <div className="w-12 h-12 rounded-xl bg-amber-950/80 border border-amber-800 flex items-center justify-center text-amber-400 mx-auto">
                   <Lock className="w-6 h-6" />
                 </div>
                 <div className="space-y-1">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400 bg-cyan-950/60 px-2.5 py-0.5 rounded border border-cyan-800">
-                    Protected Academic Content
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 bg-amber-950/60 px-2.5 py-0.5 rounded border border-amber-800">
+                    Administrator Approval Required
                   </span>
                   <h2 className="text-xl sm:text-2xl font-extrabold text-white">
-                    Annual Membership Required
+                    {isSuspended ? 'Account Suspended' : isRejected ? 'Admission Rejected' : 'Admission Approval Pending'}
                   </h2>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Full lecture streaming and PDF notes require an active annual membership pass (Rs. 1,000 / year).
+                    {isSuspended
+                      ? 'Your student account access has been suspended. Please contact portal administration at itxmirajkhan@gmail.com.'
+                      : isRejected
+                      ? 'Your admission application was not approved. Please contact administration for further details.'
+                      : 'Your admission is currently under review by our administration. Once approved by the administrator, all full HD video lectures and PDF handouts unlock automatically.'}
                   </p>
                 </div>
 
-                {membershipStatus === 'pending' ? (
-                  <div className="p-3 bg-amber-950/60 border border-amber-800 rounded-xl text-xs text-amber-200 flex items-center justify-center gap-2">
-                    <Clock className="w-4 h-4 animate-spin text-amber-400 shrink-0" />
-                    <span>Your payment verification is in progress (usually 2–6 hours).</span>
-                  </div>
-                ) : null}
-
                 <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
                   <button
-                    onClick={() => navigate('/membership')}
+                    onClick={() => navigate('/application-status')}
                     className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-xs shadow-md transition cursor-pointer flex items-center justify-center gap-2 touch-target"
                   >
-                    <CreditCard className="w-4 h-4" />
-                    <span>Activate Membership (Rs. 1,000)</span>
+                    <span>Check Application Status</span>
                   </button>
                   <button
                     onClick={() => navigate('/subjects')}
-                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold touch-target"
+                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold touch-target cursor-pointer"
                   >
-                    Back to Subjects
+                    Back to Curriculum
                   </button>
                 </div>
               </div>
@@ -315,32 +317,62 @@ export const LearnPage: React.FC<LearnPageProps> = ({
             {/* Tab: Notes */}
             {activeTab === 'notes' && (
               <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
-                <h2 className="text-sm font-bold text-white">Study Resources & Downloadable Handouts</h2>
+                <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                  <div>
+                    <h2 className="text-sm font-bold text-white">Study Resources & Downloadable Handouts</h2>
+                    <p className="text-xs text-slate-400">Chapter notes, solved numericals, and board formulas</p>
+                  </div>
+                  {currentLesson.pdfNotesUrl && (
+                    <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800">
+                      PDF Available
+                    </span>
+                  )}
+                </div>
+
                 {currentLesson.pdfNotesUrl ? (
-                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="p-2.5 rounded-lg bg-cyan-950 text-cyan-400 border border-cyan-800 shrink-0">
-                        <FileText className="w-5 h-5" />
+                      <div className="p-3 rounded-xl bg-cyan-950 text-cyan-400 border border-cyan-800 shrink-0">
+                        <FileText className="w-6 h-6" />
                       </div>
                       <div className="min-w-0">
-                        <h3 className="text-xs font-bold text-white truncate">{currentLesson.title} — Lecture Notes</h3>
-                        <p className="text-[11px] text-slate-400">Official instructor notes, key derivations & solved numericals</p>
+                        <h3 className="text-xs font-bold text-white truncate">
+                          {currentLesson.pdfFileName || `${currentLesson.title} — Lecture Notes.pdf`}
+                        </h3>
+                        <p className="text-[11px] text-slate-400">
+                          {currentLesson.pdfFileSize
+                            ? `${(currentLesson.pdfFileSize / (1024 * 1024)).toFixed(2)} MB • `
+                            : ''}
+                          Official instructor derivations & chapter notes
+                        </p>
                       </div>
                     </div>
-                    <a
-                      href={currentLesson.pdfNotesUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="px-4 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 transition shrink-0 touch-target"
-                    >
-                      <Download className="w-3.5 h-3.5 text-slate-950" />
-                      <span>Download PDF</span>
-                    </a>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <a
+                        href={currentLesson.pdfNotesUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-semibold text-xs transition border border-slate-700 touch-target flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>View PDF</span>
+                      </a>
+                      <a
+                        href={currentLesson.pdfNotesUrl}
+                        download={currentLesson.pdfFileName || `${currentLesson.title}_notes.pdf`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-4 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 transition touch-target shadow-md shadow-cyan-500/20 cursor-pointer"
+                      >
+                        <Download className="w-3.5 h-3.5 text-slate-950" />
+                        <span>Download PDF Notes</span>
+                      </a>
+                    </div>
                   </div>
                 ) : (
                   <div className="p-8 text-center text-xs text-slate-400 space-y-2">
                     <FileText className="w-8 h-8 text-slate-600 mx-auto" />
-                    <p>No external PDF attached for this lecture. Follow the on-screen textbook derivations.</p>
+                    <p>No PDF notes attached for this lecture yet. Follow the comprehensive on-screen derivations.</p>
                   </div>
                 )}
               </div>

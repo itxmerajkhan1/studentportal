@@ -105,7 +105,7 @@ service cloud.firestore {
         && data.status == 'pending'
         && data.currency == 'PKR'
         && data.amount is number && data.amount > 0
-        && (data.paymentMethod == 'easypaisa' || data.paymentMethod == 'jazzcash' || data.paymentMethod == 'bank_transfer')
+        && (data.paymentMethod == 'easypaisa' || data.paymentMethod == 'sadapay' || data.paymentMethod == 'bank_transfer' || data.paymentMethod == 'jazzcash')
         && data.transactionReference is string && data.transactionReference.size() >= 4 && data.transactionReference.size() <= 80
         && data.receiptUrl is string && data.receiptUrl.size() <= 1000000;
     }
@@ -178,8 +178,8 @@ service cloud.firestore {
     match /lessons/{lessonId} {
       // List metadata allowed for signed-in users if published (or admin)
       allow list: if (isSignedIn() && resource.data.isPublished == true) || isAdmin();
-      // Protected get: must have active membership (or admin)
-      allow get: if ((resource.data.isPublished == true) && hasActiveMembership()) || isAdmin();
+      // Protected get: approved students or admin can access published lectures
+      allow get: if ((resource.data.isPublished == true) && isApprovedStudent()) || isAdmin();
       allow create, update: if isAdmin() && isValidLesson(incoming());
       allow delete: if isAdmin();
     }

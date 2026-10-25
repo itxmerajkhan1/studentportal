@@ -18,6 +18,12 @@ import {
   Check,
 } from 'lucide-react';
 
+import {
+  OFFICIAL_PAYMENT_ACCOUNTS,
+  OFFICIAL_CONTACT_PHONE,
+  PUBLIC_CONTACT_EMAIL,
+} from '../config/constants';
+
 interface PaymentPageProps {
   siteSettings: SiteSettings;
   navigate: (route: string) => void;
@@ -26,7 +32,7 @@ interface PaymentPageProps {
 export const PaymentPage: React.FC<PaymentPageProps> = ({ siteSettings, navigate }) => {
   const { user, profile, isApproved, isPending, membershipStatus, refreshProfile } = useAuth();
 
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('easypaisa');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('bank_transfer');
   const [transactionReference, setTransactionReference] = useState('');
   const [paymentDate, setPaymentDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [receiptBase64, setReceiptBase64] = useState<string>('');
@@ -222,7 +228,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ siteSettings, navigate
             Annual Membership Payment
           </h1>
           <p className="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto">
-            Send fee via Easypaisa, JazzCash, or online bank transfer and submit your transaction reference below for verified activation.
+            Send fee via Bank Transfer (Meezan Bank), SadaPay, or Easypaisa and submit your transaction reference below for verified activation.
           </p>
         </div>
 
@@ -250,91 +256,125 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ siteSettings, navigate
               <ShieldCheck className="w-4 h-4 text-cyan-400" />
               <span>Step 1: Transfer Fee to Verified Accounts</span>
             </h3>
-            <span className="text-[11px] text-slate-400">Click to copy account number</span>
+            <span className="text-[11px] text-slate-400">Click to copy account details</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Easypaisa */}
-            <div className="bg-slate-900 border border-emerald-900/60 rounded-2xl p-5 space-y-3 relative overflow-hidden group hover:border-emerald-500/60 transition">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-emerald-400 uppercase tracking-wide flex items-center gap-1.5">
-                  <Smartphone className="w-4 h-4" /> Easypaisa
-                </span>
-                <span className="text-[10px] bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded font-mono font-bold">
-                  Instant
-                </span>
-              </div>
-              <div>
-                <p className="text-[11px] text-slate-400">Account Title</p>
-                <p className="text-sm font-bold text-white">{siteSettings.easypaisaTitle || 'Meraj Educational Portal'}</p>
-              </div>
-              <div>
-                <p className="text-[11px] text-slate-400">Mobile / Account No.</p>
-                <p className="text-sm font-mono font-bold text-emerald-300">{siteSettings.easypaisaNumber || '0300-1234567'}</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => copyToClipboard(siteSettings.easypaisaNumber || '0300-1234567', 'ep')}
-                className="w-full py-1.5 rounded-lg bg-emerald-950 hover:bg-emerald-900 text-emerald-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer border border-emerald-800"
-              >
-                {copiedKey === 'ep' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copiedKey === 'ep' ? 'Copied!' : 'Copy Number'}</span>
-              </button>
-            </div>
-
-            {/* JazzCash */}
-            <div className="bg-slate-900 border border-amber-900/60 rounded-2xl p-5 space-y-3 relative overflow-hidden group hover:border-amber-500/60 transition">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-amber-400 uppercase tracking-wide flex items-center gap-1.5">
-                  <Smartphone className="w-4 h-4" /> JazzCash
-                </span>
-                <span className="text-[10px] bg-amber-950 text-amber-300 px-2 py-0.5 rounded font-mono font-bold">
-                  Instant
-                </span>
-              </div>
-              <div>
-                <p className="text-[11px] text-slate-400">Account Title</p>
-                <p className="text-sm font-bold text-white">{siteSettings.jazzcashTitle || 'Meraj Educational Portal'}</p>
-              </div>
-              <div>
-                <p className="text-[11px] text-slate-400">Mobile / Account No.</p>
-                <p className="text-sm font-mono font-bold text-amber-300">{siteSettings.jazzcashNumber || '0301-7654321'}</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => copyToClipboard(siteSettings.jazzcashNumber || '0301-7654321', 'jc')}
-                className="w-full py-1.5 rounded-lg bg-amber-950 hover:bg-amber-900 text-amber-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer border border-amber-800"
-              >
-                {copiedKey === 'jc' ? <Check className="w-3.5 h-3.5 text-amber-400" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copiedKey === 'jc' ? 'Copied!' : 'Copy Number'}</span>
-              </button>
-            </div>
-
-            {/* Bank Transfer */}
-            <div className="bg-slate-900 border border-cyan-900/60 rounded-2xl p-5 space-y-3 relative overflow-hidden group hover:border-cyan-500/60 transition">
+            {/* 1. Bank Transfer (Meezan Bank) */}
+            <div className="bg-slate-900 border border-cyan-900/60 rounded-2xl p-5 space-y-3 relative overflow-hidden group hover:border-cyan-500/60 transition shadow-lg">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-cyan-400 uppercase tracking-wide flex items-center gap-1.5">
                   <Building className="w-4 h-4" /> Bank Transfer
                 </span>
-                <span className="text-[10px] bg-cyan-950 text-cyan-300 px-2 py-0.5 rounded font-mono font-bold truncate max-w-[90px]">
-                  {siteSettings.bankName || 'Meezan Bank'}
+                <span className="text-[10px] bg-cyan-950 text-cyan-300 px-2 py-0.5 rounded font-mono font-bold">
+                  {siteSettings.bankBranch || OFFICIAL_PAYMENT_ACCOUNTS.bank.branchLabel}
                 </span>
               </div>
               <div>
-                <p className="text-[11px] text-slate-400">Account Title</p>
-                <p className="text-sm font-bold text-white truncate">{siteSettings.bankTitle || 'Meraj Learning Academy'}</p>
+                <p className="text-[10px] uppercase font-semibold text-slate-400">Bank / Branch</p>
+                <p className="text-xs font-bold text-white">{siteSettings.bankName || OFFICIAL_PAYMENT_ACCOUNTS.bank.bankName} - {siteSettings.bankBranch || OFFICIAL_PAYMENT_ACCOUNTS.bank.branchLabel}</p>
               </div>
-              <div>
-                <p className="text-[11px] text-slate-400">IBAN / Account Number</p>
-                <p className="text-xs font-mono font-bold text-cyan-300 truncate">{siteSettings.bankIban || 'PK36MEZN0001234567890123'}</p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] uppercase font-semibold text-slate-400">Account Title</p>
+                  <p className="text-xs font-bold text-white">{siteSettings.bankTitle || OFFICIAL_PAYMENT_ACCOUNTS.bank.accountTitle}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => copyToClipboard(siteSettings.bankTitle || OFFICIAL_PAYMENT_ACCOUNTS.bank.accountTitle, 'btitle')}
+                  className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] text-slate-300 flex items-center gap-1 cursor-pointer"
+                >
+                  {copiedKey === 'btitle' ? <Check className="w-3 h-3 text-cyan-400" /> : <Copy className="w-3 h-3" />}
+                  <span>{copiedKey === 'btitle' ? 'Copied' : 'Copy'}</span>
+                </button>
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] uppercase font-semibold text-slate-400">Account Number</p>
+                  <p className="text-xs font-mono font-bold text-cyan-300">{siteSettings.bankAccountNumber || OFFICIAL_PAYMENT_ACCOUNTS.bank.accountNumber}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => copyToClipboard(siteSettings.bankAccountNumber || OFFICIAL_PAYMENT_ACCOUNTS.bank.accountNumber, 'bacc')}
+                  className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] text-slate-300 flex items-center gap-1 cursor-pointer"
+                >
+                  {copiedKey === 'bacc' ? <Check className="w-3 h-3 text-cyan-400" /> : <Copy className="w-3 h-3" />}
+                  <span>{copiedKey === 'bacc' ? 'Copied' : 'Copy'}</span>
+                </button>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="truncate pr-1">
+                  <p className="text-[10px] uppercase font-semibold text-slate-400">IBAN</p>
+                  <p className="text-[11px] font-mono font-bold text-cyan-300 truncate">{siteSettings.bankIban || OFFICIAL_PAYMENT_ACCOUNTS.bank.iban}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => copyToClipboard(siteSettings.bankIban || OFFICIAL_PAYMENT_ACCOUNTS.bank.iban, 'biban')}
+                  className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] text-slate-300 flex items-center gap-1 cursor-pointer shrink-0"
+                >
+                  {copiedKey === 'biban' ? <Check className="w-3 h-3 text-cyan-400" /> : <Copy className="w-3 h-3" />}
+                  <span>{copiedKey === 'biban' ? 'Copied' : 'Copy'}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* 2. SadaPay */}
+            <div className="bg-slate-900 border border-sky-900/60 rounded-2xl p-5 space-y-3 relative overflow-hidden group hover:border-sky-500/60 transition shadow-lg flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-sky-400 uppercase tracking-wide flex items-center gap-1.5">
+                    <Smartphone className="w-4 h-4" /> SadaPay
+                  </span>
+                  <span className="text-[10px] bg-sky-950 text-sky-300 px-2 py-0.5 rounded font-mono font-bold">
+                    Fast & Zero Fee
+                  </span>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase font-semibold text-slate-400">Account Holder</p>
+                  <p className="text-sm font-bold text-white">{siteSettings.sadapayTitle || OFFICIAL_PAYMENT_ACCOUNTS.sadapay.accountHolder}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase font-semibold text-slate-400">Payment Number</p>
+                  <p className="text-base font-mono font-bold text-sky-300">{siteSettings.sadapayNumber || OFFICIAL_PAYMENT_ACCOUNTS.sadapay.paymentNumber}</p>
+                </div>
               </div>
               <button
                 type="button"
-                onClick={() => copyToClipboard(siteSettings.bankIban || 'PK36MEZN0001234567890123', 'bank')}
-                className="w-full py-1.5 rounded-lg bg-cyan-950 hover:bg-cyan-900 text-cyan-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer border border-cyan-800"
+                onClick={() => copyToClipboard(siteSettings.sadapayNumber || OFFICIAL_PAYMENT_ACCOUNTS.sadapay.paymentNumber, 'sp')}
+                className="w-full py-2 rounded-lg bg-sky-950 hover:bg-sky-900 text-sky-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer border border-sky-800"
               >
-                {copiedKey === 'bank' ? <Check className="w-3.5 h-3.5 text-cyan-400" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copiedKey === 'bank' ? 'Copied!' : 'Copy IBAN'}</span>
+                {copiedKey === 'sp' ? <Check className="w-3.5 h-3.5 text-sky-400" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copiedKey === 'sp' ? 'Number Copied!' : 'Copy SadaPay Number'}</span>
+              </button>
+            </div>
+
+            {/* 3. Easypaisa */}
+            <div className="bg-slate-900 border border-emerald-900/60 rounded-2xl p-5 space-y-3 relative overflow-hidden group hover:border-emerald-500/60 transition shadow-lg flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-emerald-400 uppercase tracking-wide flex items-center gap-1.5">
+                    <Smartphone className="w-4 h-4" /> Easypaisa
+                  </span>
+                  <span className="text-[10px] bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded font-mono font-bold">
+                    Mobile Wallet
+                  </span>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase font-semibold text-slate-400">Account Holder</p>
+                  <p className="text-sm font-bold text-white">{siteSettings.easypaisaTitle || OFFICIAL_PAYMENT_ACCOUNTS.easypaisa.accountHolder}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase font-semibold text-slate-400">Payment Number</p>
+                  <p className="text-base font-mono font-bold text-emerald-300">{siteSettings.easypaisaNumber || OFFICIAL_PAYMENT_ACCOUNTS.easypaisa.paymentNumber}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => copyToClipboard(siteSettings.easypaisaNumber || OFFICIAL_PAYMENT_ACCOUNTS.easypaisa.paymentNumber, 'ep')}
+                className="w-full py-2 rounded-lg bg-emerald-950 hover:bg-emerald-900 text-emerald-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer border border-emerald-800"
+              >
+                {copiedKey === 'ep' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copiedKey === 'ep' ? 'Number Copied!' : 'Copy Easypaisa Number'}</span>
               </button>
             </div>
           </div>
@@ -348,7 +388,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ siteSettings, navigate
               <span>Step 2: Submit Payment & Receipt Details</span>
             </h3>
             <p className="text-xs text-slate-400 mt-1">
-              Enter the TRX ID from your SMS or bank app and upload the transaction screenshot for admin review.
+              Enter the TRX ID from your SMS or banking app and upload your receipt screenshot for administrator review.
             </p>
           </div>
 
@@ -374,9 +414,9 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ siteSettings, navigate
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {[
+                  { id: 'bank_transfer', label: 'Bank Transfer (Meezan)', icon: <Building className="w-4 h-4 text-cyan-400" /> },
+                  { id: 'sadapay', label: 'SadaPay', icon: <Smartphone className="w-4 h-4 text-sky-400" /> },
                   { id: 'easypaisa', label: 'Easypaisa', icon: <Smartphone className="w-4 h-4 text-emerald-400" /> },
-                  { id: 'jazzcash', label: 'JazzCash', icon: <Smartphone className="w-4 h-4 text-amber-400" /> },
-                  { id: 'bank_transfer', label: 'Bank Transfer', icon: <Building className="w-4 h-4 text-cyan-400" /> },
                 ].map((m) => (
                   <button
                     key={m.id}
