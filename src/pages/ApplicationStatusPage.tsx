@@ -51,16 +51,18 @@ export const ApplicationStatusPage: React.FC<ApplicationStatusPageProps> = ({
   // If user is not logged in at all, direct them to login
   if (!user) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-6">
-        <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center space-y-4">
-          <GraduationCap className="w-12 h-12 text-cyan-400 mx-auto" />
-          <h2 className="text-xl font-bold">Check Application Status</h2>
-          <p className="text-xs text-slate-400">Please log in to review your admission status.</p>
+      <div className="min-h-screen bg-[#022544] text-[#FEFEFE] flex items-center justify-center p-6">
+        <div className="max-w-md w-full bg-[#093D6C] border border-[#FEFEFE]/15 rounded-xl p-8 text-center space-y-4 shadow-sm">
+          <div className="flex justify-center">
+            <IlmoraLogo variant="icon" size="md" />
+          </div>
+          <h2 className="text-xl font-semibold text-[#FEFEFE] font-heading">Check Application Status</h2>
+          <p className="text-xs text-[#FEFEFE]/75">Please log in to review your admission status.</p>
           <button
             onClick={() => navigate('/login')}
-            className="w-full py-2.5 rounded-xl bg-cyan-400 text-slate-950 font-bold text-xs"
+            className="w-full py-2.5 rounded-lg bg-[#FECF35] hover:bg-[#ebd02f] text-[#033D6B] font-medium text-xs transition"
           >
-            Go to Login
+            Go to login
           </button>
         </div>
       </div>
@@ -68,8 +70,8 @@ export const ApplicationStatusPage: React.FC<ApplicationStatusPageProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
-      <div className="max-w-xl w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl space-y-6">
+    <div className="min-h-screen bg-[#022544] text-[#FEFEFE] py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+      <div className="max-w-xl w-full bg-[#093D6C] border border-[#FEFEFE]/15 rounded-xl p-6 sm:p-8 shadow-sm space-y-6">
         {/* Brand Logo & Status Header */}
         <div className="text-center space-y-4">
           <div className="flex justify-center">
@@ -77,36 +79,36 @@ export const ApplicationStatusPage: React.FC<ApplicationStatusPageProps> = ({
           </div>
 
           {isAdmin ? (
-            <div className="w-16 h-16 rounded-2xl bg-cyan-950 text-cyan-400 border border-cyan-700/60 flex items-center justify-center mx-auto shadow-lg shadow-cyan-950/50">
-              <ShieldCheck className="w-9 h-9" />
+            <div className="w-14 h-14 rounded-xl bg-[#033D6B] text-[#FECF35] border border-[#FECF35]/40 flex items-center justify-center mx-auto">
+              <ShieldCheck className="w-8 h-8 text-[#FECF35]" />
             </div>
           ) : isApproved ? (
-            <div className="w-16 h-16 rounded-2xl bg-emerald-950 text-emerald-400 border border-emerald-700/60 flex items-center justify-center mx-auto shadow-lg shadow-emerald-950/50">
-              <CheckCircle2 className="w-9 h-9" />
+            <div className="w-14 h-14 rounded-xl bg-emerald-950 text-emerald-300 border border-emerald-700/60 flex items-center justify-center mx-auto">
+              <CheckCircle2 className="w-8 h-8" />
             </div>
           ) : isRejected ? (
-            <div className="w-16 h-16 rounded-2xl bg-rose-950 text-rose-400 border border-rose-700/60 flex items-center justify-center mx-auto shadow-lg shadow-rose-950/50">
-              <XCircle className="w-9 h-9" />
+            <div className="w-14 h-14 rounded-xl bg-rose-950 text-rose-300 border border-rose-700/60 flex items-center justify-center mx-auto">
+              <XCircle className="w-8 h-8" />
             </div>
           ) : isSuspended ? (
-            <div className="w-16 h-16 rounded-2xl bg-rose-950 text-rose-400 border border-rose-700/60 flex items-center justify-center mx-auto shadow-lg shadow-rose-950/50">
-              <AlertOctagon className="w-9 h-9" />
+            <div className="w-14 h-14 rounded-xl bg-rose-950 text-rose-300 border border-rose-700/60 flex items-center justify-center mx-auto">
+              <AlertOctagon className="w-8 h-8" />
             </div>
           ) : (
-            <div className="w-16 h-16 rounded-2xl bg-amber-950 text-amber-400 border border-amber-700/60 flex items-center justify-center mx-auto shadow-lg shadow-amber-950/50">
-              <Clock className="w-9 h-9 animate-pulse" />
+            <div className="w-14 h-14 rounded-xl bg-[#033D6B] text-[#FECF35] border border-[#FECF35]/30 flex items-center justify-center mx-auto">
+              <Clock className="w-8 h-8 text-[#FECF35]" />
             </div>
           )}
 
           <div>
-            <span className="text-[10px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+            <span className="text-[10px] uppercase font-semibold tracking-wider px-2.5 py-0.5 rounded bg-[#033D6B] text-[#FEFEFE]/80 border border-[#FEFEFE]/15">
               Application ID: {user.uid.slice(0, 8).toUpperCase()}
             </span>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-2">
+            <h1 className="text-2xl sm:text-3xl font-semibold text-[#FEFEFE] mt-2 font-heading">
               {isAdmin
                 ? 'Administrator Account Active'
                 : isApproved
-                ? 'Admission Approved!'
+                ? 'Admission Approved'
                 : isRejected
                 ? 'Application Not Approved'
                 : isSuspended
@@ -115,7 +117,7 @@ export const ApplicationStatusPage: React.FC<ApplicationStatusPageProps> = ({
             </h1>
           </div>
 
-          <p className="text-xs sm:text-sm text-slate-300 max-w-md mx-auto leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#FEFEFE]/80 max-w-md mx-auto leading-relaxed">
             {isAdmin
               ? 'You have full privileged access to manage students, approve admissions, create courses, and configure the portal.'
               : isApproved
@@ -130,46 +132,46 @@ export const ApplicationStatusPage: React.FC<ApplicationStatusPageProps> = ({
 
         {/* Rejection / Suspension Alert Note if applicable */}
         {(isRejected || isSuspended) && profile?.rejectionReason && (
-          <div className="p-4 rounded-2xl bg-rose-950/50 border border-rose-800 text-xs text-rose-200 space-y-1">
-            <span className="font-bold text-rose-300">Administration Note:</span>
+          <div className="p-4 rounded-lg bg-rose-950/60 border border-rose-800 text-xs text-rose-200 space-y-1">
+            <span className="font-semibold text-rose-300">Administration Note:</span>
             <p className="leading-relaxed">{profile.rejectionReason}</p>
           </div>
         )}
 
         {/* Student Application Summary Card */}
-        <div className="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 sm:p-5 space-y-3 text-xs">
-          <h3 className="font-bold text-slate-200 uppercase tracking-wider text-[11px] pb-2 border-b border-slate-800">
+        <div className="bg-[#033D6B] border border-[#FEFEFE]/15 rounded-lg p-4 sm:p-5 space-y-3 text-xs">
+          <h2 className="font-semibold text-[#FEFEFE] uppercase tracking-wider text-[11px] pb-2 border-b border-[#FEFEFE]/15 font-heading">
             Registered Profile Details
-          </h3>
+          </h2>
 
-          <div className="grid grid-cols-2 gap-3 text-slate-400">
+          <div className="grid grid-cols-2 gap-3 text-[#FEFEFE]/75">
             <div>
-              <p className="text-[10px] uppercase text-slate-400 font-semibold">Student Name</p>
-              <p className="text-slate-100 font-medium">{profile?.fullName || user.displayName || 'N/A'}</p>
+              <p className="text-[10px] uppercase text-[#FEFEFE]/60 font-medium">Student name</p>
+              <p className="text-[#FEFEFE] font-medium">{profile?.fullName || user.displayName || 'N/A'}</p>
             </div>
             <div>
-              <p className="text-[10px] uppercase text-slate-400 font-semibold">Registered Email</p>
-              <p className="text-slate-100 font-medium truncate">{user.email}</p>
+              <p className="text-[10px] uppercase text-[#FEFEFE]/60 font-medium">Registered email</p>
+              <p className="text-[#FEFEFE] font-medium truncate">{user.email}</p>
             </div>
             <div>
-              <p className="text-[10px] uppercase text-slate-400 font-semibold">Academic Stream</p>
-              <p className="text-cyan-300 font-medium">{profile?.academicLevel || 'Class 12'}</p>
+              <p className="text-[10px] uppercase text-[#FEFEFE]/60 font-medium">Academic stream</p>
+              <p className="text-[#FECF35] font-medium">{profile?.academicLevel || 'Class 12'}</p>
             </div>
             <div>
-              <p className="text-[10px] uppercase text-slate-400 font-semibold">Mobile Number</p>
-              <p className="text-slate-100 font-medium">{profile?.phoneNumber || 'N/A'}</p>
+              <p className="text-[10px] uppercase text-[#FEFEFE]/60 font-medium">Mobile number</p>
+              <p className="text-[#FEFEFE] font-medium">{profile?.phoneNumber || 'N/A'}</p>
             </div>
           </div>
 
-          <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between">
-            <span className="text-[11px] text-slate-400 font-medium">Approval Status:</span>
+          <div className="pt-2 border-t border-[#FEFEFE]/15 flex items-center justify-between">
+            <span className="text-[11px] text-[#FEFEFE]/70 font-medium">Approval status:</span>
             <span
-              className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+              className={`px-2.5 py-0.5 rounded text-xs font-semibold uppercase tracking-wider ${
                 isAdmin || isApproved
                   ? 'bg-emerald-950 text-emerald-300 border border-emerald-600'
                   : isRejected || isSuspended
                   ? 'bg-rose-950 text-rose-300 border border-rose-600'
-                  : 'bg-amber-950 text-amber-300 border border-amber-600 animate-pulse'
+                  : 'bg-[#FECF35]/15 text-[#FECF35] border border-[#FECF35]/40'
               }`}
             >
               {profile?.status || (isAdmin ? 'Admin' : 'Pending')}
@@ -179,7 +181,7 @@ export const ApplicationStatusPage: React.FC<ApplicationStatusPageProps> = ({
 
         {/* Refresh Feedback Message */}
         {refreshedNotice && (
-          <div className="p-3 bg-cyan-950/60 border border-cyan-800 text-cyan-200 text-xs rounded-xl text-center">
+          <div className="p-3 bg-[#033D6B] border border-[#FECF35]/40 text-[#FECF35] text-xs rounded-lg text-center">
             Status refreshed from database.
           </div>
         )}
@@ -189,7 +191,7 @@ export const ApplicationStatusPage: React.FC<ApplicationStatusPageProps> = ({
           {isApproved || isAdmin ? (
             <button
               onClick={() => navigate(isAdmin ? '/admin' : '/dashboard')}
-              className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/20 transition cursor-pointer flex items-center justify-center gap-2"
+              className="w-full py-3 px-4 rounded-lg bg-[#FECF35] hover:bg-[#ebd02f] text-[#033D6B] font-medium text-sm transition shadow-sm cursor-pointer flex items-center justify-center gap-2"
             >
               <span>{isAdmin ? 'Enter Admin Control Panel' : 'Enter Student Learning Portal'}</span>
               <ArrowRight className="w-4 h-4" />
@@ -199,19 +201,19 @@ export const ApplicationStatusPage: React.FC<ApplicationStatusPageProps> = ({
               <button
                 onClick={handleRefresh}
                 disabled={refreshing}
-                className="flex-1 py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs transition border border-slate-700 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                className="flex-1 py-2.5 px-4 rounded-lg bg-[#033D6B] hover:bg-[#022544] text-[#FEFEFE] font-medium text-xs transition border border-[#FEFEFE]/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-                <span>{refreshing ? 'Checking...' : 'Check Approval Status'}</span>
+                <span>{refreshing ? 'Checking...' : 'Check approval status'}</span>
               </button>
 
               <a
-                href={`https://wa.me/${supportPhone.replace(/[^0-9]/g, '')}?text=Assalam%20o%20Alaikum,%20I%20have%20registered%20on%20Meraj%20Learning%20Portal%20with%20email%20${encodeURIComponent(
+                href={`https://wa.me/${supportPhone.replace(/[^0-9]/g, '')}?text=Assalam%20o%20Alaikum,%20I%20have%20registered%20on%20ILMORA%20with%20email%20${encodeURIComponent(
                   user.email || ''
                 )}.%20Please%20verify%20my%20account.`}
                 target="_blank"
                 rel="noreferrer"
-                className="flex-1 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition flex items-center justify-center gap-2 text-center"
+                className="flex-1 py-2.5 px-4 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-medium text-xs transition flex items-center justify-center gap-2 text-center"
               >
                 <Phone className="w-4 h-4" />
                 <span>Expedite via WhatsApp</span>
@@ -222,21 +224,21 @@ export const ApplicationStatusPage: React.FC<ApplicationStatusPageProps> = ({
           <div className="flex items-center justify-between pt-2">
             <button
               onClick={() => navigate('/courses')}
-              className="text-xs text-cyan-400 hover:text-cyan-300 font-medium cursor-pointer"
+              className="text-xs text-[#FECF35] hover:underline font-medium cursor-pointer"
             >
-              Browse Course Previews
+              Browse course previews
             </button>
             <button
               onClick={handleSignOut}
-              className="text-xs text-slate-400 hover:text-rose-400 flex items-center gap-1.5 cursor-pointer font-medium"
+              className="text-xs text-[#FEFEFE]/65 hover:text-rose-400 flex items-center gap-1.5 cursor-pointer font-medium"
             >
               <LogOut className="w-3.5 h-3.5" />
-              <span>Sign Out</span>
+              <span>Sign out</span>
             </button>
           </div>
 
-          <p className="text-[11px] text-center text-slate-400 pt-2 border-t border-slate-800/80">
-            Admissions helpline: <a href={`mailto:${supportEmail}`} className="text-cyan-400 hover:underline">{supportEmail}</a> • <a href={`https://wa.me/${supportPhone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer" className="text-cyan-400 hover:underline">{supportPhone}</a>
+          <p className="text-[11px] text-center text-[#FEFEFE]/65 pt-2 border-t border-[#FEFEFE]/15">
+            Admissions helpline: <a href={`mailto:${supportEmail}`} className="text-[#FECF35] hover:underline">{supportEmail}</a> • <a href={`https://wa.me/${supportPhone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer" className="text-[#FECF35] hover:underline">{supportPhone}</a>
           </p>
         </div>
       </div>

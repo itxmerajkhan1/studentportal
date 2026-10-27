@@ -1,6 +1,6 @@
 import React from 'react';
 import { GraduationCap, Phone, Mail, ShieldCheck, MapPin } from 'lucide-react';
-import { OFFICIAL_CONTACT_PHONE, PUBLIC_CONTACT_EMAIL, OFFICIAL_WHATSAPP_URL, BRAND_NAME, BRAND_TAGLINE } from '../config/constants';
+import { OFFICIAL_CONTACT_PHONE, PUBLIC_CONTACT_EMAIL, OFFICIAL_WHATSAPP_URL } from '../config/constants';
 import { IlmoraLogo } from './IlmoraLogo';
 
 interface FooterProps {
@@ -15,7 +15,7 @@ export const Footer: React.FC<FooterProps> = ({
   supportEmail = PUBLIC_CONTACT_EMAIL,
 }) => {
   return (
-    <footer className="bg-slate-950 text-slate-400 border-t border-slate-800 text-sm">
+    <footer className="bg-[#022340] text-[#FEFEFE]/80 border-t border-[#FEFEFE]/15 text-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Info */}
@@ -26,43 +26,43 @@ export const Footer: React.FC<FooterProps> = ({
             >
               <IlmoraLogo variant="full" theme="light" size="md" />
             </div>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <p className="text-xs text-[#FEFEFE]/80 leading-relaxed">
               Premier educational technology platform delivering chapter-wise concept lectures, exam problem solving, and curated notes. Learn Today. Lead Tomorrow.
             </p>
-            <div className="flex items-center gap-2 text-xs text-cyan-400 bg-cyan-950/30 p-2.5 rounded-lg border border-cyan-800/40">
-              <ShieldCheck className="w-4 h-4 shrink-0" />
-              <span>Admin-Verified Student Enrollment</span>
+            <div className="flex items-center gap-2 text-xs text-[#FECF35] bg-[#FECF35]/10 p-2.5 rounded-lg border border-[#FECF35]/30">
+              <ShieldCheck className="w-4 h-4 shrink-0 text-[#FECF35]" />
+              <span className="font-medium">Admin-verified student enrollment</span>
             </div>
           </div>
 
           {/* Academic Programs */}
           <div>
-            <h4 className="text-sm font-semibold text-white tracking-wide uppercase mb-3">
-              Curricula & Boards
+            <h4 className="text-sm font-semibold text-[#FEFEFE] tracking-normal mb-3 font-heading">
+              Curricula & boards
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <button onClick={() => navigate('/courses')} className="hover:text-cyan-400 cursor-pointer">
+                <button onClick={() => navigate('/courses')} className="hover:text-[#FECF35] transition cursor-pointer">
                   FSc Part 1 & 2 (Pre-Engineering)
                 </button>
               </li>
               <li>
-                <button onClick={() => navigate('/courses')} className="hover:text-cyan-400 cursor-pointer">
+                <button onClick={() => navigate('/courses')} className="hover:text-[#FECF35] transition cursor-pointer">
                   FSc Part 1 & 2 (Pre-Medical)
                 </button>
               </li>
               <li>
-                <button onClick={() => navigate('/courses')} className="hover:text-cyan-400 cursor-pointer">
+                <button onClick={() => navigate('/courses')} className="hover:text-[#FECF35] transition cursor-pointer">
                   ICS & Computer Science Stream
                 </button>
               </li>
               <li>
-                <button onClick={() => navigate('/courses')} className="hover:text-cyan-400 cursor-pointer">
+                <button onClick={() => navigate('/courses')} className="hover:text-[#FECF35] transition cursor-pointer">
                   MDCAT & ECAT Entry Test Modules
                 </button>
               </li>
               <li>
-                <button onClick={() => navigate('/courses')} className="hover:text-cyan-400 cursor-pointer">
+                <button onClick={() => navigate('/courses')} className="hover:text-[#FECF35] transition cursor-pointer">
                   Matric Class 9 & 10 (Science Group)
                 </button>
               </li>
@@ -71,42 +71,42 @@ export const Footer: React.FC<FooterProps> = ({
 
           {/* Quick Access */}
           <div>
-            <h4 className="text-sm font-semibold text-white tracking-wide uppercase mb-3">
-              Quick Links
+            <h4 className="text-sm font-semibold text-[#FEFEFE] tracking-normal mb-3 font-heading">
+              Quick links
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <button onClick={() => navigate('/')} className="hover:text-cyan-400 cursor-pointer">
-                  Portal Home
+                <button onClick={() => navigate('/')} className="hover:text-[#FECF35] transition cursor-pointer">
+                  Portal home
                 </button>
               </li>
               <li>
-                <button onClick={() => navigate('/courses')} className="hover:text-cyan-400 cursor-pointer">
-                  Lecture Directory
+                <button onClick={() => navigate('/courses')} className="hover:text-[#FECF35] transition cursor-pointer">
+                  Lecture directory
                 </button>
               </li>
               <li>
-                <button onClick={() => navigate('/announcements')} className="hover:text-cyan-400 cursor-pointer">
-                  Board Exam Announcements
+                <button onClick={() => navigate('/announcements')} className="hover:text-[#FECF35] transition cursor-pointer">
+                  Board exam announcements
                 </button>
               </li>
               <li>
-                <button onClick={() => navigate('/register')} className="hover:text-cyan-400 cursor-pointer">
-                  Student Registration Form
+                <button onClick={() => navigate('/register')} className="hover:text-[#FECF35] transition cursor-pointer">
+                  Student registration form
                 </button>
               </li>
               <li>
-                <button onClick={() => navigate('/application-status')} className="hover:text-cyan-400 cursor-pointer">
-                  Check Admission Approval Status
+                <button onClick={() => navigate('/application-status')} className="hover:text-[#FECF35] transition cursor-pointer">
+                  Check admission approval status
                 </button>
               </li>
               <li>
                 <button
                   onClick={() => navigate('/admin-login')}
-                  className="hover:text-cyan-400 cursor-pointer flex items-center gap-1.5 text-slate-400"
+                  className="hover:text-[#FECF35] transition cursor-pointer flex items-center gap-1.5 text-[#FEFEFE]/80"
                 >
-                  <ShieldCheck className="w-3.5 h-3.5 text-cyan-500" />
-                  <span>Administrator Portal</span>
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#FECF35]" />
+                  <span>Administrator portal</span>
                 </button>
               </li>
             </ul>
@@ -114,49 +114,49 @@ export const Footer: React.FC<FooterProps> = ({
 
           {/* Support & Helpline */}
           <div>
-            <h4 className="text-sm font-semibold text-white tracking-wide uppercase mb-3">
-              Student Helpline
+            <h4 className="text-sm font-semibold text-[#FEFEFE] tracking-normal mb-3 font-heading">
+              Student helpline
             </h4>
-            <p className="text-xs text-slate-400 mb-3">
+            <p className="text-xs text-[#FEFEFE]/75 mb-3">
               For admission verification, password resets, or video playback inquiries:
             </p>
-            <div className="space-y-2 text-xs">
+            <div className="space-y-2.5 text-xs">
               <div className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-cyan-400" />
+                <Phone className="w-4 h-4 text-[#FECF35]" />
                 <a
                   href={OFFICIAL_WHATSAPP_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-slate-200 hover:text-cyan-400 font-medium"
+                  className="text-[#FEFEFE] hover:text-[#FECF35] transition font-medium"
                 >
-                  {supportPhone} (WhatsApp Help)
+                  {supportPhone} (WhatsApp)
                 </a>
               </div>
               <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-cyan-400" />
-                <a href={`mailto:${supportEmail}`} className="text-slate-200 hover:text-cyan-400">
+                <Mail className="w-4 h-4 text-[#FECF35]" />
+                <a href={`mailto:${supportEmail}`} className="text-[#FEFEFE] hover:text-[#FECF35] transition">
                   {supportEmail}
                 </a>
               </div>
-              <div className="flex items-center gap-2 text-slate-400">
-                <MapPin className="w-4 h-4 text-slate-500" />
+              <div className="flex items-center gap-2 text-[#FEFEFE]/70">
+                <MapPin className="w-4 h-4 text-[#FECF35]" />
                 <span>Islamabad / Lahore / Karachi, Pakistan</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-slate-900 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-3">
+        <div className="border-t border-[#FEFEFE]/15 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-[#FEFEFE]/70 gap-3">
           <p>© {new Date().getFullYear()} ILMORA. All rights reserved.</p>
-          <div className="flex items-center gap-4 text-[11px] text-slate-400">
+          <div className="flex items-center gap-4 text-[11px] text-[#FEFEFE]/70">
             <span>ILMORA • Learn Today. Lead Tomorrow.</span>
-            <span className="text-slate-700">•</span>
+            <span className="text-[#FEFEFE]/30">•</span>
             <button
               onClick={() => navigate('/admin-login')}
-              className="hover:text-cyan-400 text-slate-400 transition cursor-pointer flex items-center gap-1"
+              className="hover:text-[#FECF35] text-[#FEFEFE]/70 transition cursor-pointer flex items-center gap-1"
             >
-              <ShieldCheck className="w-3 h-3 text-cyan-500/80" />
-              <span>Admin Gateway</span>
+              <ShieldCheck className="w-3 h-3 text-[#FECF35]" />
+              <span>Admin gateway</span>
             </button>
           </div>
         </div>

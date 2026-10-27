@@ -8,15 +8,18 @@ service firebase.storage {
 
     function isAdmin() {
       return isSignedIn() && (
-        request.auth.token.email == "itxmerajkhan3109@gmail.com" ||
-        firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid))
+        request.auth.token.email.lower() == "itxmerajkhan3109@gmail.com" ||
+        (request.auth.token.email != null && request.auth.token.email.matches('(?i)itxmerajkhan3109@gmail[.]com')) ||
+        firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid)) ||
+        firestore.exists(/databases/ai-studio-merajlearningpor-bb0c80a7-f372-43a5-a1b6-a3cebb3f3bc4/documents/admins/$(request.auth.uid))
       );
     }
 
     function isApprovedStudent() {
       return isSignedIn() && (
         isAdmin() ||
-        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.status == 'approved'
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.status == 'approved' ||
+        firestore.get(/databases/ai-studio-merajlearningpor-bb0c80a7-f372-43a5-a1b6-a3cebb3f3bc4/documents/users/$(request.auth.uid)).data.status == 'approved'
       );
     }
 

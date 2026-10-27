@@ -699,7 +699,7 @@ export const INITIAL_LESSONS: Lesson[] = [
 
 export async function seedInitialPortalDataIfEmpty(): Promise<void> {
   try {
-    // 1. Seed site settings if missing
+    // 1. Ensure basic site settings exist if completely missing (for public contact info & bank details)
     try {
       const snap = await getDocs(collection(db, 'siteSettings'));
       if (snap.empty) {
@@ -709,56 +709,11 @@ export async function seedInitialPortalDataIfEmpty(): Promise<void> {
       // Ignored
     }
 
-    // 2. Seed Subjects if missing
-    try {
-      const subjectsSnap = await getDocs(collection(db, 'subjects'));
-      if (subjectsSnap.empty) {
-        console.log('Seeding initial subjects...');
-        for (const subj of INITIAL_SUBJECTS) {
-          await setDoc(doc(db, 'subjects', subj.id), subj);
-        }
-      }
-    } catch {
-      // Ignored
-    }
-
-    // 3. Seed Chapters if missing
-    try {
-      const chaptersSnap = await getDocs(collection(db, 'chapters'));
-      if (chaptersSnap.empty) {
-        console.log('Seeding initial chapters...');
-        for (const chap of INITIAL_CHAPTERS) {
-          await setDoc(doc(db, 'chapters', chap.id), chap);
-        }
-      }
-    } catch {
-      // Ignored
-    }
-
-    // 4. Seed Courses if missing
-    try {
-      const coursesSnap = await getDocs(collection(db, 'courses'));
-      if (coursesSnap.empty) {
-        for (const course of INITIAL_COURSES) {
-          await setDoc(doc(db, 'courses', course.id), course);
-        }
-      }
-    } catch {
-      // Ignored
-    }
-
-    // 5. Seed Lessons if missing
-    try {
-      const lessonsSnap = await getDocs(collection(db, 'lessons'));
-      if (lessonsSnap.empty) {
-        for (const lesson of INITIAL_LESSONS) {
-          await setDoc(doc(db, 'lessons', lesson.id), lesson);
-        }
-      }
-    } catch {
-      // Ignored
-    }
+    // IMPORTANT: Never automatically re-create courses, lessons, subjects or chapters.
+    // When an administrator deletes content, it must remain permanently deleted.
+    // Content must come strictly from Firestore and not be overwritten by demo data.
   } catch (error) {
-    console.warn('Initial seeding skipped:', error);
+    console.warn('Initial settings check notice:', error);
   }
 }
+

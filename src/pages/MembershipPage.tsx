@@ -61,112 +61,112 @@ export const MembershipPage: React.FC<MembershipPageProps> = ({ siteSettings, na
   };
 
   return (
-    <div className="bg-slate-950 text-slate-100 min-h-screen py-10 px-4 sm:px-6 lg:px-8">
+    <div className="bg-[#022544] text-[#FEFEFE] min-h-screen py-10 px-4 sm:px-6 lg:px-8 selection:bg-[#FECF35] selection:text-[#033D6B]">
       <div className="max-w-5xl mx-auto space-y-10">
         {/* Header Hero */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-950/80 text-cyan-300 border border-cyan-700/60 text-xs font-bold uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#093D6C] text-[#FECF35] border border-[#FECF35]/30 text-xs font-semibold uppercase tracking-wider">
+            <Sparkles className="w-3.5 h-3.5 text-[#FECF35]" />
             <span>Annual Academic Membership</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-heading font-semibold text-[#FEFEFE] tracking-tight">
             ILMORA Academic Membership
           </h1>
-          <p className="text-sm text-slate-400 max-w-2xl mx-auto">
-            Comprehensive annual access for Class 11, Class 12, and MDCAT/ECAT students. Watch full HD lectures, access chapter-wise PDF notes, and track your board examination preparation.
+          <p className="text-sm text-[#FEFEFE]/75 max-w-2xl mx-auto font-sans leading-relaxed">
+            Comprehensive annual access for Class 11, Class 12, and MDCAT/ECAT students. Watch full HD lectures, access chapter-wise PDF notes, and master board exam preparation.
           </p>
         </div>
 
         {/* Current Student Membership Status Card */}
         {user && (
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-6 border-b border-slate-800">
+          <div className="bg-[#093D6C] border border-[#FEFEFE]/15 rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-6 border-b border-[#FEFEFE]/10">
               <div className="space-y-1">
-                <span className="text-[11px] font-bold uppercase text-slate-400 tracking-wider">
+                <span className="text-[11px] font-semibold uppercase text-[#FEFEFE]/60 tracking-wider">
                   Your Account Status
                 </span>
                 <div className="flex items-center gap-3">
-                  <h2 className="text-xl sm:text-2xl font-bold text-white">
+                  <h2 className="text-xl sm:text-2xl font-heading font-semibold text-[#FEFEFE]">
                     {profile?.fullName || user.email}
                   </h2>
-                  <span className="text-xs px-2.5 py-0.5 rounded-full font-bold bg-slate-800 text-slate-300 border border-slate-700">
+                  <span className="text-xs px-2.5 py-0.5 rounded-full font-medium bg-[#033D6B] text-[#FECF35] border border-[#FECF35]/25">
                     {profile?.academicLevel || 'Student'}
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 font-mono">{user.email}</p>
+                <p className="text-xs text-[#FEFEFE]/60 font-mono">{user.email}</p>
               </div>
 
               {/* Status Badge & Actions */}
               <div className="flex flex-wrap items-center gap-3">
                 {isAdmin ? (
-                  <span className="px-3.5 py-1.5 rounded-xl bg-cyan-950 text-cyan-300 border border-cyan-600 font-bold text-xs flex items-center gap-1.5 shadow-sm">
-                    <ShieldCheck className="w-4 h-4 text-cyan-400" /> Administrator (Full Access)
+                  <span className="px-3.5 py-1.5 rounded-lg bg-[#033D6B] text-[#FECF35] border border-[#FECF35]/30 font-medium text-xs flex items-center gap-1.5 shadow-sm">
+                    <ShieldCheck className="w-4 h-4 text-[#FECF35]" /> Administrator (Full Access)
                   </span>
                 ) : membershipStatus === 'active' ? (
                   <div className="flex items-center gap-2">
-                    <span className="px-3.5 py-1.5 rounded-xl bg-emerald-950 text-emerald-300 border border-emerald-600 font-bold text-xs flex items-center gap-1.5 shadow-sm">
+                    <span className="px-3.5 py-1.5 rounded-lg bg-[#033D6B] text-emerald-300 border border-emerald-500/30 font-medium text-xs flex items-center gap-1.5 shadow-sm">
                       <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Active Membership
                     </span>
                     <button
                       onClick={() => setShowSlipModal(true)}
-                      className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
+                      className="px-3 py-1.5 rounded-lg bg-[#033D6B] hover:bg-[#07355c] text-[#FEFEFE] text-xs font-medium border border-[#FEFEFE]/15 flex items-center gap-1.5 transition cursor-pointer"
                     >
                       <Printer className="w-3.5 h-3.5" />
-                      <span>Membership Slip</span>
+                      <span>Membership slip</span>
                     </button>
                   </div>
                 ) : isPaymentPending ? (
-                  <span className="px-3.5 py-1.5 rounded-xl bg-amber-950 text-amber-300 border border-amber-600 font-bold text-xs flex items-center gap-1.5 shadow-sm animate-pulse">
-                    <Clock className="w-4 h-4 text-amber-400" /> Verification In Progress
+                  <span className="px-3.5 py-1.5 rounded-lg bg-[#033D6B] text-[#FECF35] border border-[#FECF35]/30 font-medium text-xs flex items-center gap-1.5 shadow-sm">
+                    <Clock className="w-4 h-4 text-[#FECF35]" /> Verification In Progress
                   </span>
                 ) : membershipStatus === 'expired' ? (
-                  <span className="px-3.5 py-1.5 rounded-xl bg-rose-950 text-rose-300 border border-rose-600 font-bold text-xs flex items-center gap-1.5 shadow-sm">
+                  <span className="px-3.5 py-1.5 rounded-lg bg-rose-950 text-rose-300 border border-rose-700 font-medium text-xs flex items-center gap-1.5 shadow-sm">
                     <XCircle className="w-4 h-4 text-rose-400" /> Membership Expired
                   </span>
                 ) : (
-                  <span className="px-3.5 py-1.5 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 font-semibold text-xs flex items-center gap-1.5">
-                    <AlertTriangle className="w-4 h-4 text-amber-400" /> Unpaid / Not Active
+                  <span className="px-3.5 py-1.5 rounded-lg bg-[#033D6B] text-[#FECF35] border border-[#FECF35]/25 font-medium text-xs flex items-center gap-1.5">
+                    <AlertTriangle className="w-4 h-4 text-[#FECF35]" /> Unpaid / Not Active
                   </span>
                 )}
               </div>
             </div>
 
-            {/* Membership Details Details Row */}
+            {/* Membership Details Row */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6">
               <div>
-                <p className="text-xs text-slate-400 font-medium">Annual Fee</p>
-                <p className="text-lg font-bold text-white mt-0.5">
+                <p className="text-xs text-[#FEFEFE]/70 font-medium">Annual Fee</p>
+                <p className="text-lg font-heading font-semibold text-[#FEFEFE] mt-0.5">
                   Rs. {siteSettings.annualMembershipFee?.toLocaleString() || '1,000'} / Year
                 </p>
-                <p className="text-[11px] text-slate-400">Non-recurring manual payment</p>
+                <p className="text-[11px] text-[#FEFEFE]/60">Non-recurring manual payment</p>
               </div>
 
               <div>
-                <p className="text-xs text-slate-400 font-medium">Expiration & Validity</p>
+                <p className="text-xs text-[#FEFEFE]/70 font-medium">Expiration & Validity</p>
                 {isAdmin ? (
-                  <p className="text-lg font-bold text-cyan-400 mt-0.5">Permanent Admin Access</p>
+                  <p className="text-lg font-heading font-semibold text-[#FECF35] mt-0.5">Permanent Admin Access</p>
                 ) : membershipStatus === 'active' && membershipExpiresAt ? (
                   <div>
-                    <p className="text-lg font-bold text-emerald-400 mt-0.5">
+                    <p className="text-lg font-heading font-semibold text-emerald-300 mt-0.5">
                       {new Date(membershipExpiresAt).toLocaleDateString('en-PK', {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric',
                       })}
                     </p>
-                    <p className="text-[11px] text-emerald-400 font-semibold">
+                    <p className="text-[11px] text-emerald-300 font-medium">
                       {membershipDaysRemaining} days remaining
                     </p>
                   </div>
                 ) : isPaymentPending ? (
                   <div>
-                    <p className="text-lg font-bold text-amber-300 mt-0.5">Pending Approval</p>
-                    <p className="text-[11px] text-slate-400">Usually verified within 2–6 hours</p>
+                    <p className="text-lg font-heading font-semibold text-[#FECF35] mt-0.5">Pending Approval</p>
+                    <p className="text-[11px] text-[#FEFEFE]/60">Usually verified within 2–6 hours</p>
                   </div>
                 ) : (
                   <div>
-                    <p className="text-lg font-bold text-slate-400 mt-0.5">No Active Subscription</p>
-                    <p className="text-[11px] text-slate-400">Purchase below for 365-day access</p>
+                    <p className="text-lg font-heading font-semibold text-[#FEFEFE]/70 mt-0.5">No Active Subscription</p>
+                    <p className="text-[11px] text-[#FEFEFE]/60">Purchase below for 365-day access</p>
                   </div>
                 )}
               </div>
@@ -175,20 +175,20 @@ export const MembershipPage: React.FC<MembershipPageProps> = ({ siteSettings, na
                 {isAdmin || membershipStatus === 'active' ? (
                   <button
                     onClick={() => navigate('/payment')}
-                    className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition cursor-pointer flex items-center gap-2"
+                    className="px-4 py-2.5 rounded-lg bg-[#033D6B] hover:bg-[#07355c] text-[#FEFEFE] border border-[#FEFEFE]/15 text-xs font-medium transition cursor-pointer flex items-center gap-2"
                   >
-                    <CreditCard className="w-4 h-4 text-cyan-400" />
-                    <span>Extend / Renew (+365 Days)</span>
+                    <CreditCard className="w-4 h-4 text-[#FECF35]" />
+                    <span>Extend / renew (+365 days)</span>
                   </button>
                 ) : isPaymentPending ? (
                   <div className="text-right">
-                    <p className="text-xs text-amber-300 font-semibold">Payment under review</p>
-                    <p className="text-[11px] text-slate-400">TRX: {latestPayment?.transactionReference}</p>
+                    <p className="text-xs text-[#FECF35] font-medium">Payment under review</p>
+                    <p className="text-[11px] text-[#FEFEFE]/60">TRX: {latestPayment?.transactionReference}</p>
                   </div>
                 ) : (
                   <button
                     onClick={() => navigate('/payment')}
-                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-bold text-xs shadow-lg shadow-cyan-500/20 transition cursor-pointer flex items-center gap-1.5"
+                    className="px-5 py-2.5 rounded-lg bg-[#FECF35] hover:bg-[#ebd02f] text-[#033D6B] font-medium text-xs shadow transition cursor-pointer flex items-center gap-1.5"
                   >
                     <CreditCard className="w-4 h-4" />
                     <span>Pay Rs. {siteSettings.annualMembershipFee?.toLocaleString() || '1,000'} Now →</span>
@@ -199,33 +199,33 @@ export const MembershipPage: React.FC<MembershipPageProps> = ({ siteSettings, na
 
             {/* Pending verification alert banner */}
             {isPaymentPending && (
-              <div className="mt-6 p-4 rounded-2xl bg-amber-950/40 border border-amber-800/80 text-amber-200 text-xs space-y-1">
-                <div className="flex items-center gap-2 font-bold">
-                  <Clock className="w-4 h-4 text-amber-400 animate-spin" />
+              <div className="mt-6 p-4 rounded-xl bg-[#033D6B] border border-[#FECF35]/30 text-[#FEFEFE] text-xs space-y-1">
+                <div className="flex items-center gap-2 font-semibold text-[#FECF35]">
+                  <Clock className="w-4 h-4 text-[#FECF35]" />
                   <span>Verification in Progress</span>
                 </div>
-                <p className="text-[11px] text-slate-300 leading-relaxed">
-                  We have received your payment request of Rs. {latestPayment.amount} submitted via {latestPayment.paymentMethod.toUpperCase()} (TRX: <span className="font-mono font-bold text-white">{latestPayment.transactionReference}</span>). Our admin reviews payments during operating hours. Your 365-day membership will activate immediately upon verification.
+                <p className="text-[11px] text-[#FEFEFE]/80 leading-relaxed font-sans">
+                  We have received your payment request of Rs. {latestPayment.amount} submitted via {latestPayment.paymentMethod.toUpperCase()} (TRX: <span className="font-mono font-semibold text-[#FECF35]">{latestPayment.transactionReference}</span>). Our admin reviews payments during operating hours. Your 365-day membership will activate immediately upon verification.
                 </p>
               </div>
             )}
 
             {/* Rejection alert banner */}
             {isPaymentRejected && (
-              <div className="mt-6 p-4 rounded-2xl bg-rose-950/40 border border-rose-800 text-rose-200 text-xs space-y-2">
-                <div className="flex items-center gap-2 font-bold">
+              <div className="mt-6 p-4 rounded-xl bg-rose-950/50 border border-rose-700/60 text-rose-200 text-xs space-y-2">
+                <div className="flex items-center gap-2 font-semibold">
                   <XCircle className="w-4 h-4 text-rose-400" />
                   <span>Previous Payment Request Rejected</span>
                 </div>
-                <p className="text-[11px] text-slate-300">
-                  Reason provided: <strong className="text-rose-200 font-medium">{latestPayment.rejectionReason || 'Invalid transaction ID or receipt could not be verified.'}</strong>
+                <p className="text-[11px] text-rose-200/90 font-sans">
+                  Reason provided: <strong className="text-white font-medium">{latestPayment.rejectionReason || 'Invalid transaction ID or receipt could not be verified.'}</strong>
                 </p>
                 <div className="pt-1">
                   <button
                     onClick={() => navigate('/payment')}
-                    className="px-4 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs cursor-pointer"
+                    className="px-4 py-1.5 rounded-lg bg-rose-700 hover:bg-rose-600 text-white font-medium text-xs cursor-pointer"
                   >
-                    Submit New Payment Request
+                    Submit new payment request
                   </button>
                 </div>
               </div>
@@ -236,28 +236,28 @@ export const MembershipPage: React.FC<MembershipPageProps> = ({ siteSettings, na
         {/* Pricing & Plan Details */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Plan Card */}
-          <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+          <div className="lg:col-span-2 bg-[#093D6C] border border-[#FEFEFE]/15 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl">
+            <div className="flex items-center justify-between pb-4 border-b border-[#FEFEFE]/10">
               <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-cyan-400">Everything Included</span>
-                <h3 className="text-xl font-bold text-white mt-1">365-Day Academic Access</h3>
+                <span className="text-xs font-semibold uppercase tracking-wider text-[#FECF35]">Everything Included</span>
+                <h3 className="text-xl font-heading font-semibold text-[#FEFEFE] mt-1">365-Day Academic Access</h3>
               </div>
               <div className="text-right">
-                <span className="text-2xl sm:text-3xl font-extrabold text-white">
+                <span className="text-2xl sm:text-3xl font-heading font-semibold text-[#FEFEFE]">
                   Rs. {siteSettings.annualMembershipFee?.toLocaleString() || '1,000'}
                 </span>
-                <span className="text-xs text-slate-400 block">per student / year</span>
+                <span className="text-xs text-[#FEFEFE]/60 block font-sans">per student / year</span>
               </div>
             </div>
 
             <div className="space-y-4">
-              <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Features & Privileges</h4>
+              <h4 className="text-xs font-semibold text-[#FEFEFE]/80 uppercase tracking-wider">Features & Privileges</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
                 {[
                   {
                     title: 'Full Video Lecture Streaming',
                     desc: 'Instant streaming of all Physics, Math & Chemistry recorded chapters with zero ads.',
-                    icon: <Video className="w-4 h-4 text-cyan-400" />,
+                    icon: <Video className="w-4 h-4 text-[#FECF35]" />,
                   },
                   {
                     title: 'Chapter-Wise PDF Notes',
@@ -267,42 +267,42 @@ export const MembershipPage: React.FC<MembershipPageProps> = ({ siteSettings, na
                   {
                     title: 'MDCAT & ECAT Question Banks',
                     desc: 'Step-by-step video solutions to past 10-year board questions & entry test questions.',
-                    icon: <BookOpen className="w-4 h-4 text-blue-400" />,
+                    icon: <BookOpen className="w-4 h-4 text-sky-400" />,
                   },
                   {
                     title: 'Course Completion Certificates',
                     desc: 'Official digital verified certificate recognizing completion of coursework.',
-                    icon: <Award className="w-4 h-4 text-amber-400" />,
+                    icon: <Award className="w-4 h-4 text-[#FECF35]" />,
                   },
                   {
                     title: 'Adaptive Playback Controls',
                     desc: 'Resume where you left off with variable speeds (0.75x to 2.0x) and theater modes.',
-                    icon: <Sparkles className="w-4 h-4 text-purple-400" />,
+                    icon: <Sparkles className="w-4 h-4 text-[#FECF35]" />,
                   },
                   {
                     title: 'Priority WhatsApp Support',
                     desc: 'Direct helpline assistance for curriculum questions and exam announcements.',
-                    icon: <ShieldCheck className="w-4 h-4 text-cyan-400" />,
+                    icon: <ShieldCheck className="w-4 h-4 text-emerald-400" />,
                   },
                 ].map((feat, i) => (
-                  <div key={i} className="p-3.5 rounded-2xl bg-slate-950 border border-slate-800/80 space-y-1">
-                    <div className="flex items-center gap-2 font-bold text-white">
+                  <div key={i} className="p-3.5 rounded-xl bg-[#033D6B] border border-[#FEFEFE]/15 space-y-1">
+                    <div className="flex items-center gap-2 font-medium text-[#FEFEFE]">
                       {feat.icon}
                       <span>{feat.title}</span>
                     </div>
-                    <p className="text-[11px] text-slate-400 leading-relaxed pl-6">{feat.desc}</p>
+                    <p className="text-[11px] text-[#FEFEFE]/70 leading-relaxed pl-6 font-sans">{feat.desc}</p>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Refund & Guarantee */}
-            <div className="p-4 rounded-2xl bg-blue-950/30 border border-blue-900/40 text-xs text-slate-300 space-y-1">
-              <p className="font-bold text-white flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-cyan-400" />
+            <div className="p-4 rounded-xl bg-[#033D6B] border border-[#FEFEFE]/15 text-xs text-[#FEFEFE]/85 space-y-1">
+              <p className="font-heading font-semibold text-[#FEFEFE] flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-[#FECF35]" />
                 <span>100% Satisfaction & Disputed Transaction Guarantee</span>
               </p>
-              <p className="text-[11px] text-slate-400 leading-relaxed">
+              <p className="text-[11px] text-[#FEFEFE]/75 leading-relaxed font-sans">
                 If you face any issues streaming video lessons or downloading curriculum notes within 48 hours of your membership activation, our support team will promptly resolve them or provide a full refund.
               </p>
             </div>
@@ -310,57 +310,57 @@ export const MembershipPage: React.FC<MembershipPageProps> = ({ siteSettings, na
 
           {/* Quick Pay / Status Sidebar */}
           <div className="space-y-6">
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-5 shadow-xl">
-              <h3 className="font-bold text-white text-base">Payment Methods</h3>
-              <p className="text-xs text-slate-400">
+            <div className="bg-[#093D6C] border border-[#FEFEFE]/15 rounded-2xl p-6 space-y-5 shadow-xl">
+              <h3 className="font-heading font-semibold text-[#FEFEFE] text-base">Payment Methods</h3>
+              <p className="text-xs text-[#FEFEFE]/75 font-sans">
                 Pay using your preferred Pakistani mobile wallet or banking app:
               </p>
 
               <div className="space-y-3 text-xs">
-                <div className="p-3 bg-slate-950 rounded-xl border border-cyan-950 flex items-center justify-between">
+                <div className="p-3 bg-[#033D6B] rounded-xl border border-[#FEFEFE]/15 flex items-center justify-between">
                   <div>
-                    <span className="font-bold text-cyan-400 block">Bank Transfer</span>
-                    <span className="text-slate-400 text-[10px]">{siteSettings.bankBranch || 'MEEZAN DIGITAL CENTRE'}</span>
+                    <span className="font-semibold text-[#FECF35] block">Bank Transfer</span>
+                    <span className="text-[#FEFEFE]/60 text-[10px]">{siteSettings.bankBranch || 'MEEZAN DIGITAL CENTRE'}</span>
                   </div>
-                  <span className="text-slate-300 text-[11px] font-mono">{siteSettings.bankAccountNumber || '00300116151367'}</span>
+                  <span className="text-[#FEFEFE] text-[11px] font-mono">{siteSettings.bankAccountNumber || '00300116151367'}</span>
                 </div>
-                <div className="p-3 bg-slate-950 rounded-xl border border-amber-950 flex items-center justify-between">
+                <div className="p-3 bg-[#033D6B] rounded-xl border border-[#FEFEFE]/15 flex items-center justify-between">
                   <div>
-                    <span className="font-bold text-amber-400 block">SadaPay</span>
-                    <span className="text-slate-400 text-[10px]">{siteSettings.sadapayTitle || 'Muhammad Mairaj Khan'}</span>
+                    <span className="font-semibold text-[#FECF35] block">SadaPay</span>
+                    <span className="text-[#FEFEFE]/60 text-[10px]">{siteSettings.sadapayTitle || 'Muhammad Mairaj Khan'}</span>
                   </div>
-                  <span className="text-slate-300 text-[11px] font-mono">{siteSettings.sadapayNumber || '03323242608'}</span>
+                  <span className="text-[#FEFEFE] text-[11px] font-mono">{siteSettings.sadapayNumber || '03323242608'}</span>
                 </div>
-                <div className="p-3 bg-slate-950 rounded-xl border border-emerald-950 flex items-center justify-between">
+                <div className="p-3 bg-[#033D6B] rounded-xl border border-[#FEFEFE]/15 flex items-center justify-between">
                   <div>
-                    <span className="font-bold text-emerald-400 block">Easypaisa</span>
-                    <span className="text-slate-400 text-[10px]">{siteSettings.easypaisaTitle || 'Muhammad Mubeen Khan'}</span>
+                    <span className="font-semibold text-emerald-400 block">Easypaisa</span>
+                    <span className="text-[#FEFEFE]/60 text-[10px]">{siteSettings.easypaisaTitle || 'Muhammad Mubeen Khan'}</span>
                   </div>
-                  <span className="text-slate-300 text-[11px] font-mono">{siteSettings.easypaisaNumber || '03265877959'}</span>
+                  <span className="text-[#FEFEFE] text-[11px] font-mono">{siteSettings.easypaisaNumber || '03265877959'}</span>
                 </div>
               </div>
 
               <button
                 onClick={() => navigate('/payment')}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-bold text-xs shadow-lg shadow-cyan-500/20 transition cursor-pointer flex items-center justify-center gap-1.5"
+                className="w-full py-2.5 rounded-lg bg-[#FECF35] hover:bg-[#ebd02f] text-[#033D6B] font-medium text-xs shadow transition cursor-pointer flex items-center justify-center gap-1.5"
               >
-                <span>Proceed to Payment Form</span>
+                <span>Proceed to payment form</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
 
             {/* Helpline Assistance */}
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-3 text-xs">
-              <h4 className="font-bold text-white flex items-center gap-1.5">
-                <HelpCircle className="w-4 h-4 text-cyan-400" />
+            <div className="bg-[#093D6C] border border-[#FEFEFE]/15 rounded-2xl p-6 space-y-3 text-xs shadow-xl">
+              <h4 className="font-heading font-semibold text-[#FEFEFE] flex items-center gap-1.5">
+                <HelpCircle className="w-4 h-4 text-[#FECF35]" />
                 <span>Need Assistance?</span>
               </h4>
-              <p className="text-slate-400 text-[11px] leading-relaxed">
+              <p className="text-[#FEFEFE]/75 text-[11px] leading-relaxed font-sans">
                 If your payment is delayed or you have inquiries about board course coverage:
               </p>
               <div className="space-y-1 font-mono text-[11px]">
-                <p className="text-cyan-300">WhatsApp: {siteSettings.supportPhone}</p>
-                <p className="text-slate-400">{siteSettings.supportEmail}</p>
+                <p className="text-[#FECF35]">WhatsApp: {siteSettings.supportPhone}</p>
+                <p className="text-[#FEFEFE]/70">{siteSettings.supportEmail}</p>
               </div>
             </div>
           </div>
@@ -368,16 +368,16 @@ export const MembershipPage: React.FC<MembershipPageProps> = ({ siteSettings, na
 
         {/* Student Payment History Table */}
         {user && paymentHistory.length > 0 && (
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-4 shadow-xl">
+          <div className="bg-[#093D6C] border border-[#FEFEFE]/15 rounded-2xl p-6 sm:p-8 space-y-4 shadow-xl">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-base font-bold text-white">Your Payment Request History</h3>
-                <p className="text-xs text-slate-400">Track the review status of your membership submissions</p>
+                <h3 className="text-base font-heading font-semibold text-[#FEFEFE]">Your Payment Request History</h3>
+                <p className="text-xs text-[#FEFEFE]/70 font-sans">Track the review status of your membership submissions</p>
               </div>
               <button
                 onClick={loadHistory}
                 disabled={loadingHistory}
-                className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs flex items-center gap-1.5"
+                className="p-2 rounded-lg bg-[#033D6B] hover:bg-[#07355c] text-[#FEFEFE] border border-[#FEFEFE]/15 text-xs flex items-center gap-1.5 cursor-pointer"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${loadingHistory ? 'animate-spin' : ''}`} />
                 <span className="hidden sm:inline">Refresh</span>
@@ -385,8 +385,8 @@ export const MembershipPage: React.FC<MembershipPageProps> = ({ siteSettings, na
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-950 text-slate-400 uppercase font-semibold text-[10px] tracking-wider border-b border-slate-800">
+              <table className="w-full text-left text-xs text-[#FEFEFE]/90">
+                <thead className="bg-[#033D6B] text-[#FEFEFE]/70 uppercase font-medium text-[10px] tracking-wider border-b border-[#FEFEFE]/15">
                   <tr>
                     <th className="py-3 px-4">Submitted At</th>
                     <th className="py-3 px-4">Method</th>
@@ -396,36 +396,36 @@ export const MembershipPage: React.FC<MembershipPageProps> = ({ siteSettings, na
                     <th className="py-3 px-4 text-right">Receipt</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60">
+                <tbody className="divide-y divide-[#FEFEFE]/10">
                   {paymentHistory.map((p) => (
-                    <tr key={p.id} className="hover:bg-slate-850/40">
-                      <td className="py-3 px-4 font-mono text-[11px] text-slate-400">
+                    <tr key={p.id} className="hover:bg-[#033D6B]/50 transition">
+                      <td className="py-3 px-4 font-mono text-[11px] text-[#FEFEFE]/70">
                         {new Date(p.submittedAt).toLocaleDateString('en-PK', {
                           month: 'short',
                           day: 'numeric',
                           year: 'numeric',
                         })}
                       </td>
-                      <td className="py-3 px-4 capitalize font-semibold text-slate-200">
+                      <td className="py-3 px-4 capitalize font-medium text-[#FEFEFE]">
                         {p.paymentMethod.replace('_', ' ')}
                       </td>
-                      <td className="py-3 px-4 font-mono font-bold text-cyan-300">
+                      <td className="py-3 px-4 font-mono font-semibold text-[#FECF35]">
                         {p.transactionReference}
                       </td>
-                      <td className="py-3 px-4 font-bold text-white">
+                      <td className="py-3 px-4 font-semibold text-[#FEFEFE]">
                         Rs. {p.amount?.toLocaleString()}
                       </td>
                       <td className="py-3 px-4">
                         {p.status === 'approved' ? (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-800">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#033D6B] text-emerald-300 border border-emerald-500/30">
                             Approved & Active
                           </span>
                         ) : p.status === 'rejected' ? (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-950 text-rose-300 border border-rose-800" title={p.rejectionReason || ''}>
+                          <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-rose-950 text-rose-300 border border-rose-700" title={p.rejectionReason || ''}>
                             Rejected
                           </span>
                         ) : (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-950 text-amber-300 border border-amber-800">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#033D6B] text-[#FECF35] border border-[#FECF35]/30">
                             Pending Review
                           </span>
                         )}
@@ -434,9 +434,9 @@ export const MembershipPage: React.FC<MembershipPageProps> = ({ siteSettings, na
                         {p.receiptUrl && (
                           <button
                             onClick={() => setViewReceiptModal(p.receiptUrl)}
-                            className="text-cyan-400 hover:text-cyan-300 underline font-semibold text-[11px]"
+                            className="text-[#FECF35] hover:underline font-medium text-[11px] cursor-pointer"
                           >
-                            View Receipt
+                            View receipt
                           </button>
                         )}
                       </td>

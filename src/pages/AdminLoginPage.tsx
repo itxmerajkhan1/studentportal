@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { IlmoraLogo } from '../components/IlmoraLogo';
 import {
   ShieldCheck,
   ShieldAlert,
@@ -42,7 +43,6 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ navigate }) => {
       if (isAdmin) {
         navigate('/admin');
       } else {
-        // Logged in user is NOT an admin
         setForbiddenError(true);
       }
     }
@@ -65,7 +65,6 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ navigate }) => {
       if (result.isAdmin) {
         navigate('/admin');
       } else {
-        // Authenticated with Firebase Auth, but NOT registered in /admins/{uid}
         setForbiddenError(true);
         setErrorMsg('403 Forbidden: Access Denied. This account does not possess administrative privileges.');
       }
@@ -121,7 +120,7 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ navigate }) => {
     setResetSubmitting(true);
     try {
       await requestPasswordReset(targetEmail);
-      setResetSuccessMsg(`Password reset email dispatched to ${targetEmail}. Please check your inbox and spam folder to set or update your password.`);
+      setResetSuccessMsg(`Password reset email dispatched to ${targetEmail}. Please check your inbox and spam folder.`);
     } catch (err: unknown) {
       console.error('Password reset error:', err);
       const msg = err instanceof Error ? err.message : 'Unable to send password reset email.';
@@ -144,66 +143,66 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ navigate }) => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative selection:bg-cyan-500 selection:text-slate-950">
-      {/* Background glow accents */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[32rem] h-[32rem] bg-cyan-600/10 blur-[120px] pointer-events-none rounded-full" />
-      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-600/10 blur-[100px] pointer-events-none rounded-full" />
-
-      <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl relative z-10 space-y-6">
+    <div className="min-h-screen bg-[#022544] text-[#FEFEFE] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 selection:bg-[#FECF35] selection:text-[#033D6B]">
+      <div className="max-w-md w-full bg-[#093D6C] border border-[#FEFEFE]/15 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
         {/* Top return link */}
-        <div className="flex items-center justify-between pb-2 border-b border-slate-800/80">
+        <div className="flex items-center justify-between pb-3 border-b border-[#FEFEFE]/10">
           <button
             onClick={() => navigate('/login')}
-            className="text-xs text-slate-400 hover:text-cyan-400 flex items-center gap-1.5 transition cursor-pointer"
+            className="text-xs text-[#FEFEFE]/80 hover:text-[#FECF35] flex items-center gap-1.5 transition cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Student Login</span>
+            <span>Student login</span>
           </button>
-          <span className="text-[10px] uppercase font-bold tracking-widest text-cyan-400 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800">
+          <span className="text-[10px] uppercase font-semibold tracking-wider text-[#FECF35] bg-[#033D6B] px-2.5 py-0.5 rounded border border-[#FECF35]/30">
             Admin Portal
           </span>
         </div>
 
-        {/* Header */}
-        <div className="text-center space-y-2">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-500 via-sky-600 to-blue-700 flex items-center justify-center text-slate-950 mx-auto shadow-xl shadow-cyan-500/25">
-            <ShieldCheck className="w-8 h-8 text-slate-950" />
+        {/* Logo and Header */}
+        <div className="text-center space-y-3">
+          <div className="flex justify-center">
+            <IlmoraLogo variant="full" size="md" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          <div className="flex items-center justify-center gap-2 text-xs text-[#FECF35]">
+            <ShieldCheck className="w-4 h-4" />
+            <span className="font-medium tracking-wide">Administrator Clearance</span>
+          </div>
+          <h1 className="text-xl sm:text-2xl font-heading font-semibold text-[#FEFEFE]">
             Administrator Sign In
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400">
-            Secure clearance portal for curriculum management, admission approvals, and platform administration.
+          <p className="text-xs text-[#FEFEFE]/75 leading-relaxed">
+            Faculty and curriculum management portal. All access events are authenticated and verified against trusted administrator records.
           </p>
         </div>
 
         {/* Forbidden 403 State for Authenticated Non-Admin Students */}
         {forbiddenError && user && !isAdmin && (
-          <div className="p-4 rounded-2xl bg-rose-950/70 border border-rose-800 text-rose-200 text-xs space-y-3 animate-fade-in shadow-lg">
+          <div className="p-4 rounded-xl bg-rose-950/70 border border-rose-700/60 text-rose-200 text-xs space-y-3">
             <div className="flex items-start gap-2.5">
               <ShieldAlert className="w-5 h-5 shrink-0 text-rose-400 mt-0.5" />
               <div>
-                <strong className="block text-sm font-bold text-rose-300">
+                <strong className="block text-sm font-semibold text-rose-300">
                   403 Forbidden — Access Denied
                 </strong>
                 <p className="text-rose-200/90 mt-1 leading-relaxed">
-                  You are signed in as <strong className="text-white">{user.email}</strong>, which does not have administrative privileges. Only verified faculty and portal administrators may access the Admin Control Panel.
+                  You are signed in as <strong className="text-white">{user.email}</strong>, which does not possess administrative privileges.
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2 pt-2 border-t border-rose-900/60">
               <button
                 onClick={handleSwitchToStudent}
-                className="flex-1 py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 font-semibold text-xs border border-slate-700 transition cursor-pointer flex items-center justify-center gap-1.5"
+                className="flex-1 py-2 px-3 rounded-lg bg-[#033D6B] hover:bg-[#07355c] text-[#FEFEFE] font-medium text-xs border border-[#FEFEFE]/20 transition cursor-pointer flex items-center justify-center gap-1.5"
               >
-                <GraduationCap className="w-3.5 h-3.5 text-cyan-400" />
-                <span>Go to Student View</span>
+                <GraduationCap className="w-3.5 h-3.5 text-[#FECF35]" />
+                <span>Go to student view</span>
               </button>
               <button
                 onClick={handleSignOutAndRetry}
-                className="flex-1 py-2 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs transition cursor-pointer"
+                className="flex-1 py-2 px-3 rounded-lg bg-rose-700 hover:bg-rose-600 text-white font-medium text-xs transition cursor-pointer"
               >
-                Sign Out & Switch
+                Sign out & switch
               </button>
             </div>
           </div>
@@ -211,7 +210,7 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ navigate }) => {
 
         {/* General Error Alert */}
         {errorMsg && !forbiddenError && (
-          <div className="p-4 rounded-xl bg-rose-950/60 border border-rose-800 text-rose-200 text-xs flex items-start gap-2.5 shadow-md">
+          <div className="p-3.5 rounded-xl bg-rose-950/60 border border-rose-700/50 text-rose-200 text-xs flex items-start gap-2.5">
             <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
             <span className="leading-relaxed">{errorMsg}</span>
           </div>
@@ -219,7 +218,7 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ navigate }) => {
 
         {/* Password Reset Success Notice */}
         {resetSuccessMsg && (
-          <div className="p-4 rounded-xl bg-emerald-950/60 border border-emerald-800 text-emerald-200 text-xs flex items-start gap-2.5 shadow-md">
+          <div className="p-3.5 rounded-xl bg-emerald-950/60 border border-emerald-700/50 text-emerald-200 text-xs flex items-start gap-2.5">
             <CheckCircle className="w-4 h-4 shrink-0 text-emerald-400 mt-0.5" />
             <span className="leading-relaxed">{resetSuccessMsg}</span>
           </div>
@@ -229,11 +228,11 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ navigate }) => {
         {(!user || isAdmin) && (
           <form onSubmit={handleAdminSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label className="block text-xs font-medium text-[#FEFEFE]/90 mb-1.5">
                 Administrator Email
               </label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" />
+                <Mail className="w-4 h-4 text-[#FEFEFE]/45 absolute left-3.5 top-3 pointer-events-none" />
                 <input
                   type="email"
                   placeholder="admin@domain.com"
@@ -241,27 +240,27 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ navigate }) => {
                   onChange={(e) => setEmail(e.target.value)}
                   autoComplete="username email"
                   required
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-950/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition"
+                  className="w-full pl-10 pr-4 py-2.5 bg-[#033D6B] border border-[#FEFEFE]/20 rounded-lg text-sm text-[#FEFEFE] placeholder-[#FEFEFE]/40 focus:outline-none focus:ring-2 focus:ring-[#FECF35]/50 focus:border-[#FECF35] transition"
                 />
               </div>
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-semibold text-slate-300">
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs font-medium text-[#FEFEFE]/90">
                   Administrative Password
                 </label>
                 <button
                   type="button"
                   onClick={() => setShowResetBox(!showResetBox)}
-                  className="text-xs text-cyan-400 hover:text-cyan-300 font-medium cursor-pointer transition flex items-center gap-1"
+                  className="text-xs text-[#FECF35] hover:underline font-medium cursor-pointer transition flex items-center gap-1"
                 >
                   <KeyRound className="w-3 h-3" />
                   <span>{showResetBox ? 'Hide reset' : 'Reset password'}</span>
                 </button>
               </div>
               <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" />
+                <Lock className="w-4 h-4 text-[#FEFEFE]/45 absolute left-3.5 top-3 pointer-events-none" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Enter administrator password"
@@ -269,12 +268,12 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ navigate }) => {
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="current-password"
                   required
-                  className="w-full pl-10 pr-11 py-2.5 bg-slate-950/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition"
+                  className="w-full pl-10 pr-11 py-2.5 bg-[#033D6B] border border-[#FEFEFE]/20 rounded-lg text-sm text-[#FEFEFE] placeholder-[#FEFEFE]/40 focus:outline-none focus:ring-2 focus:ring-[#FECF35]/50 focus:border-[#FECF35] transition"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-2.5 p-1 text-slate-400 hover:text-slate-200 cursor-pointer transition"
+                  className="absolute right-3 top-2.5 p-1 text-[#FEFEFE]/50 hover:text-[#FEFEFE] cursor-pointer transition"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -286,33 +285,33 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ navigate }) => {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-400 via-cyan-300 to-sky-400 text-slate-950 font-bold text-sm hover:from-cyan-300 hover:to-sky-300 transition shadow-lg shadow-cyan-500/20 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+              className="w-full py-2.5 px-4 rounded-lg bg-[#FECF35] text-[#033D6B] font-medium text-sm hover:bg-[#ebd02f] transition shadow disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
             >
               {submitting ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
+                  <Loader2 className="w-4 h-4 animate-spin text-[#033D6B]" />
                   <span>Verifying clearance...</span>
                 </>
               ) : (
                 <>
-                  <ShieldCheck className="w-4 h-4 text-slate-950" />
-                  <span>Sign In to Admin Portal</span>
-                  <ArrowRight className="w-4 h-4 text-slate-950" />
+                  <ShieldCheck className="w-4 h-4 text-[#033D6B]" />
+                  <span>Sign in to admin portal</span>
+                  <ArrowRight className="w-4 h-4 text-[#033D6B]" />
                 </>
               )}
             </button>
           </form>
         )}
 
-        {/* Password Reset Drawer / Box */}
+        {/* Password Reset Box */}
         {showResetBox && (
-          <div className="p-4 rounded-2xl bg-slate-950/80 border border-cyan-800/50 space-y-3 animate-fade-in">
-            <div className="flex items-center gap-2 text-xs font-bold text-cyan-300">
-              <KeyRound className="w-4 h-4 text-cyan-400" />
+          <div className="p-4 rounded-xl bg-[#033D6B] border border-[#FEFEFE]/20 space-y-3">
+            <div className="flex items-center gap-2 text-xs font-semibold text-[#FECF35]">
+              <KeyRound className="w-4 h-4" />
               <span>Send Admin Password Reset Link</span>
             </div>
-            <p className="text-[11px] text-slate-400 leading-relaxed">
-              Enter your designated administrator email address to dispatch an official Firebase password setup / reset email.
+            <p className="text-[11px] text-[#FEFEFE]/75 leading-relaxed">
+              Enter the designated administrator email address to receive an official Firebase password reset link.
             </p>
             <div className="flex gap-2">
               <input
@@ -320,15 +319,15 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ navigate }) => {
                 placeholder="admin@domain.com"
                 value={resetEmail || email}
                 onChange={(e) => setResetEmail(e.target.value)}
-                className="flex-1 px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                className="flex-1 px-3 py-2 bg-[#022544] border border-[#FEFEFE]/20 rounded-lg text-xs text-[#FEFEFE] placeholder-[#FEFEFE]/40 focus:outline-none focus:ring-1 focus:ring-[#FECF35]"
               />
               <button
                 type="button"
                 onClick={handlePasswordReset}
                 disabled={resetSubmitting}
-                className="px-3 py-2 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs rounded-lg transition disabled:opacity-50 cursor-pointer shrink-0"
+                className="px-3 py-2 bg-[#FECF35] hover:bg-[#ebd02f] text-[#033D6B] font-medium text-xs rounded-lg transition disabled:opacity-50 cursor-pointer shrink-0"
               >
-                {resetSubmitting ? 'Sending...' : 'Send Link'}
+                {resetSubmitting ? 'Sending...' : 'Send link'}
               </button>
             </div>
           </div>
@@ -337,11 +336,11 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ navigate }) => {
         {/* Divider */}
         {(!user || isAdmin) && (
           <>
-            <div className="relative my-3 text-center">
+            <div className="relative my-2 text-center">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-800" />
+                <div className="w-full border-t border-[#FEFEFE]/10" />
               </div>
-              <span className="relative bg-slate-900 px-3 text-xs text-slate-500">
+              <span className="relative bg-[#093D6C] px-3 text-xs text-[#FEFEFE]/60">
                 Or authenticate via Google
               </span>
             </div>
@@ -350,7 +349,7 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ navigate }) => {
             <button
               onClick={handleGoogleAdminSubmit}
               disabled={submitting}
-              className="w-full py-2.5 px-4 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700 text-xs font-semibold text-slate-200 transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              className="w-full py-2.5 px-4 rounded-lg bg-[#033D6B] hover:bg-[#07355c] border border-[#FEFEFE]/20 text-xs font-medium text-[#FEFEFE] transition flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">
                 <path
@@ -376,24 +375,24 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ navigate }) => {
         )}
 
         {/* Security Notice Footer */}
-        <div className="pt-2 border-t border-slate-800/80 text-center space-y-2">
-          <p className="text-[11px] text-slate-400 flex items-center justify-center gap-1.5">
-            <Lock className="w-3 h-3 text-cyan-400 shrink-0" />
+        <div className="pt-3 border-t border-[#FEFEFE]/10 text-center space-y-2">
+          <p className="text-[11px] text-[#FEFEFE]/60 flex items-center justify-center gap-1.5">
+            <Lock className="w-3 h-3 text-[#FECF35] shrink-0" />
             <span>Authorized staff only • All operations logged & verified</span>
           </p>
-          <div className="flex items-center justify-center gap-3 text-xs text-slate-400 pt-1">
+          <div className="flex items-center justify-center gap-3 text-xs text-[#FEFEFE]/70 pt-1">
             <button
               onClick={() => navigate('/login')}
-              className="text-cyan-400 hover:text-cyan-300 transition cursor-pointer"
+              className="text-[#FECF35] hover:underline transition cursor-pointer"
             >
-              Student Sign In
+              Student sign in
             </button>
-            <span className="text-slate-700">•</span>
+            <span className="text-[#FEFEFE]/30">•</span>
             <button
               onClick={() => navigate('/')}
-              className="text-slate-400 hover:text-slate-200 transition cursor-pointer"
+              className="text-[#FEFEFE]/70 hover:text-[#FEFEFE] transition cursor-pointer"
             >
-              Back to Home
+              Back to home
             </button>
           </div>
         </div>
@@ -401,3 +400,4 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ navigate }) => {
     </div>
   );
 };
+

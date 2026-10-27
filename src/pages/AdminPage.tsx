@@ -173,6 +173,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
   // Course Modal
   const [courseModalOpen, setCourseModalOpen] = useState(false);
   const [editingCourse, setEditingCourse] = useState<Partial<Course> | null>(null);
+  const [deletingCourseId, setDeletingCourseId] = useState<string | null>(null);
 
   // Lesson Modal
   const [lessonModalOpen, setLessonModalOpen] = useState(false);
@@ -239,25 +240,25 @@ export const AdminPage: React.FC<AdminPageProps> = ({
   // Guard: If not admin
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-6">
-        <RefreshCw className="w-8 h-8 text-cyan-400 animate-spin" />
+      <div className="min-h-screen bg-[#022544] text-[#FEFEFE] flex items-center justify-center p-6">
+        <RefreshCw className="w-8 h-8 text-[#FECF35] animate-spin" />
       </div>
     );
   }
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-6">
-        <div className="max-w-md w-full bg-slate-900 border border-rose-800 rounded-3xl p-8 text-center space-y-4 shadow-2xl">
-          <ShieldAlert className="w-14 h-14 text-rose-500 mx-auto" />
-          <h2 className="text-2xl font-bold text-white">403 Forbidden Access</h2>
-          <p className="text-xs text-slate-400 leading-relaxed">
+      <div className="min-h-screen bg-[#022544] text-[#FEFEFE] flex items-center justify-center p-6 selection:bg-[#FECF35] selection:text-[#033D6B]">
+        <div className="max-w-md w-full bg-[#093D6C] border border-[#FEFEFE]/15 rounded-xl p-8 text-center space-y-4 shadow-sm">
+          <ShieldAlert className="w-14 h-14 text-rose-400 mx-auto" />
+          <h2 className="text-2xl font-heading font-semibold text-[#FEFEFE]">403 Forbidden Access</h2>
+          <p className="text-xs text-[#FEFEFE]/70 leading-relaxed">
             Administrative privileges required. Only verified portal administrators can access student admission reviews, curriculum publishing, and system configurations.
           </p>
           <div className="pt-2">
             <button
               onClick={() => navigate('/')}
-              className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold"
+              className="px-5 py-2.5 rounded-lg bg-[#033D6B] hover:bg-[#022544] text-[#FEFEFE] text-xs font-medium border border-[#FEFEFE]/15 transition cursor-pointer"
             >
               Return to Homepage
             </button>
@@ -524,14 +525,21 @@ export const AdminPage: React.FC<AdminPageProps> = ({
   };
 
   const handleDeleteCourse = async (courseId: string) => {
-    if (!confirm('Are you sure you want to delete this course and its curriculum references?')) return;
+    if (!courseId) return;
+    if (!confirm('Are you sure you want to permanently delete this course? It will not be restored.')) return;
+    setDeletingCourseId(courseId);
     try {
       await deleteCourseDoc(courseId);
       await onRefreshData();
-      setFeedbackMsg('Course deleted.');
-      setTimeout(() => setFeedbackMsg(null), 3000);
-    } catch (err) {
+      setFeedbackMsg('Course permanently removed from database.');
+      setTimeout(() => setFeedbackMsg(null), 3500);
+    } catch (err: unknown) {
       console.error('Error deleting course:', err);
+      const msg = err instanceof Error ? err.message : 'Failed to delete course from database.';
+      setFeedbackMsg(`Deletion failed: ${msg}`);
+      setTimeout(() => setFeedbackMsg(null), 5000);
+    } finally {
+      setDeletingCourseId(null);
     }
   };
 
@@ -845,23 +853,23 @@ export const AdminPage: React.FC<AdminPageProps> = ({
   }
 
   return (
-    <div className="bg-slate-950 text-slate-100 min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+    <div className="bg-[#022544] text-[#FEFEFE] min-h-screen py-8 px-4 sm:px-6 lg:px-8 selection:bg-[#FECF35] selection:text-[#033D6B]">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Admin Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#FEFEFE]/10">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-700 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-cyan-500/20">
+            <div className="w-12 h-12 rounded-xl bg-[#033D6B] border border-[#FECF35]/40 flex items-center justify-center text-[#FECF35] shadow-sm">
               <Sparkles className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-extrabold text-white">Administrator Control Panel</h1>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-700">
+                <h1 className="text-2xl font-heading font-semibold text-[#FEFEFE]">Administrator control panel</h1>
+                <span className="text-[11px] font-medium px-2.5 py-0.5 rounded-md bg-[#033D6B] text-[#FECF35] border border-[#FECF35]/40 uppercase tracking-wider">
                   Super Admin
                 </span>
               </div>
-              <p className="text-xs text-slate-400">
-                Logged in as <strong className="text-slate-200">{user?.email}</strong> • Academic moderation & video asset distribution
+              <p className="text-xs text-[#FEFEFE]/70">
+                Logged in as <strong className="text-[#FEFEFE]">{user?.email}</strong> • Academic moderation & video asset distribution
               </p>
             </div>
           </div>
@@ -873,30 +881,30 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                 fetchPaymentsList();
                 onRefreshData();
               }}
-              className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-semibold flex items-center gap-1.5 text-slate-300 transition cursor-pointer"
+              className="px-3.5 py-2 rounded-lg bg-[#093D6C] hover:bg-[#033D6B] border border-[#FEFEFE]/15 text-xs font-medium flex items-center gap-1.5 text-[#FEFEFE] transition cursor-pointer"
             >
-              <RefreshCw className="w-3.5 h-3.5" />
-              <span>Refresh Records</span>
+              <RefreshCw className="w-3.5 h-3.5 text-[#FECF35]" />
+              <span>Refresh records</span>
             </button>
             <button
               onClick={() => navigate('/dashboard')}
-              className="px-3.5 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs shadow-md transition cursor-pointer"
+              className="px-3.5 py-2 rounded-lg bg-[#FECF35] hover:bg-[#ebd02f] text-[#033D6B] font-medium text-xs shadow-sm transition cursor-pointer"
             >
-              Student View →
+              Student view →
             </button>
           </div>
         </div>
 
         {/* Global Feedback Alert */}
         {feedbackMsg && (
-          <div className="p-4 rounded-2xl bg-cyan-950/80 border border-cyan-800 text-cyan-200 text-xs flex items-center gap-2 shadow-lg animate-fade-in">
-            <CheckCircle className="w-4 h-4 text-cyan-400 shrink-0" />
+          <div className="p-4 rounded-xl bg-[#093D6C] border border-[#FECF35]/50 text-[#FEFEFE] text-xs flex items-center gap-2 shadow-sm animate-fade-in">
+            <CheckCircle className="w-4 h-4 text-[#FECF35] shrink-0" />
             <span>{feedbackMsg}</span>
           </div>
         )}
 
         {/* Navigation Tabs */}
-        <div className="flex overflow-x-auto gap-2 p-1 bg-slate-900 rounded-2xl border border-slate-800 text-xs">
+        <div className="flex overflow-x-auto gap-1.5 p-1.5 bg-[#093D6C] rounded-xl border border-[#FEFEFE]/15 text-xs">
           {[
             { id: 'overview', label: 'Overview Metrics', icon: <BarChart className="w-4 h-4" /> },
             {
@@ -922,10 +930,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold whitespace-nowrap transition cursor-pointer ${
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg font-medium whitespace-nowrap transition cursor-pointer ${
                 activeTab === tab.id
-                  ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                  ? 'bg-[#FECF35] text-[#033D6B]'
+                  : 'text-[#FEFEFE]/80 hover:text-white hover:bg-[#033D6B]'
               }`}
             >
               {tab.icon}
@@ -938,70 +946,70 @@ export const AdminPage: React.FC<AdminPageProps> = ({
         {activeTab === 'overview' && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              <div className="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl flex items-center justify-between">
+              <div className="bg-[#093D6C] border border-[#FEFEFE]/15 p-5 sm:p-6 rounded-xl shadow-sm flex items-center justify-between">
                 <div>
-                  <p className="text-xs uppercase font-bold text-slate-400">Total Registered</p>
-                  <p className="text-3xl font-extrabold text-white mt-1">{totalStudents}</p>
-                  <p className="text-[11px] text-slate-400 mt-1">Students in database</p>
+                  <p className="text-xs uppercase font-medium tracking-wider text-[#FEFEFE]/60">Total registered</p>
+                  <p className="text-3xl font-heading font-semibold text-[#FEFEFE] mt-1">{totalStudents}</p>
+                  <p className="text-[11px] text-[#FEFEFE]/60 mt-1">Students in database</p>
                 </div>
-                <div className="p-3 rounded-2xl bg-blue-950 text-blue-400 border border-blue-800">
-                  <Users className="w-6 h-6" />
+                <div className="p-3 rounded-lg bg-[#033D6B] text-[#FEFEFE] border border-[#FEFEFE]/15">
+                  <Users className="w-6 h-6 text-[#FECF35]" />
                 </div>
               </div>
 
-              <div className="bg-slate-900 border border-amber-800/60 p-6 rounded-3xl shadow-xl flex items-center justify-between">
+              <div className="bg-[#093D6C] border border-[#FEFEFE]/15 p-5 sm:p-6 rounded-xl shadow-sm flex items-center justify-between">
                 <div>
-                  <p className="text-xs uppercase font-bold text-amber-400">Pending Admissions</p>
-                  <p className="text-3xl font-extrabold text-amber-300 mt-1">{pendingStudents}</p>
-                  <p className="text-[11px] text-amber-200/80 mt-1">Require moderation</p>
+                  <p className="text-xs uppercase font-medium tracking-wider text-[#FECF35]">Pending admissions</p>
+                  <p className="text-3xl font-heading font-semibold text-[#FECF35] mt-1">{pendingStudents}</p>
+                  <p className="text-[11px] text-[#FEFEFE]/70 mt-1">Require moderation</p>
                 </div>
-                <div className="p-3 rounded-2xl bg-amber-950 text-amber-400 border border-amber-800">
+                <div className="p-3 rounded-lg bg-[#033D6B] text-[#FECF35] border border-[#FECF35]/30">
                   <Clock className="w-6 h-6 animate-pulse" />
                 </div>
               </div>
 
-              <div className="bg-slate-900 border border-emerald-800/60 p-6 rounded-3xl shadow-xl flex items-center justify-between">
+              <div className="bg-[#093D6C] border border-[#FEFEFE]/15 p-5 sm:p-6 rounded-xl shadow-sm flex items-center justify-between">
                 <div>
-                  <p className="text-xs uppercase font-bold text-emerald-400">Total Verified Revenue</p>
-                  <p className="text-3xl font-extrabold text-emerald-300 mt-1">
+                  <p className="text-xs uppercase font-medium tracking-wider text-emerald-300">Total verified revenue</p>
+                  <p className="text-3xl font-heading font-semibold text-emerald-300 mt-1">
                     Rs. {totalVerifiedRevenue.toLocaleString()}
                   </p>
-                  <p className="text-[11px] text-slate-400 mt-1">From approved annual memberships</p>
+                  <p className="text-[11px] text-[#FEFEFE]/60 mt-1">From approved annual memberships</p>
                 </div>
-                <div className="p-3 rounded-2xl bg-emerald-950 text-emerald-400 border border-emerald-800">
+                <div className="p-3 rounded-lg bg-[#033D6B] text-emerald-400 border border-emerald-500/30">
                   <Award className="w-6 h-6" />
                 </div>
               </div>
 
-              <div className="bg-slate-900 border border-purple-800/60 p-6 rounded-3xl shadow-xl flex items-center justify-between">
+              <div className="bg-[#093D6C] border border-[#FEFEFE]/15 p-5 sm:p-6 rounded-xl shadow-sm flex items-center justify-between">
                 <div>
-                  <p className="text-xs uppercase font-bold text-purple-400">Pending Payments</p>
-                  <p className="text-3xl font-extrabold text-purple-300 mt-1">{pendingPaymentsCount}</p>
-                  <p className="text-[11px] text-purple-200/80 mt-1">Awaiting receipt verification</p>
+                  <p className="text-xs uppercase font-medium tracking-wider text-[#FECF35]">Pending payments</p>
+                  <p className="text-3xl font-heading font-semibold text-[#FEFEFE] mt-1">{pendingPaymentsCount}</p>
+                  <p className="text-[11px] text-[#FEFEFE]/60 mt-1">Awaiting receipt verification</p>
                 </div>
-                <div className="p-3 rounded-2xl bg-purple-950 text-purple-400 border border-purple-800">
+                <div className="p-3 rounded-lg bg-[#033D6B] text-[#FECF35] border border-[#FEFEFE]/15">
                   <CreditCard className="w-6 h-6 animate-pulse" />
                 </div>
               </div>
 
-              <div className="bg-slate-900 border border-cyan-800/60 p-6 rounded-3xl shadow-xl flex items-center justify-between">
+              <div className="bg-[#093D6C] border border-[#FEFEFE]/15 p-5 sm:p-6 rounded-xl shadow-sm flex items-center justify-between">
                 <div>
-                  <p className="text-xs uppercase font-bold text-cyan-400">Active Memberships</p>
-                  <p className="text-3xl font-extrabold text-white mt-1">{activeMembershipsCount}</p>
-                  <p className="text-[11px] text-slate-400 mt-1">Enrolled with video streaming</p>
+                  <p className="text-xs uppercase font-medium tracking-wider text-[#FEFEFE]/80">Active memberships</p>
+                  <p className="text-3xl font-heading font-semibold text-[#FEFEFE] mt-1">{activeMembershipsCount}</p>
+                  <p className="text-[11px] text-[#FEFEFE]/60 mt-1">Enrolled with video streaming</p>
                 </div>
-                <div className="p-3 rounded-2xl bg-cyan-950 text-cyan-400 border border-cyan-800">
+                <div className="p-3 rounded-lg bg-[#033D6B] text-emerald-400 border border-[#FEFEFE]/15">
                   <CheckCircle className="w-6 h-6" />
                 </div>
               </div>
 
-              <div className="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-xl flex items-center justify-between">
+              <div className="bg-[#093D6C] border border-[#FEFEFE]/15 p-5 sm:p-6 rounded-xl shadow-sm flex items-center justify-between">
                 <div>
-                  <p className="text-xs uppercase font-bold text-cyan-400">Published Lectures</p>
-                  <p className="text-3xl font-extrabold text-white mt-1">{totalLessons}</p>
-                  <p className="text-[11px] text-slate-400 mt-1">Across {totalCourses} courses</p>
+                  <p className="text-xs uppercase font-medium tracking-wider text-[#FEFEFE]/80">Published lectures</p>
+                  <p className="text-3xl font-heading font-semibold text-[#FEFEFE] mt-1">{totalLessons}</p>
+                  <p className="text-[11px] text-[#FEFEFE]/60 mt-1">Across curriculum chapters</p>
                 </div>
-                <div className="p-3 rounded-2xl bg-slate-800 text-slate-300 border border-slate-700">
+                <div className="p-3 rounded-lg bg-[#033D6B] text-[#FECF35] border border-[#FEFEFE]/15">
                   <Video className="w-6 h-6" />
                 </div>
               </div>
@@ -1009,14 +1017,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({
 
             {/* Quick Action Banner if pending payments exist */}
             {pendingPaymentsCount > 0 && (
-              <div className="bg-purple-950/40 border border-purple-800/80 rounded-3xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="bg-[#093D6C] border border-[#FECF35]/40 rounded-xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <CreditCard className="w-6 h-6 text-purple-400 shrink-0" />
+                  <CreditCard className="w-6 h-6 text-[#FECF35] shrink-0" />
                   <div>
-                    <h3 className="text-sm font-bold text-purple-300">
-                      {pendingPaymentsCount} Student Payment Requests Awaiting Verification
+                    <h3 className="text-sm font-heading font-semibold text-[#FEFEFE]">
+                      {pendingPaymentsCount} student payment requests awaiting verification
                     </h3>
-                    <p className="text-xs text-purple-200/80">
+                    <p className="text-xs text-[#FEFEFE]/70">
                       Students are waiting for receipt confirmation to begin streaming video lectures.
                     </p>
                   </div>
@@ -1026,23 +1034,23 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                     setActiveTab('payments');
                     setPaymentStatusFilter('pending');
                   }}
-                  className="px-5 py-2.5 rounded-xl bg-purple-500 hover:bg-purple-400 text-slate-950 font-bold text-xs cursor-pointer shrink-0"
+                  className="px-4 py-2 rounded-lg bg-[#FECF35] hover:bg-[#ebd02f] text-[#033D6B] font-medium text-xs cursor-pointer shrink-0 transition"
                 >
-                  Verify Payments Now →
+                  Verify payments now →
                 </button>
               </div>
             )}
 
             {/* Quick Action Banner if pending admissions exist */}
             {pendingStudents > 0 && (
-              <div className="bg-amber-950/40 border border-amber-800/80 rounded-3xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="bg-[#093D6C] border border-[#FECF35]/40 rounded-xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <AlertTriangle className="w-6 h-6 text-amber-400 shrink-0" />
+                  <AlertTriangle className="w-6 h-6 text-[#FECF35] shrink-0" />
                   <div>
-                    <h3 className="text-sm font-bold text-amber-300">
-                      {pendingStudents} Student Admission Applications Awaiting Approval
+                    <h3 className="text-sm font-heading font-semibold text-[#FEFEFE]">
+                      {pendingStudents} student admission applications awaiting approval
                     </h3>
-                    <p className="text-xs text-amber-200/80">
+                    <p className="text-xs text-[#FEFEFE]/70">
                       Unapproved students cannot view video lectures until authorized.
                     </p>
                   </div>
@@ -1052,9 +1060,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                     setActiveTab('students');
                     setStatusFilter('pending');
                   }}
-                  className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs cursor-pointer shrink-0"
+                  className="px-4 py-2 rounded-lg bg-[#FECF35] hover:bg-[#ebd02f] text-[#033D6B] font-medium text-xs cursor-pointer shrink-0 transition"
                 >
-                  Review Pending Applications Now
+                  Moderate admissions →
                 </button>
               </div>
             )}
@@ -1065,27 +1073,27 @@ export const AdminPage: React.FC<AdminPageProps> = ({
         {activeTab === 'students' && (
           <div className="space-y-6">
             {/* Filter & Search Bar */}
-            <div className="bg-slate-900 border border-slate-800 p-4 rounded-3xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="bg-[#093D6C] border border-[#FEFEFE]/15 p-4 rounded-xl shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="relative w-full md:w-80">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                <Search className="w-4 h-4 text-[#FEFEFE]/50 absolute left-3.5 top-3" />
                 <input
                   type="text"
                   placeholder="Search student name, email, phone..."
                   value={studentSearch}
                   onChange={(e) => setStudentSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+                  className="w-full pl-10 pr-4 py-2 bg-[#033D6B] border border-[#FEFEFE]/20 rounded-lg text-xs text-[#FEFEFE] placeholder-[#FEFEFE]/40 focus:outline-none focus:border-[#FECF35]"
                 />
               </div>
 
               <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
-                <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
-                  <span className="px-2 text-slate-400 font-medium">Status:</span>
+                <div className="flex items-center gap-1 bg-[#033D6B] p-1 rounded-lg border border-[#FEFEFE]/15 text-xs">
+                  <span className="px-2 text-[#FEFEFE]/60 font-medium">Status:</span>
                   {['all', 'pending', 'approved', 'rejected', 'suspended'].map((s) => (
                     <button
                       key={s}
                       onClick={() => setStatusFilter(s)}
-                      className={`px-2.5 py-1 rounded-lg capitalize font-medium transition cursor-pointer ${
-                        statusFilter === s ? 'bg-cyan-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-white'
+                      className={`px-2.5 py-1 rounded-md capitalize font-medium transition cursor-pointer ${
+                        statusFilter === s ? 'bg-[#FECF35] text-[#033D6B]' : 'text-[#FEFEFE]/80 hover:text-white'
                       }`}
                     >
                       {s}
@@ -1096,33 +1104,33 @@ export const AdminPage: React.FC<AdminPageProps> = ({
             </div>
 
             {/* Students Table */}
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
+            <div className="bg-[#093D6C] border border-[#FEFEFE]/15 rounded-xl overflow-hidden shadow-sm">
               {loadingStudents ? (
-                <div className="p-12 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
-                  <RefreshCw className="w-4 h-4 animate-spin text-cyan-400" />
+                <div className="p-12 text-center text-xs text-[#FEFEFE]/70 flex items-center justify-center gap-2">
+                  <RefreshCw className="w-4 h-4 animate-spin text-[#FECF35]" />
                   <span>Loading student records from Firestore...</span>
                 </div>
               ) : filteredStudents.length === 0 ? (
-                <div className="p-12 text-center text-xs text-slate-500 space-y-2">
-                  <Users className="w-10 h-10 text-slate-600 mx-auto" />
+                <div className="p-12 text-center text-xs text-[#FEFEFE]/60 space-y-2">
+                  <Users className="w-10 h-10 text-[#FEFEFE]/30 mx-auto" />
                   <p>No student applications match the specified criteria.</p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
                     <thead>
-                      <tr className="bg-slate-950/80 text-slate-400 uppercase text-[10px] border-b border-slate-800">
-                        <th className="py-3.5 px-4">Student</th>
-                        <th className="py-3.5 px-4">Academic Level</th>
-                        <th className="py-3.5 px-4">Contact Phone</th>
-                        <th className="py-3.5 px-4">Admission</th>
-                        <th className="py-3.5 px-4">Annual Membership</th>
-                        <th className="py-3.5 px-4 text-right">Moderation Actions</th>
+                      <tr className="bg-[#033D6B] text-[#FEFEFE]/70 uppercase text-[11px] border-b border-[#FEFEFE]/10">
+                        <th className="py-3.5 px-4 font-medium">Student</th>
+                        <th className="py-3.5 px-4 font-medium">Academic Level</th>
+                        <th className="py-3.5 px-4 font-medium">Contact Phone</th>
+                        <th className="py-3.5 px-4 font-medium">Admission</th>
+                        <th className="py-3.5 px-4 font-medium">Annual Membership</th>
+                        <th className="py-3.5 px-4 font-medium text-right">Moderation Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/60">
+                    <tbody className="divide-y divide-[#FEFEFE]/10">
                       {filteredStudents.map((s) => (
-                        <tr key={s.uid} className="hover:bg-slate-850/50 transition">
+                        <tr key={s.uid} className="hover:bg-[#033D6B]/50 transition">
                           <td className="py-3.5 px-4">
                             <div>
                               <p className="font-bold text-white flex items-center gap-1.5">
@@ -1265,6 +1273,178 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                           </td>
                         </tr>
                       ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: PAYMENT VERIFICATION & ANNUAL MEMBERSHIPS */}
+        {activeTab === 'payments' && (
+          <div className="space-y-6">
+            {/* Filter & Search Bar */}
+            <div className="bg-[#093D6C] border border-[#FEFEFE]/15 p-4 rounded-xl shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="relative w-full md:w-80">
+                <Search className="w-4 h-4 text-[#FEFEFE]/50 absolute left-3.5 top-3" />
+                <input
+                  type="text"
+                  placeholder="Search student, email, TRX ID..."
+                  value={paymentSearch}
+                  onChange={(e) => setPaymentSearch(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 bg-[#033D6B] border border-[#FEFEFE]/20 rounded-lg text-xs text-[#FEFEFE] placeholder-[#FEFEFE]/40 focus:outline-none focus:border-[#FECF35]"
+                />
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                <div className="flex items-center gap-1 bg-[#033D6B] p-1 rounded-lg border border-[#FEFEFE]/15 text-xs">
+                  <span className="px-2 text-[#FEFEFE]/60 font-medium">Status:</span>
+                  {['all', 'pending', 'approved', 'rejected'].map((st) => (
+                    <button
+                      key={st}
+                      onClick={() => setPaymentStatusFilter(st)}
+                      className={`px-2.5 py-1 rounded-md capitalize font-medium transition cursor-pointer ${
+                        paymentStatusFilter === st
+                          ? 'bg-[#FECF35] text-[#033D6B]'
+                          : 'text-[#FEFEFE]/80 hover:text-white'
+                      }`}
+                    >
+                      {st}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="flex items-center gap-1.5 bg-[#033D6B] px-2.5 py-1 rounded-lg border border-[#FEFEFE]/15 text-xs">
+                  <span className="text-[#FEFEFE]/60 font-medium">Channel:</span>
+                  <select
+                    value={paymentMethodFilter}
+                    onChange={(e) => setPaymentMethodFilter(e.target.value)}
+                    className="bg-transparent text-[#FEFEFE] font-medium focus:outline-none cursor-pointer"
+                  >
+                    <option value="all" className="bg-[#033D6B] text-white">All Channels</option>
+                    <option value="bank_transfer" className="bg-[#033D6B] text-white">Meezan Bank</option>
+                    <option value="sadapay" className="bg-[#033D6B] text-white">SadaPay</option>
+                    <option value="easypaisa" className="bg-[#033D6B] text-white">Easypaisa</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Payments Table */}
+            <div className="bg-[#093D6C] border border-[#FEFEFE]/15 rounded-xl overflow-hidden shadow-sm">
+              {loadingPayments ? (
+                <div className="p-12 text-center text-xs text-[#FEFEFE]/70 flex items-center justify-center gap-2">
+                  <RefreshCw className="w-4 h-4 animate-spin text-[#FECF35]" />
+                  <span>Loading payment records from Firestore...</span>
+                </div>
+              ) : filteredPayments.length === 0 ? (
+                <div className="p-12 text-center text-xs text-[#FEFEFE]/60 space-y-2">
+                  <CreditCard className="w-10 h-10 text-[#FEFEFE]/30 mx-auto" />
+                  <p>No payment verification records match the selected filter.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead>
+                      <tr className="bg-[#033D6B] text-[#FEFEFE]/70 uppercase text-[11px] border-b border-[#FEFEFE]/10">
+                        <th className="py-3.5 px-4 font-medium">Student</th>
+                        <th className="py-3.5 px-4 font-medium">Channel & Amount</th>
+                        <th className="py-3.5 px-4 font-medium">TRX Reference</th>
+                        <th className="py-3.5 px-4 font-medium">Submitted</th>
+                        <th className="py-3.5 px-4 font-medium">Receipt</th>
+                        <th className="py-3.5 px-4 font-medium">Status</th>
+                        <th className="py-3.5 px-4 font-medium text-right">Verification</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#FEFEFE]/10">
+                      {filteredPayments.map((p) => {
+                        const trxNorm = p.transactionReference?.trim().toLowerCase();
+                        const isDuplicate = trxNorm && (duplicateTrxMap[trxNorm] || 0) > 1;
+
+                        return (
+                          <tr key={p.id} className="hover:bg-[#033D6B]/50 transition">
+                            <td className="py-3.5 px-4">
+                              <p className="font-semibold text-white">{p.studentName || 'Student'}</p>
+                              <p className="text-[11px] text-[#FEFEFE]/60">{p.studentEmail}</p>
+                            </td>
+                            <td className="py-3.5 px-4 text-[#FEFEFE]/90">
+                              <span className="font-semibold text-[#FECF35]">
+                                Rs. {p.amount ? p.amount.toLocaleString() : '5,000'}
+                              </span>
+                              <p className="text-[11px] text-[#FEFEFE]/60 capitalize">
+                                {p.paymentMethod?.replace('_', ' ') || 'Bank'}
+                              </p>
+                            </td>
+                            <td className="py-3.5 px-4">
+                              <div className="space-y-1">
+                                <span className="font-mono text-xs text-[#FEFEFE] bg-[#033D6B] px-2 py-0.5 rounded border border-[#FEFEFE]/15 inline-block">
+                                  {p.transactionReference}
+                                </span>
+                                {isDuplicate && (
+                                  <div className="flex items-center gap-1 text-[10px] text-rose-300 font-medium">
+                                    <AlertTriangle className="w-3 h-3 text-rose-400" />
+                                    <span>Duplicate TRX reference!</span>
+                                  </div>
+                                )}
+                              </div>
+                            </td>
+                            <td className="py-3.5 px-4 text-[#FEFEFE]/60">
+                              {p.submittedAt ? new Date(p.submittedAt).toLocaleDateString() : 'Recent'}
+                            </td>
+                            <td className="py-3.5 px-4">
+                              {p.receiptUrl ? (
+                                <button
+                                  onClick={() => setViewReceiptUrl(p.receiptUrl)}
+                                  className="px-2.5 py-1 rounded bg-[#033D6B] hover:bg-[#FECF35] hover:text-[#033D6B] text-[#FECF35] text-[11px] font-medium border border-[#FECF35]/30 flex items-center gap-1 cursor-pointer transition"
+                                >
+                                  <Eye className="w-3 h-3" />
+                                  <span>View Proof</span>
+                                </button>
+                              ) : (
+                                <span className="text-[11px] text-[#FEFEFE]/40 italic">No image</span>
+                              )}
+                            </td>
+                            <td className="py-3.5 px-4">
+                              <span
+                                className={`inline-block px-2.5 py-0.5 rounded-md text-[11px] font-medium uppercase tracking-wider ${
+                                  p.status === 'approved'
+                                    ? 'bg-emerald-950/80 text-emerald-200 border border-emerald-600/50'
+                                    : p.status === 'pending'
+                                    ? 'bg-[#033D6B] text-[#FECF35] border border-[#FECF35]/40 animate-pulse'
+                                    : 'bg-rose-950/80 text-rose-200 border border-rose-700/60'
+                                }`}
+                              >
+                                {p.status}
+                              </span>
+                            </td>
+                            <td className="py-3.5 px-4 text-right">
+                              <div className="flex items-center justify-end gap-1.5">
+                                {p.status !== 'approved' && (
+                                  <button
+                                    onClick={() => handleApprovePayment(p)}
+                                    className="px-2.5 py-1.5 rounded-md bg-[#FECF35] hover:bg-[#ebd02f] text-[#033D6B] font-medium text-[11px] cursor-pointer shadow-sm flex items-center gap-1 transition"
+                                    title="Verify payment and activate 365-day access"
+                                  >
+                                    <CheckCircle className="w-3.5 h-3.5" />
+                                    <span>Approve</span>
+                                  </button>
+                                )}
+                                {p.status === 'pending' && (
+                                  <button
+                                    onClick={() => handleOpenRejectPayment(p)}
+                                    className="px-2.5 py-1.5 rounded-md bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-700/60 font-medium text-[11px] cursor-pointer shadow-sm flex items-center gap-1 transition"
+                                    title="Reject invalid transaction"
+                                  >
+                                    <XCircle className="w-3.5 h-3.5" />
+                                    <span>Reject</span>
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -3102,6 +3282,162 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* PAYMENT REJECT MODAL */}
+        {rejectModalPayment && (
+          <div className="fixed inset-0 z-50 bg-[#022544]/80 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-[#093D6C] border border-[#FEFEFE]/20 rounded-xl p-6 max-w-md w-full shadow-lg space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-rose-950/80 text-rose-300 border border-rose-700/60 flex items-center justify-center shrink-0">
+                  <XCircle className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="font-heading font-semibold text-white text-base">Reject payment request</h3>
+                  <p className="text-xs text-[#FEFEFE]/70">For {rejectModalPayment.studentName} ({rejectModalPayment.transactionReference})</p>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-[#FEFEFE]/80 mb-1.5">
+                  Reason for rejection (Visible to student)
+                </label>
+                <textarea
+                  rows={3}
+                  value={paymentRejectionReason}
+                  onChange={(e) => setPaymentRejectionReason(e.target.value)}
+                  className="w-full p-2.5 bg-[#033D6B] border border-[#FEFEFE]/20 rounded-lg text-xs text-white placeholder-[#FEFEFE]/40 focus:outline-none focus:border-[#FECF35]"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setRejectModalPayment(null)}
+                  className="px-4 py-2 rounded-lg bg-[#033D6B] text-xs font-medium text-[#FEFEFE]/80 hover:text-white border border-[#FEFEFE]/15 transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmRejectPayment}
+                  className="px-4 py-2 rounded-lg bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-700/60 text-xs font-medium transition cursor-pointer"
+                >
+                  Confirm Rejection
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* RECEIPT PROOF PREVIEW MODAL */}
+        {viewReceiptUrl && (
+          <div className="fixed inset-0 z-50 bg-[#022544]/80 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-[#093D6C] border border-[#FEFEFE]/20 rounded-xl p-5 max-w-xl w-full shadow-2xl space-y-4 my-auto max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between pb-3 border-b border-[#FEFEFE]/10">
+                <h3 className="font-heading font-semibold text-white text-sm">Transaction receipt proof</h3>
+                <button
+                  onClick={() => setViewReceiptUrl(null)}
+                  className="p-1 rounded-md text-[#FEFEFE]/60 hover:text-white"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="bg-[#022544] rounded-lg p-2 border border-[#FEFEFE]/10 flex items-center justify-center">
+                <img
+                  src={viewReceiptUrl}
+                  alt="Payment receipt proof"
+                  className="max-h-[70vh] object-contain rounded-md"
+                />
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setViewReceiptUrl(null)}
+                  className="px-4 py-2 rounded-lg bg-[#FECF35] text-[#033D6B] font-medium text-xs hover:bg-[#ebd02f] transition cursor-pointer"
+                >
+                  Close Preview
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* GRANT MEMBERSHIP MODAL */}
+        {grantMembershipStudent && (
+          <div className="fixed inset-0 z-50 bg-[#022544]/80 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-[#093D6C] border border-[#FEFEFE]/20 rounded-xl p-6 max-w-md w-full shadow-2xl space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-[#033D6B] border border-[#FECF35]/40 text-[#FECF35] flex items-center justify-center shrink-0">
+                  <CreditCard className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-heading font-semibold text-white text-base">Grant academic membership</h3>
+                  <p className="text-xs text-[#FEFEFE]/70">{grantMembershipStudent.fullName} ({grantMembershipStudent.email})</p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs font-medium text-[#FEFEFE]/80 mb-1.5">
+                    Membership duration (Days)
+                  </label>
+                  <select
+                    value={grantDays}
+                    onChange={(e) => setGrantDays(Number(e.target.value))}
+                    className="w-full p-2.5 bg-[#033D6B] border border-[#FEFEFE]/20 rounded-lg text-xs text-white focus:outline-none focus:border-[#FECF35]"
+                  >
+                    <option value={365}>365 Days (1 Full Year - Standard)</option>
+                    <option value={180}>180 Days (Half Year / Semester)</option>
+                    <option value={90}>90 Days (Exam Crash Course)</option>
+                    <option value={30}>30 Days (Short Access)</option>
+                  </select>
+                </div>
+
+                <div className="p-3 bg-[#022544]/60 border border-[#FEFEFE]/10 rounded-lg text-[11px] text-[#FEFEFE]/70">
+                  Current Status:{' '}
+                  <span className="font-semibold text-[#FECF35] uppercase">{grantMembershipStudent.membershipStatus || 'unpaid'}</span>
+                  {grantMembershipStudent.membershipExpiresAt && (
+                    <p className="mt-0.5">
+                      Expires: {new Date(grantMembershipStudent.membershipExpiresAt).toLocaleDateString()}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-2 pt-2 border-t border-[#FEFEFE]/10">
+                {grantMembershipStudent.membershipStatus === 'active' && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleRevokeMembership(grantMembershipStudent.uid);
+                      setGrantMembershipStudent(null);
+                    }}
+                    className="px-3 py-1.5 rounded-lg bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-700/60 text-xs font-medium transition cursor-pointer"
+                  >
+                    Revoke Access
+                  </button>
+                )}
+                <div className="flex items-center gap-2 ml-auto">
+                  <button
+                    type="button"
+                    onClick={() => setGrantMembershipStudent(null)}
+                    className="px-4 py-2 rounded-lg bg-[#033D6B] text-xs font-medium text-[#FEFEFE]/80 hover:text-white border border-[#FEFEFE]/15 transition cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleManualGrantMembership(grantMembershipStudent.uid, grantDays)}
+                    className="px-4 py-2 rounded-lg bg-[#FECF35] text-[#033D6B] font-medium text-xs hover:bg-[#ebd02f] transition cursor-pointer"
+                  >
+                    Grant {grantDays} Days
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )}

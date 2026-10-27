@@ -207,171 +207,171 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ siteSettings, navigate
   }
 
   return (
-    <div className="bg-slate-950 text-slate-100 min-h-screen py-10 px-4 sm:px-6 lg:px-8">
+    <div className="bg-[#022544] text-[#FEFEFE] min-h-screen py-10 px-4 sm:px-6 lg:px-8 selection:bg-[#FECF35] selection:text-[#033D6B]">
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Navigation & Header */}
         <div className="flex items-center justify-between">
           <button
             onClick={() => navigate('/membership')}
-            className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-cyan-400 font-medium transition cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-xs text-[#FEFEFE]/75 hover:text-[#FECF35] font-medium transition cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Back to Membership Overview</span>
+            <span>Back to membership overview</span>
           </button>
-          <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-800">
+          <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-[#033D6B] text-[#FECF35] border border-[#FECF35]/25">
             Secure Verification
           </span>
         </div>
 
         <div className="text-center space-y-2">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-heading font-semibold text-[#FEFEFE] tracking-tight">
             Annual Membership Payment
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto">
+          <p className="text-xs sm:text-sm text-[#FEFEFE]/75 max-w-xl mx-auto font-sans leading-relaxed">
             Send fee via Bank Transfer (Meezan Bank), SadaPay, or Easypaisa and submit your transaction reference below for verified activation.
           </p>
         </div>
 
         {/* Pricing Summary Card */}
-        <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 border border-cyan-800/40 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-2xl">
+        <div className="bg-[#093D6C] border border-[#FECF35]/30 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
           <div className="space-y-1 text-center sm:text-left">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-cyan-400">Official Student Package</span>
-            <h2 className="text-xl sm:text-2xl font-bold text-white">Full-Year Academic Membership</h2>
-            <p className="text-xs text-slate-300">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-[#FECF35]">Official Student Package</span>
+            <h2 className="text-xl sm:text-2xl font-heading font-semibold text-[#FEFEFE]">Full-Year Academic Membership</h2>
+            <p className="text-xs text-[#FEFEFE]/75 font-sans">
               Valid for {siteSettings.membershipDurationDays || 365} days • Access to all FSc/Matric lectures, notes, & past papers
             </p>
           </div>
           <div className="text-center sm:text-right shrink-0">
-            <div className="text-3xl sm:text-4xl font-extrabold text-white">
+            <div className="text-3xl sm:text-4xl font-heading font-semibold text-[#FECF35]">
               Rs. {siteSettings.annualMembershipFee?.toLocaleString() || '1,000'}
             </div>
-            <p className="text-[11px] text-slate-400 mt-0.5">PKR / Annual (No recurring charges)</p>
+            <p className="text-[11px] text-[#FEFEFE]/60 mt-0.5 font-sans">PKR / Annual (No recurring charges)</p>
           </div>
         </div>
 
-        {/* Section 1: Official Verified Accounts (Configured by Admin) */}
+        {/* Section 1: Official Accounts */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-cyan-400" />
+            <h3 className="text-sm font-heading font-semibold text-[#FEFEFE] uppercase tracking-wider flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-[#FECF35]" />
               <span>Step 1: Transfer Fee to Verified Accounts</span>
             </h3>
-            <span className="text-[11px] text-slate-400">Click to copy account details</span>
+            <span className="text-[11px] text-[#FEFEFE]/60 font-sans">Click to copy account details</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* 1. Bank Transfer (Meezan Bank) */}
-            <div className="bg-slate-900 border border-cyan-900/60 rounded-2xl p-5 space-y-3 relative overflow-hidden group hover:border-cyan-500/60 transition shadow-lg">
+            <div className="bg-[#093D6C] border border-[#FEFEFE]/15 rounded-xl p-5 space-y-3 relative overflow-hidden group hover:border-[#FECF35]/40 transition shadow-md">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-cyan-400 uppercase tracking-wide flex items-center gap-1.5">
+                <span className="text-xs font-semibold text-[#FECF35] uppercase tracking-wide flex items-center gap-1.5">
                   <Building className="w-4 h-4" /> Bank Transfer
                 </span>
-                <span className="text-[10px] bg-cyan-950 text-cyan-300 px-2 py-0.5 rounded font-mono font-bold">
+                <span className="text-[10px] bg-[#033D6B] text-[#FECF35] px-2 py-0.5 rounded font-mono font-semibold border border-[#FECF35]/25">
                   {siteSettings.bankBranch || OFFICIAL_PAYMENT_ACCOUNTS.bank.branchLabel}
                 </span>
               </div>
               <div>
-                <p className="text-[10px] uppercase font-semibold text-slate-400">Bank / Branch</p>
-                <p className="text-xs font-bold text-white">{siteSettings.bankName || OFFICIAL_PAYMENT_ACCOUNTS.bank.bankName} - {siteSettings.bankBranch || OFFICIAL_PAYMENT_ACCOUNTS.bank.branchLabel}</p>
+                <p className="text-[10px] uppercase font-medium text-[#FEFEFE]/60">Bank / Branch</p>
+                <p className="text-xs font-semibold text-[#FEFEFE]">{siteSettings.bankName || OFFICIAL_PAYMENT_ACCOUNTS.bank.bankName} - {siteSettings.bankBranch || OFFICIAL_PAYMENT_ACCOUNTS.bank.branchLabel}</p>
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[10px] uppercase font-semibold text-slate-400">Account Title</p>
-                  <p className="text-xs font-bold text-white">{siteSettings.bankTitle || OFFICIAL_PAYMENT_ACCOUNTS.bank.accountTitle}</p>
+                  <p className="text-[10px] uppercase font-medium text-[#FEFEFE]/60">Account Title</p>
+                  <p className="text-xs font-semibold text-[#FEFEFE]">{siteSettings.bankTitle || OFFICIAL_PAYMENT_ACCOUNTS.bank.accountTitle}</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => copyToClipboard(siteSettings.bankTitle || OFFICIAL_PAYMENT_ACCOUNTS.bank.accountTitle, 'btitle')}
-                  className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] text-slate-300 flex items-center gap-1 cursor-pointer"
+                  className="px-2 py-1 rounded bg-[#033D6B] hover:bg-[#07355c] text-[10px] text-[#FEFEFE] border border-[#FEFEFE]/15 flex items-center gap-1 cursor-pointer"
                 >
-                  {copiedKey === 'btitle' ? <Check className="w-3 h-3 text-cyan-400" /> : <Copy className="w-3 h-3" />}
+                  {copiedKey === 'btitle' ? <Check className="w-3 h-3 text-[#FECF35]" /> : <Copy className="w-3 h-3" />}
                   <span>{copiedKey === 'btitle' ? 'Copied' : 'Copy'}</span>
                 </button>
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[10px] uppercase font-semibold text-slate-400">Account Number</p>
-                  <p className="text-xs font-mono font-bold text-cyan-300">{siteSettings.bankAccountNumber || OFFICIAL_PAYMENT_ACCOUNTS.bank.accountNumber}</p>
+                  <p className="text-[10px] uppercase font-medium text-[#FEFEFE]/60">Account Number</p>
+                  <p className="text-xs font-mono font-semibold text-[#FECF35]">{siteSettings.bankAccountNumber || OFFICIAL_PAYMENT_ACCOUNTS.bank.accountNumber}</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => copyToClipboard(siteSettings.bankAccountNumber || OFFICIAL_PAYMENT_ACCOUNTS.bank.accountNumber, 'bacc')}
-                  className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] text-slate-300 flex items-center gap-1 cursor-pointer"
+                  className="px-2 py-1 rounded bg-[#033D6B] hover:bg-[#07355c] text-[10px] text-[#FEFEFE] border border-[#FEFEFE]/15 flex items-center gap-1 cursor-pointer"
                 >
-                  {copiedKey === 'bacc' ? <Check className="w-3 h-3 text-cyan-400" /> : <Copy className="w-3 h-3" />}
+                  {copiedKey === 'bacc' ? <Check className="w-3 h-3 text-[#FECF35]" /> : <Copy className="w-3 h-3" />}
                   <span>{copiedKey === 'bacc' ? 'Copied' : 'Copy'}</span>
                 </button>
               </div>
               <div className="flex items-center justify-between">
                 <div className="truncate pr-1">
-                  <p className="text-[10px] uppercase font-semibold text-slate-400">IBAN</p>
-                  <p className="text-[11px] font-mono font-bold text-cyan-300 truncate">{siteSettings.bankIban || OFFICIAL_PAYMENT_ACCOUNTS.bank.iban}</p>
+                  <p className="text-[10px] uppercase font-medium text-[#FEFEFE]/60">IBAN</p>
+                  <p className="text-[11px] font-mono font-semibold text-[#FECF35] truncate">{siteSettings.bankIban || OFFICIAL_PAYMENT_ACCOUNTS.bank.iban}</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => copyToClipboard(siteSettings.bankIban || OFFICIAL_PAYMENT_ACCOUNTS.bank.iban, 'biban')}
-                  className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] text-slate-300 flex items-center gap-1 cursor-pointer shrink-0"
+                  className="px-2 py-1 rounded bg-[#033D6B] hover:bg-[#07355c] text-[10px] text-[#FEFEFE] border border-[#FEFEFE]/15 flex items-center gap-1 cursor-pointer shrink-0"
                 >
-                  {copiedKey === 'biban' ? <Check className="w-3 h-3 text-cyan-400" /> : <Copy className="w-3 h-3" />}
+                  {copiedKey === 'biban' ? <Check className="w-3 h-3 text-[#FECF35]" /> : <Copy className="w-3 h-3" />}
                   <span>{copiedKey === 'biban' ? 'Copied' : 'Copy'}</span>
                 </button>
               </div>
             </div>
 
             {/* 2. SadaPay */}
-            <div className="bg-slate-900 border border-sky-900/60 rounded-2xl p-5 space-y-3 relative overflow-hidden group hover:border-sky-500/60 transition shadow-lg flex flex-col justify-between">
+            <div className="bg-[#093D6C] border border-[#FEFEFE]/15 rounded-xl p-5 space-y-3 relative overflow-hidden group hover:border-[#FECF35]/40 transition shadow-md flex flex-col justify-between">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-sky-400 uppercase tracking-wide flex items-center gap-1.5">
+                  <span className="text-xs font-semibold text-[#FECF35] uppercase tracking-wide flex items-center gap-1.5">
                     <Smartphone className="w-4 h-4" /> SadaPay
                   </span>
-                  <span className="text-[10px] bg-sky-950 text-sky-300 px-2 py-0.5 rounded font-mono font-bold">
+                  <span className="text-[10px] bg-[#033D6B] text-[#FECF35] px-2 py-0.5 rounded font-mono font-semibold border border-[#FECF35]/25">
                     Fast & Zero Fee
                   </span>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase font-semibold text-slate-400">Account Holder</p>
-                  <p className="text-sm font-bold text-white">{siteSettings.sadapayTitle || OFFICIAL_PAYMENT_ACCOUNTS.sadapay.accountHolder}</p>
+                  <p className="text-[10px] uppercase font-medium text-[#FEFEFE]/60">Account Holder</p>
+                  <p className="text-sm font-semibold text-[#FEFEFE]">{siteSettings.sadapayTitle || OFFICIAL_PAYMENT_ACCOUNTS.sadapay.accountHolder}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase font-semibold text-slate-400">Payment Number</p>
-                  <p className="text-base font-mono font-bold text-sky-300">{siteSettings.sadapayNumber || OFFICIAL_PAYMENT_ACCOUNTS.sadapay.paymentNumber}</p>
+                  <p className="text-[10px] uppercase font-medium text-[#FEFEFE]/60">Payment Number</p>
+                  <p className="text-base font-mono font-semibold text-[#FECF35]">{siteSettings.sadapayNumber || OFFICIAL_PAYMENT_ACCOUNTS.sadapay.paymentNumber}</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => copyToClipboard(siteSettings.sadapayNumber || OFFICIAL_PAYMENT_ACCOUNTS.sadapay.paymentNumber, 'sp')}
-                className="w-full py-2 rounded-lg bg-sky-950 hover:bg-sky-900 text-sky-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer border border-sky-800"
+                className="w-full py-2 rounded-lg bg-[#033D6B] hover:bg-[#07355c] text-[#FEFEFE] text-xs font-medium flex items-center justify-center gap-1.5 transition cursor-pointer border border-[#FEFEFE]/15"
               >
-                {copiedKey === 'sp' ? <Check className="w-3.5 h-3.5 text-sky-400" /> : <Copy className="w-3.5 h-3.5" />}
+                {copiedKey === 'sp' ? <Check className="w-3.5 h-3.5 text-[#FECF35]" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copiedKey === 'sp' ? 'Number Copied!' : 'Copy SadaPay Number'}</span>
               </button>
             </div>
 
             {/* 3. Easypaisa */}
-            <div className="bg-slate-900 border border-emerald-900/60 rounded-2xl p-5 space-y-3 relative overflow-hidden group hover:border-emerald-500/60 transition shadow-lg flex flex-col justify-between">
+            <div className="bg-[#093D6C] border border-[#FEFEFE]/15 rounded-xl p-5 space-y-3 relative overflow-hidden group hover:border-[#FECF35]/40 transition shadow-md flex flex-col justify-between">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-emerald-400 uppercase tracking-wide flex items-center gap-1.5">
+                  <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wide flex items-center gap-1.5">
                     <Smartphone className="w-4 h-4" /> Easypaisa
                   </span>
-                  <span className="text-[10px] bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded font-mono font-bold">
+                  <span className="text-[10px] bg-[#033D6B] text-emerald-400 px-2 py-0.5 rounded font-mono font-semibold border border-emerald-500/25">
                     Mobile Wallet
                   </span>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase font-semibold text-slate-400">Account Holder</p>
-                  <p className="text-sm font-bold text-white">{siteSettings.easypaisaTitle || OFFICIAL_PAYMENT_ACCOUNTS.easypaisa.accountHolder}</p>
+                  <p className="text-[10px] uppercase font-medium text-[#FEFEFE]/60">Account Holder</p>
+                  <p className="text-sm font-semibold text-[#FEFEFE]">{siteSettings.easypaisaTitle || OFFICIAL_PAYMENT_ACCOUNTS.easypaisa.accountHolder}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase font-semibold text-slate-400">Payment Number</p>
-                  <p className="text-base font-mono font-bold text-emerald-300">{siteSettings.easypaisaNumber || OFFICIAL_PAYMENT_ACCOUNTS.easypaisa.paymentNumber}</p>
+                  <p className="text-[10px] uppercase font-medium text-[#FEFEFE]/60">Payment Number</p>
+                  <p className="text-base font-mono font-semibold text-emerald-400">{siteSettings.easypaisaNumber || OFFICIAL_PAYMENT_ACCOUNTS.easypaisa.paymentNumber}</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => copyToClipboard(siteSettings.easypaisaNumber || OFFICIAL_PAYMENT_ACCOUNTS.easypaisa.paymentNumber, 'ep')}
-                className="w-full py-2 rounded-lg bg-emerald-950 hover:bg-emerald-900 text-emerald-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer border border-emerald-800"
+                className="w-full py-2 rounded-lg bg-[#033D6B] hover:bg-[#07355c] text-[#FEFEFE] text-xs font-medium flex items-center justify-center gap-1.5 transition cursor-pointer border border-[#FEFEFE]/15"
               >
                 {copiedKey === 'ep' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copiedKey === 'ep' ? 'Number Copied!' : 'Copy Easypaisa Number'}</span>
@@ -381,26 +381,26 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ siteSettings, navigate
         </div>
 
         {/* Step 2: Form */}
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
-          <div className="border-b border-slate-800 pb-4">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <CreditCard className="w-5 h-5 text-cyan-400" />
+        <div className="bg-[#093D6C] border border-[#FEFEFE]/15 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
+          <div className="border-b border-[#FEFEFE]/10 pb-4">
+            <h3 className="text-base font-heading font-semibold text-[#FEFEFE] flex items-center gap-2">
+              <CreditCard className="w-5 h-5 text-[#FECF35]" />
               <span>Step 2: Submit Payment & Receipt Details</span>
             </h3>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-[#FEFEFE]/75 mt-1 font-sans">
               Enter the TRX ID from your SMS or banking app and upload your receipt screenshot for administrator review.
             </p>
           </div>
 
           {errorMsg && (
-            <div className="p-4 rounded-2xl bg-rose-950/80 border border-rose-800 text-rose-200 text-xs flex items-center gap-2 shadow-lg">
+            <div className="p-3.5 rounded-xl bg-rose-950/70 border border-rose-700/60 text-rose-200 text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
               <span>{errorMsg}</span>
             </div>
           )}
 
           {successMsg && (
-            <div className="p-4 rounded-2xl bg-emerald-950/80 border border-emerald-800 text-emerald-200 text-xs flex items-center gap-2 shadow-lg">
+            <div className="p-3.5 rounded-xl bg-emerald-950/70 border border-emerald-700/60 text-emerald-200 text-xs flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>{successMsg}</span>
             </div>
@@ -409,13 +409,13 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ siteSettings, navigate
           <form onSubmit={handleSubmit} className="space-y-5 text-xs">
             {/* Payment Method Selector */}
             <div>
-              <label className="block font-semibold text-slate-300 mb-2">
+              <label className="block font-medium text-[#FEFEFE]/90 mb-2">
                 Select Used Payment Method <span className="text-rose-400">*</span>
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {[
-                  { id: 'bank_transfer', label: 'Bank Transfer (Meezan)', icon: <Building className="w-4 h-4 text-cyan-400" /> },
-                  { id: 'sadapay', label: 'SadaPay', icon: <Smartphone className="w-4 h-4 text-sky-400" /> },
+                  { id: 'bank_transfer', label: 'Bank Transfer (Meezan)', icon: <Building className="w-4 h-4 text-[#FECF35]" /> },
+                  { id: 'sadapay', label: 'SadaPay', icon: <Smartphone className="w-4 h-4 text-[#FECF35]" /> },
                   { id: 'easypaisa', label: 'Easypaisa', icon: <Smartphone className="w-4 h-4 text-emerald-400" /> },
                 ].map((m) => (
                   <button
@@ -424,12 +424,12 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ siteSettings, navigate
                     onClick={() => setPaymentMethod(m.id as PaymentMethod)}
                     className={`p-3 rounded-xl border text-left flex items-center gap-2.5 transition cursor-pointer ${
                       paymentMethod === m.id
-                        ? 'bg-cyan-950/60 border-cyan-500 text-white shadow-md'
-                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
+                        ? 'bg-[#033D6B] border-[#FECF35] text-white shadow-md'
+                        : 'bg-[#033D6B]/50 border-[#FEFEFE]/15 text-[#FEFEFE]/70 hover:border-[#FEFEFE]/30'
                     }`}
                   >
                     {m.icon}
-                    <span className="font-bold">{m.label}</span>
+                    <span className="font-semibold">{m.label}</span>
                   </button>
                 ))}
               </div>
@@ -438,7 +438,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ siteSettings, navigate
             {/* TRX ID & Payment Date */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">
+                <label className="block font-medium text-[#FEFEFE]/90 mb-1.5">
                   Transaction ID / Reference Number (TRX ID) <span className="text-rose-400">*</span>
                 </label>
                 <input
@@ -447,13 +447,13 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ siteSettings, navigate
                   value={transactionReference}
                   onChange={(e) => setTransactionReference(e.target.value)}
                   required
-                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white font-mono placeholder:text-slate-600 focus:outline-none focus:border-cyan-500"
+                  className="w-full px-3.5 py-2.5 bg-[#033D6B] border border-[#FEFEFE]/20 rounded-lg text-white font-mono placeholder:text-[#FEFEFE]/40 focus:outline-none focus:ring-1 focus:ring-[#FECF35] focus:border-[#FECF35]"
                 />
-                <p className="text-[11px] text-slate-400 mt-1">Found in your SMS receipt or mobile app confirmation</p>
+                <p className="text-[11px] text-[#FEFEFE]/60 mt-1 font-sans">Found in your SMS receipt or mobile app confirmation</p>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">
+                <label className="block font-medium text-[#FEFEFE]/90 mb-1.5">
                   Payment Date <span className="text-rose-400">*</span>
                 </label>
                 <input
@@ -461,28 +461,28 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ siteSettings, navigate
                   value={paymentDate}
                   onChange={(e) => setPaymentDate(e.target.value)}
                   required
-                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-cyan-500"
+                  className="w-full px-3.5 py-2.5 bg-[#033D6B] border border-[#FEFEFE]/20 rounded-lg text-white focus:outline-none focus:ring-1 focus:ring-[#FECF35] focus:border-[#FECF35]"
                 />
               </div>
             </div>
 
             {/* Amount Confirmation (Read-only PKR 1,000) */}
-            <div className="p-3.5 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between">
+            <div className="p-3.5 bg-[#033D6B] rounded-xl border border-[#FEFEFE]/15 flex items-center justify-between">
               <div>
-                <span className="text-slate-400">Membership Fee Amount:</span>
-                <span className="text-white font-bold ml-2">PKR {siteSettings.annualMembershipFee?.toLocaleString() || '1,000'}</span>
+                <span className="text-[#FEFEFE]/70">Membership Fee Amount:</span>
+                <span className="text-white font-semibold ml-2">PKR {siteSettings.annualMembershipFee?.toLocaleString() || '1,000'}</span>
               </div>
-              <span className="text-[10px] text-emerald-400 font-bold bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800">
+              <span className="text-[10px] text-[#033D6B] font-semibold bg-[#FECF35] px-2 py-0.5 rounded">
                 Annual Subscription
               </span>
             </div>
 
             {/* Receipt Upload */}
             <div>
-              <label className="block font-semibold text-slate-300 mb-1">
+              <label className="block font-medium text-[#FEFEFE]/90 mb-1.5">
                 Upload Receipt Screenshot <span className="text-rose-400">*</span>
               </label>
-              <div className="border-2 border-dashed border-slate-700 hover:border-cyan-500 rounded-2xl p-6 text-center transition bg-slate-950 relative">
+              <div className="border-2 border-dashed border-[#FEFEFE]/25 hover:border-[#FECF35] rounded-xl p-6 text-center transition bg-[#033D6B] relative">
                 <input
                   type="file"
                   accept="image/png,image/jpeg,image/webp,image/jpg"
@@ -491,20 +491,20 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ siteSettings, navigate
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 />
                 <div className="space-y-2 pointer-events-none">
-                  <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center mx-auto text-cyan-400">
+                  <div className="w-10 h-10 rounded-lg bg-[#093D6C] border border-[#FEFEFE]/15 flex items-center justify-center mx-auto text-[#FECF35]">
                     <Upload className="w-5 h-5" />
                   </div>
                   {receiptFileName ? (
                     <div>
-                      <p className="text-xs font-bold text-emerald-400 truncate max-w-sm mx-auto">{receiptFileName}</p>
-                      <p className="text-[10px] text-slate-400">Click to change selected image</p>
+                      <p className="text-xs font-semibold text-emerald-300 truncate max-w-sm mx-auto">{receiptFileName}</p>
+                      <p className="text-[10px] text-[#FEFEFE]/60">Click to change selected image</p>
                     </div>
                   ) : (
                     <div>
-                      <p className="text-xs font-semibold text-slate-200">
+                      <p className="text-xs font-medium text-[#FEFEFE]">
                         Click or drag receipt screenshot here
                       </p>
-                      <p className="text-[10px] text-slate-400">PNG, JPG, or WebP up to 2 MB</p>
+                      <p className="text-[10px] text-[#FEFEFE]/60">PNG, JPG, or WebP up to 2 MB</p>
                     </div>
                   )}
                 </div>
@@ -512,15 +512,15 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ siteSettings, navigate
 
               {/* Receipt Preview */}
               {receiptBase64 && (
-                <div className="mt-3 p-3 bg-slate-950 border border-slate-800 rounded-xl flex items-center gap-3">
+                <div className="mt-3 p-3 bg-[#033D6B] border border-[#FEFEFE]/15 rounded-xl flex items-center gap-3">
                   <img
                     src={receiptBase64}
                     alt="Receipt Preview"
-                    className="w-16 h-16 object-cover rounded-lg border border-slate-700"
+                    className="w-16 h-16 object-cover rounded-lg border border-[#FEFEFE]/20"
                   />
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-white truncate">{receiptFileName || 'Receipt Screenshot'}</p>
-                    <p className="text-[10px] text-emerald-400 flex items-center gap-1 mt-0.5">
+                    <p className="text-xs font-medium text-white truncate">{receiptFileName || 'Receipt Screenshot'}</p>
+                    <p className="text-[10px] text-emerald-300 flex items-center gap-1 mt-0.5">
                       <CheckCircle2 className="w-3 h-3" /> Ready for verification
                     </p>
                   </div>
@@ -530,7 +530,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ siteSettings, navigate
                       setReceiptBase64('');
                       setReceiptFileName('');
                     }}
-                    className="text-xs text-rose-400 hover:text-rose-300 font-semibold px-2 py-1"
+                    className="text-xs text-rose-300 hover:underline font-medium px-2 py-1"
                   >
                     Remove
                   </button>
@@ -539,8 +539,8 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ siteSettings, navigate
             </div>
 
             {/* Refund & Verification Terms Note */}
-            <div className="p-3.5 bg-blue-950/40 rounded-xl border border-blue-900/60 text-[11px] text-slate-300 flex items-start gap-2.5">
-              <Info className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+            <div className="p-3.5 bg-[#033D6B] rounded-xl border border-[#FEFEFE]/15 text-[11px] text-[#FEFEFE]/80 flex items-start gap-2.5 font-sans">
+              <Info className="w-4 h-4 text-[#FECF35] shrink-0 mt-0.5" />
               <span>
                 <strong>Verification Policy:</strong> Manual verification ensures authentic student access. Our administrator checks bank statements against your TRX ID. Membership activates automatically for 365 days upon approval.
               </span>
@@ -551,17 +551,17 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ siteSettings, navigate
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-bold text-sm shadow-xl shadow-cyan-500/20 transition cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-2.5 rounded-lg bg-[#FECF35] hover:bg-[#ebd02f] text-[#033D6B] font-medium text-sm shadow transition cursor-pointer flex items-center justify-center gap-2"
               >
                 {submitting ? (
                   <>
-                    <Clock className="w-4 h-4 animate-spin" />
-                    <span>Verifying & Submitting...</span>
+                    <Clock className="w-4 h-4 animate-spin text-[#033D6B]" />
+                    <span>Verifying & submitting...</span>
                   </>
                 ) : (
                   <>
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>Submit Payment Request for Review</span>
+                    <CheckCircle2 className="w-4 h-4 text-[#033D6B]" />
+                    <span>Submit payment request for review</span>
                   </>
                 )}
               </button>

@@ -34,12 +34,8 @@ import {
 import {
   seedInitialPortalDataIfEmpty,
   INITIAL_SETTINGS,
-  INITIAL_COURSES,
-  INITIAL_LESSONS,
-  INITIAL_SUBJECTS,
-  INITIAL_CHAPTERS,
 } from './firebase/seedData';
-import { collection, onSnapshot, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 
 function MainApp() {
   const { user, isAdmin, isApproved, isPending, loading: authLoading } = useAuth();
@@ -49,28 +45,11 @@ function MainApp() {
     return window.location.pathname || '/';
   });
 
-  const [courses, setCourses] = useState<Course[]>(INITIAL_COURSES);
-  const [lessons, setLessons] = useState<Lesson[]>(INITIAL_LESSONS);
-  const [subjects, setSubjects] = useState<Subject[]>(INITIAL_SUBJECTS);
-  const [chapters, setChapters] = useState<Chapter[]>(INITIAL_CHAPTERS);
-  const [announcements, setAnnouncements] = useState<Announcement[]>([
-    {
-      id: 'ann-1',
-      title: 'Mid-Term Exam Prep & Live Problem Solving',
-      content: 'All chapter-wise past paper solutions have been uploaded under Physics & Mathematics. Students are advised to review them.',
-      priority: 'urgent',
-      isActive: true,
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: 'ann-2',
-      title: 'MDCAT & ECAT Syllabus Synchronisation',
-      content: 'Updated high-yield organic reaction mechanisms and vectors derivations aligned with UHS and PMC standards.',
-      priority: 'normal',
-      isActive: true,
-      createdAt: new Date().toISOString(),
-    },
-  ]);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [lessons, setLessons] = useState<Lesson[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [chapters, setChapters] = useState<Chapter[]>([]);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(INITIAL_SETTINGS);
   const [userProgress, setUserProgress] = useState<LessonProgress[]>([]);
   const [loadingData, setLoadingData] = useState<boolean>(true);
@@ -90,7 +69,7 @@ function MainApp() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // Initial Seed & Data Fetching
+  // Data Fetching directly from Firestore (no hardcoded fallback or reseeding)
   const loadPortalData = useCallback(async () => {
     try {
       await seedInitialPortalDataIfEmpty();
@@ -98,57 +77,52 @@ function MainApp() {
       // Fetch subjects
       try {
         const subList = await fetchSubjects();
-        if (subList && subList.length > 0) {
-          setSubjects(subList);
-        }
-      } catch {
-        setSubjects(INITIAL_SUBJECTS);
+        setSubjects(subList || []);
+      } catch (err) {
+        console.warn('Notice loading subjects:', err);
+        setSubjects([]);
       }
 
       // Fetch chapters
       try {
         const chapList = await fetchChapters();
-        if (chapList && chapList.length > 0) {
-          setChapters(chapList);
-        }
-      } catch {
-        setChapters(INITIAL_CHAPTERS);
+        setChapters(chapList || []);
+      } catch (err) {
+        console.warn('Notice loading chapters:', err);
+        setChapters([]);
       }
 
-      // Fetch courses
-      let courseList: Course[] = [];
+      // Fetch courses (admin gets all, students get published only)
       try {
+        let courseList: Course[] = [];
         if (isAdmin) {
-          courseList = await fetchAllCoursesAdmin();
+          courseList = (await fetchAllCoursesAdmin()) || [];
         } else {
-          courseList = await fetchPublishedCourses();
+          courseList = (await fetchPublishedCourses()) || [];
         }
-      } catch {
-        courseList = INITIAL_COURSES;
-      }
-      if (courseList && courseList.length > 0) {
         setCourses(courseList);
+      } catch (err) {
+        console.warn('Notice loading courses:', err);
+        setCourses([]);
       }
 
       // Fetch lessons
       try {
         const snap = await getDocs(collection(db, 'lessons'));
-        if (!snap.empty) {
-          const lList = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Lesson, 'id'>) }));
-          setLessons(lList);
-        }
-      } catch {
-        // Fallback to initial lessons
+        const lList = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Lesson, 'id'>) }));
+        setLessons(lList);
+      } catch (err) {
+        console.warn('Notice loading lessons:', err);
+        setLessons([]);
       }
 
       // Fetch announcements
       try {
         const annList = await fetchAnnouncements();
-        if (annList && annList.length > 0) {
-          setAnnouncements(annList);
-        }
-      } catch {
-        // Keep initial announcements
+        setAnnouncements(annList || []);
+      } catch (err) {
+        console.warn('Notice loading announcements:', err);
+        setAnnouncements([]);
       }
 
       // Fetch site settings
@@ -157,8 +131,8 @@ function MainApp() {
         if (settings) {
           setSiteSettings(settings);
         }
-      } catch {
-        // Keep initial
+      } catch (err) {
+        console.warn('Notice loading site settings:', err);
       }
     } catch (err) {
       console.warn('Data initialization notice:', err);
@@ -373,7 +347,7 @@ function MainApp() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-slate-950">
+    <div className="min-h-screen bg-[#022544] text-[#FEFEFE] flex flex-col font-sans selection:bg-[#FECF35] selection:text-[#033D6B]">
       <Navbar
         currentRoute={currentRoute}
         navigate={navigate}
