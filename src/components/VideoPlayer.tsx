@@ -1,10 +1,5 @@
 import React, { useState, useRef } from 'react';
-import {
-  Maximize2,
-  Minimize2,
-  CheckCircle2,
-  Sparkles,
-} from 'lucide-react';
+import { Maximize2, Minimize2, CheckCircle2 } from 'lucide-react';
 
 interface VideoPlayerProps {
   videoUrl: string;
@@ -33,16 +28,16 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const [isTheater, setIsTheater] = useState<boolean>(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  // Format YouTube Embed URL if raw watch link is supplied
+  // Format YouTube Embed URL cleanly without forced autoplay
   const getEmbedUrl = (raw: string) => {
     if (!raw) return 'https://www.youtube.com/embed/gQyqM2wW-gU';
     if (raw.includes('youtube.com/watch?v=')) {
       const vid = raw.split('watch?v=')[1]?.split('&')[0];
-      return `https://www.youtube.com/embed/${vid}?autoplay=1&rel=0`;
+      return `https://www.youtube.com/embed/${vid}?rel=0`;
     }
     if (raw.includes('youtu.be/')) {
       const vid = raw.split('youtu.be/')[1]?.split('?')[0];
-      return `https://www.youtube.com/embed/${vid}?autoplay=1&rel=0`;
+      return `https://www.youtube.com/embed/${vid}?rel=0`;
     }
     if (raw.includes('youtube.com/embed/')) {
       return raw.includes('?') ? `${raw}&rel=0` : `${raw}?rel=0`;
@@ -65,14 +60,13 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   return (
     <div className={`transition-all duration-300 ${isTheater ? 'w-full' : 'max-w-5xl mx-auto'}`}>
-      {/* Video Container Frame: True 16:9 */}
-      <div className="relative aspect-video w-full bg-black rounded-2xl overflow-hidden shadow-2xl border border-slate-800">
+      {/* Video Frame */}
+      <div className="relative aspect-video w-full bg-slate-950 rounded-3xl overflow-hidden shadow-xl border border-slate-800">
         {isDirectVideo ? (
           <video
             ref={videoRef}
             src={videoUrl}
             controls
-            autoPlay
             playsInline
             className="w-full h-full object-contain"
             onEnded={() => {
@@ -85,7 +79,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
           <iframe
             src={getEmbedUrl(videoUrl)}
             title={title}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
             className="w-full h-full border-0"
           />
@@ -93,19 +87,19 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       </div>
 
       {/* Control Bar Below Player */}
-      <div className="mt-3 bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 text-slate-300 text-xs shadow-sm">
-        {/* Playback speed & theater view */}
+      <div className="mt-3 bg-white border border-slate-200/90 rounded-2xl p-3 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 text-xs shadow-xs">
+        {/* Speed Controls */}
         <div className="flex items-center justify-between sm:justify-start gap-2">
-          <div className="flex items-center gap-1 bg-slate-950 px-2 py-1.5 rounded-lg border border-slate-800">
-            <span className="text-slate-400 font-medium mr-1 text-[11px]">Speed:</span>
+          <div className="flex items-center gap-1 bg-slate-100 px-2 py-1.5 rounded-xl border border-slate-200">
+            <span className="text-slate-500 font-semibold mr-1 text-[11px]">Speed:</span>
             {[0.75, 1, 1.25, 1.5, 2].map((s) => (
               <button
                 key={s}
                 onClick={() => handleSpeedChange(s)}
-                className={`px-1.5 py-0.5 rounded text-[11px] font-mono font-semibold transition cursor-pointer touch-target flex items-center justify-center ${
+                className={`px-2 py-0.5 rounded-lg text-[11px] font-mono font-bold transition cursor-pointer ${
                   playbackSpeed === s
-                    ? 'bg-cyan-400 text-slate-950 font-bold'
-                    : 'text-slate-300 hover:text-white'
+                    ? 'bg-[#033D6B] text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 {s}x
@@ -115,7 +109,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
           <button
             onClick={() => setIsTheater(!isTheater)}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition cursor-pointer"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition cursor-pointer font-medium"
             title="Toggle Theater Mode"
           >
             {isTheater ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
@@ -123,12 +117,12 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
           </button>
         </div>
 
-        {/* Completion & Prev/Next Actions */}
+        {/* Prev / Complete / Next */}
         <div className="flex items-center gap-2 justify-end">
           {hasPrev && (
             <button
               onClick={onPrevLesson}
-              className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs transition cursor-pointer touch-target"
+              className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition cursor-pointer"
             >
               ← Prev
             </button>
@@ -137,13 +131,13 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
           {onToggleComplete && (
             <button
               onClick={onToggleComplete}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg font-semibold text-xs transition cursor-pointer shadow-sm touch-target ${
+              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold text-xs transition cursor-pointer shadow-xs ${
                 isCompleted
-                  ? 'bg-emerald-600 text-white hover:bg-emerald-500'
-                  : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
+                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                  : 'bg-slate-100 text-slate-800 border border-slate-200 hover:bg-slate-200'
               }`}
             >
-              <CheckCircle2 className={`w-3.5 h-3.5 ${isCompleted ? 'text-white' : 'text-slate-400'}`} />
+              <CheckCircle2 className={`w-3.5 h-3.5 ${isCompleted ? 'text-emerald-600' : 'text-slate-400'}`} />
               <span>{isCompleted ? 'Completed' : 'Mark Complete'}</span>
             </button>
           )}
@@ -151,7 +145,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
           {hasNext && (
             <button
               onClick={onNextLesson}
-              className="px-3 py-2 rounded-lg bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-xs transition cursor-pointer shadow-sm touch-target"
+              className="px-4 py-2 rounded-xl bg-[#FECF35] hover:bg-[#ebd02f] text-[#033D6B] font-bold text-xs transition cursor-pointer shadow-xs"
             >
               Next →
             </button>

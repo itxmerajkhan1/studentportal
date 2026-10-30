@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Course, Lesson, LessonProgress } from '../types';
 import { useAuth } from '../context/AuthContext';
-import { computeCourseProgress, getNextLesson } from '../utils/portalLogic';
+import { computeCourseProgress } from '../utils/portalLogic';
 import {
   ArrowLeft,
   PlayCircle,
@@ -9,7 +9,6 @@ import {
   Lock,
   Clock,
   BookOpen,
-  FileText,
   User,
   ShieldCheck,
   ChevronDown,
@@ -36,7 +35,7 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({
   userProgress,
   navigate,
 }) => {
-  const { isApproved, isAdmin, isPending, user } = useAuth();
+  const { isApproved, isAdmin, isPending } = useAuth();
   const [openChapters, setOpenChapters] = useState<Record<string, boolean>>({});
 
   const getFallbackImage = (subject: string) => {
@@ -58,44 +57,41 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({
     return userProgress.filter((p) => p.courseId === courseId && p.completed).map((p) => p.lessonId);
   }, [userProgress, courseId]);
 
-  const progress = useMemo(() => {
+  const courseProgress = useMemo(() => {
     return computeCourseProgress(
       courseLessons.map((l) => l.id),
       completedLessonIds
     );
   }, [courseLessons, completedLessonIds]);
 
-  // Group lessons by chapterTitle
-  const chapters = useMemo(() => {
-    const map = new Map<string, Lesson[]>();
+  // Group lessons by Chapter Title
+  const groupedChapters = useMemo(() => {
+    const groups: Record<string, Lesson[]> = {};
     courseLessons.forEach((l) => {
-      const ch = l.chapterTitle || 'Chapter 1: Core Fundamentals';
-      if (!map.has(ch)) map.set(ch, []);
-      map.get(ch)!.push(l);
+      const title = l.chapterTitle || 'General Chapter';
+      if (!groups[title]) groups[title] = [];
+      groups[title].push(l);
     });
-    return Array.from(map.entries()).map(([chapterTitle, chapterLessons]) => ({
-      chapterTitle,
-      chapterLessons,
-    }));
+    return groups;
   }, [courseLessons]);
 
   const toggleChapter = (title: string) => {
     setOpenChapters((prev) => ({
       ...prev,
-      [title]: prev[title] === undefined ? false : !prev[title],
+      [title]: !prev[title],
     }));
   };
 
-  const nextLesson = getNextLesson(courseLessons, completedLessonIds);
-
   if (!course) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-6">
-        <div className="text-center space-y-4">
-          <h2 className="text-xl font-bold">Course Not Found</h2>
+      <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex items-center justify-center p-6">
+        <div className="text-center space-y-4 max-w-sm bg-white p-8 rounded-3xl border border-slate-200 shadow-md">
+          <BookOpen className="w-10 h-10 text-slate-400 mx-auto" />
+          <h2 className="text-xl font-heading font-bold text-slate-900">Course Not Found</h2>
+          <p className="text-xs text-slate-600 font-sans">The requested course does not exist or has been removed.</p>
           <button
             onClick={() => navigate('/courses')}
-            className="px-4 py-2 rounded-xl bg-cyan-500 text-slate-950 font-bold text-xs"
+            className="px-4 py-2 rounded-xl bg-[#FECF35] text-[#033D6B] font-bold text-xs shadow"
           >
             ← Back to Courses
           </button>
@@ -104,218 +100,136 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({
     );
   }
 
-  const canStream = isApproved || isAdmin;
-
   return (
-    <div className="bg-[#022544] text-[#FEFEFE] min-h-screen py-10 px-4 sm:px-6 lg:px-8 selection:bg-[#FECF35] selection:text-[#033D6B]">
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Back Link */}
+    <div className="bg-[#F8FAFC] text-slate-900 min-h-screen py-8 px-4 sm:px-6 lg:px-8 selection:bg-[#FECF35] selection:text-[#033D6B]">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Back navigation */}
         <button
           onClick={() => navigate('/courses')}
-          className="inline-flex items-center gap-1.5 text-xs text-[#FEFEFE]/75 hover:text-[#FECF35] font-medium transition cursor-pointer"
+          className="flex items-center gap-2 text-xs font-semibold text-[#033D6B] hover:underline"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to all courses</span>
+          <span>Back to All Courses</span>
         </button>
 
-        {/* Hero Header Card */}
-        <div className="bg-[#093D6C] border border-[#FEFEFE]/15 rounded-2xl overflow-hidden shadow-xl grid grid-cols-1 lg:grid-cols-3">
-          {/* Details */}
-          <div className="p-6 sm:p-8 lg:col-span-2 space-y-5 flex flex-col justify-between">
+        {/* Hero Card */}
+        <div className="bg-white border border-slate-200/90 rounded-3xl overflow-hidden shadow-xs grid grid-cols-1 lg:grid-cols-12">
+          <div className="lg:col-span-7 p-6 sm:p-10 space-y-4 flex flex-col justify-between">
             <div className="space-y-3">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#033D6B] text-[#FECF35] border border-[#FECF35]/25">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider bg-[#033D6B] text-white px-2.5 py-1 rounded-md">
                   {course.subject}
                 </span>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#033D6B] text-[#FEFEFE]/80 border border-[#FEFEFE]/15">
-                  {course.academicLevel}
-                </span>
-                {canStream && (
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#033D6B] text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
-                    <ShieldCheck className="w-3.5 h-3.5" /> Enrolled & Verified
-                  </span>
-                )}
+                <span className="text-xs font-semibold text-slate-500">{course.academicLevel}</span>
               </div>
-
-              <h1 className="text-2xl sm:text-3xl font-heading font-semibold text-[#FEFEFE] leading-tight">
-                {course.title}
-              </h1>
-
-              <p className="text-xs sm:text-sm text-[#FEFEFE]/75 leading-relaxed font-sans">
-                {course.description}
-              </p>
-
-              <div className="pt-2 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-[#FEFEFE]/70 font-sans">
-                <div className="flex items-center gap-1.5">
-                  <User className="w-4 h-4 text-[#FECF35]" />
-                  <span className="text-[#FEFEFE] font-medium">{course.instructor}</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Clock className="w-4 h-4 text-[#FEFEFE]/50" />
-                  <span>{course.duration || '16+ Hours'}</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <BookOpen className="w-4 h-4 text-[#FEFEFE]/50" />
-                  <span>{courseLessons.length} Detailed Lectures</span>
-                </div>
-              </div>
+              <h1 className="text-2xl sm:text-3xl font-heading font-bold text-slate-900">{course.title}</h1>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">{course.description}</p>
             </div>
 
-            {/* Action Bar */}
-            <div className="pt-4 border-t border-[#FEFEFE]/10">
-              {canStream ? (
-                <div className="space-y-3">
-                  {/* Progress bar */}
-                  <div>
-                    <div className="flex items-center justify-between text-xs mb-1">
-                      <span className="text-[#FEFEFE]/70 font-medium">Your Syllabus Progress:</span>
-                      <span className="text-[#FECF35] font-semibold font-mono tabular-nums">{progress.percentage}% Completed</span>
-                    </div>
-                    <div className="w-full h-2 bg-[#022544] rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-[#FECF35] transition-all duration-500"
-                        style={{ width: `${progress.percentage}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  {nextLesson && (
-                    <button
-                      onClick={() => navigate(`/learn/${nextLesson.id}`)}
-                      className="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-[#FECF35] hover:bg-[#ebd02f] text-[#033D6B] font-medium text-sm shadow transition cursor-pointer flex items-center justify-center gap-2"
-                    >
-                      <PlayCircle className="w-5 h-5 text-[#033D6B]" />
-                      <span>{progress.completedCount > 0 ? 'Resume Learning' : 'Start Course Lectures'}</span>
-                    </button>
-                  )}
-                </div>
-              ) : (
-                <div className="bg-[#033D6B] border border-[#FECF35]/30 p-4 rounded-xl space-y-2">
-                  <div className="flex items-center gap-2 font-semibold text-[#FECF35] text-xs">
-                    <Lock className="w-4 h-4" />
-                    <span>Protected Video Classroom</span>
-                  </div>
-                  <p className="text-xs text-[#FEFEFE]/75 leading-relaxed font-sans">
-                    {user
-                      ? isPending
-                        ? 'Your registration is awaiting administrative approval. Once confirmed, you can stream all lectures.'
-                        : 'Your student account requires verified approval to access lecture video streams.'
-                      : 'Please sign in or register as a student to submit an admission request and unlock these lectures.'}
-                  </p>
-                  <button
-                    onClick={() => navigate(user ? '/application-status' : '/register')}
-                    className="px-4 py-2 rounded-lg bg-[#FECF35] text-[#033D6B] font-medium text-xs hover:bg-[#ebd02f] transition cursor-pointer shadow"
-                  >
-                    {user ? 'View application status' : 'Register for admission'}
-                  </button>
-                </div>
-              )}
+            <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center gap-6 text-xs text-slate-600">
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4 text-[#033D6B]" />
+                <span>Instructor: <strong className="text-slate-900">{course.instructor}</strong></span>
+              </div>
+              <div className="flex items-center gap-2">
+                <PlayCircle className="w-4 h-4 text-[#033D6B]" />
+                <span>{courseLessons.length} Video Lectures</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4 text-[#033D6B]" />
+                <span>{course.duration || 'Full Term'}</span>
+              </div>
             </div>
           </div>
 
-          {/* Thumbnail */}
-          <div className="relative aspect-video lg:aspect-auto h-full bg-[#033D6B] overflow-hidden border-t lg:border-t-0 lg:border-l border-[#FEFEFE]/15">
+          <div className="lg:col-span-5 relative aspect-video lg:aspect-auto bg-slate-900">
             <img
               src={course.thumbnailUrl || getFallbackImage(course.subject)}
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = getFallbackImage(course.subject);
-              }}
               alt={course.title}
               className="w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.src = getFallbackImage(course.subject);
+              }}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#022544]/90 via-transparent to-transparent lg:hidden" />
           </div>
         </div>
 
-        {/* Syllabus / Lecture Breakdown */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-heading font-semibold text-[#FEFEFE] tracking-tight">
-              Course Syllabus & Lectures
-            </h2>
-            <span className="text-xs text-[#FEFEFE]/60 font-sans font-medium">
-              {chapters.length} Chapters • {courseLessons.length} Total Lessons
-            </span>
+        {/* Course Progress Card */}
+        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <h2 className="text-base font-heading font-bold text-slate-900">Your Course Learning Progress</h2>
+            <p className="text-xs text-slate-600 font-sans">
+              {courseProgress.completedCount} of {courseProgress.totalCount} lectures finished
+            </p>
           </div>
+          <div className="w-full sm:w-64 space-y-1.5">
+            <div className="flex justify-between text-xs font-mono font-bold text-[#033D6B]">
+              <span>Completion</span>
+              <span>{courseProgress.percentage}%</span>
+            </div>
+            <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div className="h-full bg-[#033D6B] rounded-full transition-all duration-300" style={{ width: `${courseProgress.percentage}%` }} />
+            </div>
+          </div>
+        </div>
 
-          <div className="space-y-4">
-            {chapters.map((ch, idx) => {
-              const isOpen = openChapters[ch.chapterTitle] !== false; // default open
+        {/* Chapters & Lectures Accordion */}
+        <div className="space-y-4">
+          <h2 className="text-lg font-heading font-bold text-slate-900">Chapter Syllabus & Video Lectures</h2>
+
+          {Object.keys(groupedChapters).length > 0 ? (
+            Object.entries(groupedChapters).map(([chapTitle, chapLessons]) => {
+              const isOpen = openChapters[chapTitle] ?? true;
+
               return (
-                <div
-                  key={ch.chapterTitle}
-                  className="bg-[#093D6C] border border-[#FEFEFE]/15 rounded-xl overflow-hidden shadow-md"
-                >
-                  {/* Chapter Header */}
-                  <button
-                    onClick={() => toggleChapter(ch.chapterTitle)}
-                    className="w-full p-4 sm:p-5 flex items-center justify-between text-left hover:bg-[#07355c] transition cursor-pointer"
+                <div key={chapTitle} className="bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-2xs">
+                  <div
+                    onClick={() => toggleChapter(chapTitle)}
+                    className="p-5 bg-slate-50/80 hover:bg-slate-100/80 cursor-pointer flex items-center justify-between gap-4 select-none"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-[#033D6B] text-[#FECF35] flex items-center justify-center font-semibold text-xs border border-[#FEFEFE]/15">
-                        {idx + 1}
-                      </div>
-                      <div>
-                        <h3 className="font-heading font-semibold text-[#FEFEFE] text-sm sm:text-base">{ch.chapterTitle}</h3>
-                        <p className="text-[11px] text-[#FEFEFE]/60 font-sans">{ch.chapterLessons.length} Lectures</p>
-                      </div>
+                    <div className="space-y-0.5">
+                      <h3 className="font-heading font-bold text-sm text-slate-900">{chapTitle}</h3>
+                      <p className="text-[11px] text-slate-500 font-mono">{chapLessons.length} Video Lectures</p>
                     </div>
-                    {isOpen ? <ChevronUp className="w-4 h-4 text-[#FEFEFE]/70" /> : <ChevronDown className="w-4 h-4 text-[#FEFEFE]/70" />}
-                  </button>
+                    {isOpen ? <ChevronUp className="w-4 h-4 text-slate-500" /> : <ChevronDown className="w-4 h-4 text-slate-500" />}
+                  </div>
 
-                  {/* Chapter Lessons */}
                   {isOpen && (
-                    <div className="border-t border-[#FEFEFE]/10 divide-y divide-[#FEFEFE]/10 bg-[#033D6B]/40">
-                      {ch.chapterLessons.map((lesson) => {
-                        const isDone = completedLessonIds.includes(lesson.id);
+                    <div className="p-4 divide-y divide-slate-100">
+                      {chapLessons.map((lec) => {
+                        const isDone = completedLessonIds.includes(lec.id);
+
                         return (
                           <div
-                            key={lesson.id}
-                            onClick={() => {
-                              if (canStream) {
-                                navigate(`/learn/${lesson.id}`);
-                              } else {
-                                navigate(user ? '/application-status' : '/register');
-                              }
-                            }}
-                            className={`p-4 sm:px-6 flex items-center justify-between gap-4 transition cursor-pointer ${
-                              canStream ? 'hover:bg-[#093D6C]/60' : 'opacity-80 hover:bg-[#093D6C]/40'
-                            }`}
+                            key={lec.id}
+                            className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50 px-3 rounded-xl transition"
                           >
-                            <div className="flex items-start gap-3">
-                              <div className="mt-0.5">
-                                {canStream ? (
-                                  isDone ? (
-                                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                                  ) : (
-                                    <PlayCircle className="w-4 h-4 text-[#FECF35]" />
-                                  )
-                                ) : (
-                                  <Lock className="w-4 h-4 text-[#FEFEFE]/40" />
-                                )}
+                            <div className="flex items-start gap-3 min-w-0">
+                              <div
+                                className={`p-2 rounded-xl shrink-0 ${
+                                  isDone
+                                    ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+                                    : 'bg-slate-100 text-[#033D6B]'
+                                }`}
+                              >
+                                {isDone ? <CheckCircle2 className="w-4 h-4" /> : <PlayCircle className="w-4 h-4" />}
                               </div>
-                              <div>
-                                <h4 className="text-xs sm:text-sm font-medium text-[#FEFEFE] hover:text-[#FECF35]">
-                                  {lesson.title}
-                                </h4>
-                                <p className="text-[11px] text-[#FEFEFE]/70 line-clamp-1 mt-0.5 font-sans">
-                                  {lesson.description}
+                              <div className="min-w-0">
+                                <p className="text-xs font-bold text-slate-900 truncate">{lec.title}</p>
+                                <p className="text-[11px] text-slate-500 font-sans line-clamp-1">
+                                  {lec.description || `Lecture duration: ${lec.durationMinutes} mins`}
                                 </p>
                               </div>
                             </div>
 
-                            <div className="flex items-center gap-3 shrink-0 text-xs">
-                              <span className="text-[#FEFEFE]/60 text-[11px] font-sans">
-                                {lesson.durationMinutes} mins
-                              </span>
-                              {lesson.pdfNotesUrl && (
-                                <span className="hidden sm:inline-flex items-center gap-1 text-[10px] bg-[#033D6B] text-[#FECF35] px-2 py-0.5 rounded border border-[#FECF35]/25">
-                                  <FileText className="w-3 h-3 text-[#FECF35]" /> Notes
-                                </span>
-                              )}
-                              <span className="text-[#FECF35] font-medium text-xs">
-                                {canStream ? (isDone ? 'Rewatch' : 'Play') : 'Locked'}
-                              </span>
+                            <div className="flex items-center gap-3 shrink-0 justify-between sm:justify-end">
+                              <span className="text-[11px] font-mono text-slate-400">{lec.durationMinutes} mins</span>
+                              <button
+                                onClick={() => navigate(`/learn/${lec.id}`)}
+                                className="px-3.5 py-1.5 rounded-xl bg-[#FECF35] text-[#033D6B] font-bold text-xs hover:bg-[#ebd02f] transition cursor-pointer shadow-xs"
+                              >
+                                Stream Video
+                              </button>
                             </div>
                           </div>
                         );
@@ -324,8 +238,12 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({
                   )}
                 </div>
               );
-            })}
-          </div>
+            })
+          ) : (
+            <div className="bg-white border border-slate-200 rounded-3xl p-8 text-center text-slate-500 text-xs">
+              No video lectures published in this course yet.
+            </div>
+          )}
         </div>
       </div>
     </div>

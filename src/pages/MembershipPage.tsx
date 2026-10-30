@@ -61,19 +61,19 @@ export const MembershipPage: React.FC<MembershipPageProps> = ({ siteSettings, na
   };
 
   return (
-    <div className="bg-[#022544] text-[#FEFEFE] min-h-screen py-10 px-4 sm:px-6 lg:px-8 selection:bg-[#FECF35] selection:text-[#033D6B]">
-      <div className="max-w-5xl mx-auto space-y-10">
+    <div className="bg-[#F8FAFC] text-slate-900 min-h-screen py-8 px-4 sm:px-6 lg:px-8 selection:bg-[#FECF35] selection:text-[#033D6B]">
+      <div className="max-w-5xl mx-auto space-y-8">
         {/* Header Hero */}
-        <div className="text-center space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#093D6C] text-[#FECF35] border border-[#FECF35]/30 text-xs font-semibold uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5 text-[#FECF35]" />
+        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 text-center space-y-3 shadow-xs">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-[#033D6B] text-xs font-semibold uppercase tracking-wider">
+            <Sparkles className="w-3.5 h-3.5 text-[#033D6B]" />
             <span>Annual Academic Membership</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-heading font-semibold text-[#FEFEFE] tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-heading font-bold text-slate-900 tracking-tight">
             ILMORA Academic Membership
           </h1>
-          <p className="text-sm text-[#FEFEFE]/75 max-w-2xl mx-auto font-sans leading-relaxed">
-            Comprehensive annual access for Class 11, Class 12, and MDCAT/ECAT students. Watch full HD lectures, access chapter-wise PDF notes, and master board exam preparation.
+          <p className="text-xs sm:text-sm text-slate-600 max-w-2xl mx-auto font-sans leading-relaxed">
+            Annual access for Class 11, Class 12, and MDCAT/ECAT students. Watch full HD video lectures and track board exam preparation.
           </p>
         </div>
 

@@ -5,25 +5,26 @@
     --brand-primary: #033D6B;
     --brand-secondary: #093D6C;
     --brand-yellow: #FECF35;
-    --brand-white: #FEFEFE;
-    --brand-dark-bg: #022544;
-    --brand-card-bg: #07355c;
-    --brand-border: rgba(254, 254, 254, 0.14);
+    --brand-white: #FFFFFF;
+    --brand-canvas-bg: #F8FAFC;
+    --brand-sidebar-bg: #0F172A;
+    --brand-card-bg: #FFFFFF;
+    --brand-border: #E2E8F0;
 
-    --font-heading: 'Source Sans 3', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-heading: 'Plus Jakarta Sans', 'Source Sans 3', system-ui, -apple-system, sans-serif;
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   }
 
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   body {
     font-family: var(--font-sans);
-    background-color: var(--brand-dark-bg);
-    color: var(--brand-white);
+    background-color: var(--brand-canvas-bg);
+    color: #0F172A;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;

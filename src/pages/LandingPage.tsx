@@ -4,7 +4,6 @@ import {
   BookOpen,
   ArrowRight,
   ShieldCheck,
-  FileText,
   CheckCircle2,
   Atom,
   Binary,
@@ -15,6 +14,9 @@ import {
   PlayCircle,
   Layers,
   Sparkles,
+  Users,
+  Award,
+  Video,
 } from 'lucide-react';
 import { IlmoraLogo } from '../components/IlmoraLogo';
 
@@ -32,7 +34,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ courses, navigate }) =
       name: 'Physics',
       level: 'Class 11 & 12 • FSc Pre-Engineering / Pre-Medical',
       desc: 'Electrostatics, Current Electricity, Electromagnetism, Nuclear Physics, and board derivations.',
-      icon: <Atom className="w-5 h-5 text-[#FECF35]" />,
+      icon: <Atom className="w-5 h-5 text-[#033D6B]" />,
       chaptersCount: 10,
       lecturesCount: 24,
     },
@@ -41,7 +43,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ courses, navigate }) =
       name: 'Mathematics',
       level: 'Class 11 & 12 • FSc Pre-Engineering / ICS',
       desc: 'Functions & Limits, Differentiation, Integration, Conic Sections, and Vectors with past papers.',
-      icon: <Binary className="w-5 h-5 text-[#FECF35]" />,
+      icon: <Binary className="w-5 h-5 text-[#033D6B]" />,
       chaptersCount: 7,
       lecturesCount: 21,
     },
@@ -50,7 +52,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ courses, navigate }) =
       name: 'Chemistry',
       level: 'Class 11 & 12 • FSc Pre-Medical / Pre-Engineering',
       desc: 'Periodic Classification, s- and p-Block Elements, Organic Chemistry reaction mechanisms.',
-      icon: <FlaskConical className="w-5 h-5 text-[#FECF35]" />,
+      icon: <FlaskConical className="w-5 h-5 text-[#033D6B]" />,
       chaptersCount: 6,
       lecturesCount: 18,
     },
@@ -59,7 +61,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ courses, navigate }) =
       name: 'Computer Science',
       level: 'Class 11 & 12 • ICS Stream',
       desc: 'Data Structures, C / C++ Programming, Database Management Systems, and networking basics.',
-      icon: <Cpu className="w-5 h-5 text-[#FECF35]" />,
+      icon: <Cpu className="w-5 h-5 text-[#033D6B]" />,
       chaptersCount: 5,
       lecturesCount: 15,
     },
@@ -68,7 +70,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ courses, navigate }) =
       name: 'MDCAT Preparation',
       level: 'Medical Entrance Exam',
       desc: 'High-yield conceptual physics, chemical equilibria, reaction mechanisms, and past exam questions.',
-      icon: <GraduationCap className="w-5 h-5 text-[#FECF35]" />,
+      icon: <GraduationCap className="w-5 h-5 text-[#033D6B]" />,
       chaptersCount: 4,
       lecturesCount: 12,
     },
@@ -77,86 +79,111 @@ export const LandingPage: React.FC<LandingPageProps> = ({ courses, navigate }) =
       name: 'ECAT / NET Engineering',
       level: 'NUST / GIKI Entry Exam',
       desc: 'Spatial reasoning, structural projections, advanced physics, and entry test speed strategies.',
-      icon: <Building className="w-5 h-5 text-[#FECF35]" />,
+      icon: <Building className="w-5 h-5 text-[#033D6B]" />,
       chaptersCount: 3,
       lecturesCount: 9,
     },
   ];
 
   return (
-    <div className="bg-[#022544] text-[#FEFEFE] min-h-screen">
-      {/* Hero Section */}
-      <section className="relative pt-12 pb-16 lg:py-20 border-b border-[#FEFEFE]/15 bg-[#033D6B]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-            {/* Left Content */}
-            <div className="lg:col-span-7 space-y-6 text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#093D6C] border border-[#FEFEFE]/20 text-[#FEFEFE] text-xs font-medium">
+    <div className="bg-[#F8FAFC] text-slate-900 min-h-screen selection:bg-[#FECF35] selection:text-[#033D6B]">
+      {/* Top Banner / Hero Container */}
+      <section className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        <div className="bg-[#0F172A] text-white rounded-3xl p-6 sm:p-10 lg:p-12 shadow-xl relative overflow-hidden">
+          {/* Subtle Accent Glow */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-[#033D6B]/50 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            {/* Left Hero Content */}
+            <div className="lg:col-span-7 space-y-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/80 border border-slate-700/80 text-xs font-medium">
                 <span className="w-2 h-2 rounded-full bg-[#FECF35]" />
-                <span className="font-semibold text-[#FECF35]">ILMORA</span>
-                <span className="text-[#FEFEFE]/40">·</span>
-                <span>Learn Today. Lead Tomorrow.</span>
+                <span className="font-bold text-[#FECF35]">ILMORA</span>
+                <span className="text-slate-400">·</span>
+                <span className="text-slate-200">Learn Today. Lead Tomorrow.</span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-[#FEFEFE] leading-tight font-heading">
-                Structured Chapter-Wise Learning for Science & Engineering
+              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-heading font-extrabold tracking-tight leading-tight text-white">
+                Master Board Exams & Entry Tests with <span className="text-[#FECF35]">Concept-First</span> Video Lectures
               </h1>
 
-              <p className="text-sm sm:text-base text-[#FEFEFE]/85 leading-relaxed max-w-2xl">
-                Access curated video lectures, solved textbook numericals, and comprehensive PDF study notes taught by experienced faculty aligned with Punjab, Federal, and Entry Test syllabi.
+              <p className="text-sm sm:text-base text-slate-300 font-sans leading-relaxed max-w-2xl">
+                Structured video courses for FSc Pre-Engineering, Pre-Medical, ICS, MDCAT, and ECAT students across Pakistan. Built for academic excellence.
               </p>
 
-              {/* Primary Actions */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
-                <button
-                  onClick={() => navigate('/subjects')}
-                  className="px-6 py-3 rounded-lg bg-[#FECF35] hover:bg-[#ebd02f] text-[#033D6B] font-medium text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-sm"
-                >
-                  <BookOpen className="w-4 h-4 text-[#033D6B]" />
-                  <span>Explore subjects & chapters</span>
-                </button>
+              <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                 <button
                   onClick={() => navigate('/register')}
-                  className="px-6 py-3 rounded-lg bg-[#093D6C] hover:bg-[#0b487e] border border-[#FEFEFE]/25 text-[#FEFEFE] font-medium text-sm transition flex items-center justify-center gap-2 cursor-pointer"
+                  className="px-6 py-3.5 rounded-xl bg-[#FECF35] text-[#033D6B] font-bold text-xs hover:bg-[#ebd02f] transition shadow-md flex items-center justify-center gap-2 cursor-pointer touch-target"
                 >
-                  <span>Register as student</span>
-                  <ArrowRight className="w-4 h-4 text-[#FEFEFE]/70" />
+                  <span>Register Student Admission</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => navigate('/subjects')}
+                  className="px-6 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs border border-slate-700 transition flex items-center justify-center gap-2 cursor-pointer touch-target"
+                >
+                  <BookOpen className="w-4 h-4 text-[#FECF35]" />
+                  <span>Browse Subjects & Chapters</span>
                 </button>
               </div>
 
-              {/* Trust Indicators */}
-              <div className="pt-4 border-t border-[#FEFEFE]/15 grid grid-cols-3 gap-4 text-xs text-[#FEFEFE]/85 font-medium">
+              {/* Quick stats row */}
+              <div className="pt-4 border-t border-slate-800/80 flex items-center gap-6 text-xs text-slate-400">
                 <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-[#FECF35] shrink-0" />
-                  <span>Admin-verified access</span>
+                  <Video className="w-4 h-4 text-[#FECF35]" />
+                  <span>Full HD Video Lectures</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-[#FECF35] shrink-0" />
-                  <span>PDF formula notes</span>
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <span>Verified Admissions</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#FECF35] shrink-0" />
-                  <span>Progress tracking</span>
+                  <Award className="w-4 h-4 text-sky-400" />
+                  <span>FBISE / BISE Boards</span>
                 </div>
               </div>
             </div>
 
-            {/* Right Visual Frame */}
-            <div className="lg:col-span-5 relative">
-              <div className="relative rounded-xl overflow-hidden border border-[#FEFEFE]/20 shadow-lg bg-[#093D6C] group">
-                <img
-                  src="/src/assets/images/hero_academic_study_1792790229058.jpg"
-                  alt="Pakistani students studying science textbooks"
-                  className="w-full aspect-[4/3] object-cover group-hover:scale-101 transition-transform duration-300"
-                  loading="eager"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#022544]/90 via-[#022544]/30 to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4 p-4 rounded-lg bg-[#033D6B]/90 backdrop-blur-sm border border-[#FEFEFE]/15 text-xs text-[#FEFEFE]">
-                  <p className="font-semibold text-[#FEFEFE] font-heading text-sm">ILMORA Digital Classroom</p>
-                  <p className="text-[#FEFEFE]/80 text-[11px] mt-0.5">
-                    Concept-first lecture delivery with step-by-step problem derivations.
-                  </p>
+            {/* Right Card Feature Mockup */}
+            <div className="lg:col-span-5 bg-slate-900/90 border border-slate-800 rounded-2xl p-5 space-y-4 shadow-2xl">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                  <span className="text-xs font-semibold text-white">Student Portal Active</span>
+                </div>
+                <span className="text-[11px] font-mono text-[#FECF35]">Class 11 & 12</span>
+              </div>
+
+              <div className="bg-[#033D6B] border border-cyan-500/20 rounded-xl p-4 space-y-3">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-[#FECF35] font-bold">Featured Lecture</span>
+                  <span className="text-slate-300 font-mono text-[10px]">Physics • Class 12</span>
+                </div>
+                <h3 className="text-sm font-heading font-semibold text-white">
+                  Electric Field & Coulomb's Law Derivations
+                </h3>
+                <div className="flex items-center justify-between text-xs text-slate-300 pt-1">
+                  <span className="flex items-center gap-1">
+                    <PlayCircle className="w-3.5 h-3.5 text-[#FECF35]" /> 35 mins
+                  </span>
+                  <button
+                    onClick={() => navigate('/login')}
+                    className="px-3 py-1 rounded-lg bg-[#FECF35] text-[#033D6B] font-bold text-[11px] hover:bg-[#ebd02f]"
+                  >
+                    Watch Preview
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="p-3 bg-slate-950/80 rounded-xl border border-slate-800 space-y-1">
+                  <p className="text-slate-400 text-[10px]">Active Students</p>
+                  <p className="text-base font-bold font-mono text-white">1,250+</p>
+                </div>
+                <div className="p-3 bg-slate-950/80 rounded-xl border border-slate-800 space-y-1">
+                  <p className="text-slate-400 text-[10px]">Video Lectures</p>
+                  <p className="text-base font-bold font-mono text-white">120+</p>
                 </div>
               </div>
             </div>
@@ -164,222 +191,160 @@ export const LandingPage: React.FC<LandingPageProps> = ({ courses, navigate }) =
         </div>
       </section>
 
-      {/* 6 Independent Subjects Section */}
-      <section className="py-14 sm:py-18 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+      {/* Explore Subjects Section */}
+      <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <span className="text-xs uppercase tracking-wider font-semibold text-[#FECF35] block mb-1">
-              Independent Curricula
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-semibold text-[#FEFEFE] font-heading">
-              Subject Directory
-            </h2>
-            <p className="text-xs sm:text-sm text-[#FEFEFE]/80 mt-1 max-w-xl">
-              Each subject contains its own independent chapters, video lectures, downloadable notes, and progress records.
-            </p>
+            <span className="text-xs font-semibold text-[#033D6B] uppercase tracking-wider block">Academic Curriculum</span>
+            <h2 className="text-2xl font-heading font-bold text-slate-900 mt-1">Explore Subjects</h2>
           </div>
           <button
             onClick={() => navigate('/subjects')}
-            className="text-xs sm:text-sm font-medium text-[#FECF35] hover:underline flex items-center gap-1.5 cursor-pointer self-start sm:self-auto py-2 shrink-0"
+            className="text-xs font-semibold text-[#033D6B] hover:underline flex items-center gap-1"
           >
-            <span>Open interactive syllabus</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {subjectsList.map((subj) => (
-            <div
-              key={subj.id}
-              onClick={() => navigate('/subjects')}
-              className="bg-[#093D6C] hover:bg-[#0b487e] border border-[#FEFEFE]/15 p-5 rounded-xl transition duration-150 cursor-pointer group flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <div className="p-2.5 rounded-lg bg-[#033D6B] border border-[#FEFEFE]/15 text-[#FECF35]">
-                    {subj.icon}
-                  </div>
-                  <span className="text-[11px] font-medium text-[#FEFEFE]/75">
-                    {subj.level}
-                  </span>
-                </div>
-                <h3 className="text-lg font-semibold text-[#FEFEFE] font-heading group-hover:text-[#FECF35] transition-colors">
-                  {subj.name}
-                </h3>
-                <p className="text-xs text-[#FEFEFE]/80 mt-2 leading-relaxed">
-                  {subj.desc}
-                </p>
-              </div>
-
-              <div className="pt-4 border-t border-[#FEFEFE]/15 mt-5 flex items-center justify-between text-xs text-[#FEFEFE]/80">
-                <div className="flex items-center gap-3">
-                  <span className="flex items-center gap-1">
-                    <Layers className="w-3.5 h-3.5 text-[#FECF35]" />
-                    <span>{subj.chaptersCount} chapters</span>
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <PlayCircle className="w-3.5 h-3.5 text-[#FECF35]" />
-                    <span>{subj.lecturesCount} lectures</span>
-                  </span>
-                </div>
-                <span className="text-[#FECF35] font-medium group-hover:translate-x-1 transition-transform">
-                  View →
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Structured Admission Workflow */}
-      <section className="py-14 bg-[#033D6B] border-t border-b border-[#FEFEFE]/15">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-10">
-            <span className="text-xs uppercase tracking-wider font-semibold text-[#FECF35] block mb-1">
-              Enrollment Policy
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-semibold text-[#FEFEFE] font-heading">
-              Student Admission & Verification Workflow
-            </h2>
-            <p className="text-xs sm:text-sm text-[#FEFEFE]/80 mt-1">
-              We uphold academic rigor and verify student profiles to maintain an attentive, focused learning community.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Step 1 */}
-            <div className="bg-[#093D6C] border border-[#FEFEFE]/15 p-6 rounded-xl space-y-3">
-              <div className="w-9 h-9 rounded-lg bg-[#033D6B] text-[#FECF35] border border-[#FEFEFE]/20 flex items-center justify-center font-semibold text-sm">
-                1
-              </div>
-              <h3 className="text-base font-semibold text-[#FEFEFE] font-heading">1. Register Profile</h3>
-              <p className="text-xs text-[#FEFEFE]/80 leading-relaxed">
-                Provide your full name, academic class (Class 11, Class 12, or Entrance Exam), and verified phone number.
-              </p>
-            </div>
-
-            {/* Step 2 */}
-            <div className="bg-[#093D6C] border border-[#FECF35]/40 p-6 rounded-xl space-y-3">
-              <div className="w-9 h-9 rounded-lg bg-[#033D6B] text-[#FECF35] border border-[#FECF35]/40 flex items-center justify-center font-semibold text-sm">
-                2
-              </div>
-              <h3 className="text-base font-semibold text-[#FEFEFE] font-heading">2. Administrative Review</h3>
-              <p className="text-xs text-[#FEFEFE]/80 leading-relaxed">
-                The portal administrator reviews registrations and activates student access. You can monitor your application status anytime.
-              </p>
-            </div>
-
-            {/* Step 3 */}
-            <div className="bg-[#093D6C] border border-[#FEFEFE]/15 p-6 rounded-xl space-y-3">
-              <div className="w-9 h-9 rounded-lg bg-[#033D6B] text-[#FECF35] border border-[#FEFEFE]/20 flex items-center justify-center font-semibold text-sm">
-                3
-              </div>
-              <h3 className="text-base font-semibold text-[#FEFEFE] font-heading">3. Classroom Access</h3>
-              <p className="text-xs text-[#FEFEFE]/80 leading-relaxed">
-                Once approved, stream lectures, save your chapter progress in Firestore, and download official formula resources.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Courses Showcase */}
-      <section className="py-14 sm:py-18 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
-          <div>
-            <span className="text-xs uppercase tracking-wider font-semibold text-[#FECF35] block mb-1">
-              Curated Video Catalog
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-semibold text-[#FEFEFE] font-heading">
-              Featured Course Lecture Series
-            </h2>
-          </div>
-          <button
-            onClick={() => navigate('/courses')}
-            className="text-xs sm:text-sm font-medium text-[#FECF35] hover:underline flex items-center gap-1.5 cursor-pointer self-start sm:self-auto py-2 shrink-0"
-          >
-            <span>View all courses</span>
-            <ArrowRight className="w-4 h-4" />
+            <span>View all subjects</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {publishedCourses.slice(0, 3).map((course) => (
+          {subjectsList.map((subj) => (
             <div
-              key={course.id}
-              onClick={() => navigate(`/courses/${course.id}`)}
-              className="bg-[#093D6C] rounded-xl overflow-hidden border border-[#FEFEFE]/15 hover:border-[#FECF35]/40 transition duration-150 cursor-pointer flex flex-col group shadow-sm"
+              key={subj.id}
+              className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs hover:shadow-md transition space-y-4 flex flex-col justify-between"
             >
-              {/* Thumbnail */}
-              <div className="relative aspect-video overflow-hidden bg-[#033D6B]">
-                <img
-                  src={
-                    course.thumbnailUrl ||
-                    '/src/assets/images/subject_physics_lab_1792790230100.jpg'
-                  }
-                  alt={course.title}
-                  className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
-                  loading="lazy"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#022544]/80 via-transparent to-transparent" />
-                <span className="absolute top-3 left-3 bg-[#033D6B]/90 text-[#FECF35] text-[11px] font-medium px-2.5 py-1 rounded border border-[#FEFEFE]/15">
-                  {course.subject}
-                </span>
+              <div className="space-y-3">
+                <div className="w-10 h-10 rounded-xl bg-slate-100 text-[#033D6B] flex items-center justify-center">
+                  {subj.icon}
+                </div>
+                <div>
+                  <h3 className="text-base font-heading font-bold text-slate-900">{subj.name}</h3>
+                  <p className="text-[11px] font-semibold text-[#033D6B] mt-0.5">{subj.level}</p>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed font-sans">{subj.desc}</p>
               </div>
 
-              {/* Course Info */}
-              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                <div>
-                  <span className="text-[11px] text-[#FEFEFE]/75 font-medium">{course.academicLevel}</span>
-                  <h3 className="text-base font-semibold text-[#FEFEFE] font-heading group-hover:text-[#FECF35] transition-colors line-clamp-2 mt-1">
-                    {course.title}
-                  </h3>
-                  <p className="text-xs text-[#FEFEFE]/80 line-clamp-2 mt-2 leading-relaxed">
-                    {course.description}
-                  </p>
-                </div>
-
-                <div className="pt-3 border-t border-[#FEFEFE]/15 flex items-center justify-between text-xs text-[#FEFEFE]/75">
-                  <span className="font-medium text-[#FEFEFE]/90 truncate max-w-[170px]">
-                    {course.instructor}
-                  </span>
-                  <span className="text-[#FECF35] font-medium">Start lecture →</span>
-                </div>
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
+                <span className="text-slate-500 font-mono text-[11px]">
+                  {subj.chaptersCount} Chapters • {subj.lecturesCount} Lectures
+                </span>
+                <button
+                  onClick={() => navigate('/subjects')}
+                  className="px-3.5 py-1.5 rounded-lg bg-slate-100 hover:bg-[#FECF35] text-slate-800 hover:text-[#033D6B] font-semibold text-xs transition cursor-pointer"
+                >
+                  Explore
+                </button>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Annual Membership Plan Strip */}
-      <section className="py-14 bg-[#033D6B] border-t border-[#FEFEFE]/15">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-4">
-          <span className="text-xs uppercase tracking-wider font-semibold text-[#FECF35]">
-            Student Access Pass
-          </span>
-          <h2 className="text-2xl sm:text-3xl font-semibold text-[#FEFEFE] font-heading">
-            Rs. 1,000 / Year All-Access Membership
-          </h2>
-          <p className="text-xs sm:text-sm text-[#FEFEFE]/85 max-w-xl mx-auto leading-relaxed">
-            Unrestricted access to all Physics, Mathematics, Chemistry, English, and CS chapters, HD video lessons, and printable notes. Simple payment verification via Bank Transfer (Meezan Bank), SadaPay, or Easypaisa.
-          </p>
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+      {/* Featured Courses Section */}
+      {publishedCourses.length > 0 && (
+        <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-xs font-semibold text-[#033D6B] uppercase tracking-wider block">Structured Learning</span>
+              <h2 className="text-2xl font-heading font-bold text-slate-900 mt-1">Featured Video Courses</h2>
+            </div>
             <button
-              onClick={() => navigate('/membership')}
-              className="px-6 py-3 rounded-lg bg-[#FECF35] hover:bg-[#ebd02f] text-[#033D6B] font-medium text-xs transition cursor-pointer shadow-sm"
+              onClick={() => navigate('/courses')}
+              className="text-xs font-semibold text-[#033D6B] hover:underline flex items-center gap-1"
             >
-              View membership details
+              <span>View all courses</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
-            <button
-              onClick={() => navigate('/register')}
-              className="px-6 py-3 rounded-lg bg-[#093D6C] hover:bg-[#0b487e] border border-[#FEFEFE]/25 text-[#FEFEFE] font-medium text-xs transition cursor-pointer"
-            >
-              Register for admission
-            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {publishedCourses.slice(0, 3).map((c) => (
+              <div key={c.id} className="bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition flex flex-col justify-between">
+                <div>
+                  <div className="relative aspect-video bg-slate-900">
+                    <img src={c.thumbnailUrl} alt={c.title} className="w-full h-full object-cover" />
+                    <span className="absolute top-3 left-3 bg-[#033D6B] text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-xs">
+                      {c.subject}
+                    </span>
+                  </div>
+                  <div className="p-5 space-y-2">
+                    <h3 className="font-heading font-bold text-sm text-slate-900 line-clamp-1">{c.title}</h3>
+                    <p className="text-xs text-slate-600 line-clamp-2">{c.description}</p>
+                    <p className="text-[11px] text-[#033D6B] font-medium">Faculty: {c.instructor}</p>
+                  </div>
+                </div>
+
+                <div className="p-5 pt-0 flex items-center justify-between text-xs border-t border-slate-100 mt-2 pt-3">
+                  <span className="text-slate-500 font-mono text-[11px]">{c.academicLevel}</span>
+                  <button
+                    onClick={() => navigate(`/courses/${c.id}`)}
+                    className="px-3.5 py-1.5 rounded-lg bg-[#FECF35] text-[#033D6B] font-bold text-xs hover:bg-[#ebd02f] shadow-xs cursor-pointer"
+                  >
+                    View Course
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* How ILMORA Works Section */}
+      <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6">
+        <div className="text-center max-w-xl mx-auto space-y-2">
+          <span className="text-xs font-semibold text-[#033D6B] uppercase tracking-wider block">Admission Process</span>
+          <h2 className="text-2xl font-heading font-bold text-slate-900">How ILMORA Works</h2>
+          <p className="text-xs text-slate-600 font-sans">Three straightforward steps to unlock full video lecture access.</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs space-y-3">
+            <div className="w-8 h-8 rounded-full bg-[#033D6B] text-[#FECF35] font-bold text-xs flex items-center justify-center">
+              1
+            </div>
+            <h3 className="text-base font-heading font-bold text-slate-900">Register Admission</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Submit your student profile details, board affiliation, and official contact information through our portal.
+            </p>
+          </div>
+
+          <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs space-y-3">
+            <div className="w-8 h-8 rounded-full bg-[#033D6B] text-[#FECF35] font-bold text-xs flex items-center justify-center">
+              2
+            </div>
+            <h3 className="text-base font-heading font-bold text-slate-900">Administrator Approval</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Our administration verifies your credentials and membership status to grant authorized streaming access.
+            </p>
+          </div>
+
+          <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs space-y-3">
+            <div className="w-8 h-8 rounded-full bg-[#033D6B] text-[#FECF35] font-bold text-xs flex items-center justify-center">
+              3
+            </div>
+            <h3 className="text-base font-heading font-bold text-slate-900">Stream Video Lectures</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Access full HD chapter-wise video lectures, track learning progress, and prepare for board exams seamlessly.
+            </p>
           </div>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="bg-[#0F172A] text-slate-400 text-xs py-10 border-t border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 pb-6 border-b border-slate-800">
+            <IlmoraLogo variant="full" theme="light" size="sm" />
+            <p className="text-slate-400 text-center md:text-right text-[11px]">
+              Helpline / WhatsApp Support: <span className="text-[#FECF35] font-mono">+92 321 2812203</span> • Contact Email: <span className="text-white font-mono">itxmirajkhan@gmail.com</span>
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px]">
+            <p>© {new Date().getFullYear()} ILMORA Learning Portal. All rights reserved.</p>
+            <p>Class 11, Class 12 & Entrance Exam Prep • Pakistan</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

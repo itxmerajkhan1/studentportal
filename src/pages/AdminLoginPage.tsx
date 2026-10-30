@@ -10,11 +10,10 @@ import {
   Eye,
   EyeOff,
   AlertCircle,
-  CheckCircle,
-  Loader2,
+  RefreshCw,
   ArrowLeft,
   KeyRound,
-  GraduationCap,
+  Sparkles,
 } from 'lucide-react';
 
 interface AdminLoginPageProps {
@@ -37,7 +36,6 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ navigate }) => {
   const [resetSubmitting, setResetSubmitting] = useState(false);
   const [resetSuccessMsg, setResetSuccessMsg] = useState<string | null>(null);
 
-  // If already logged in and verified as admin, redirect to /admin
   useEffect(() => {
     if (user && !authLoading) {
       if (isAdmin) {
@@ -55,28 +53,21 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ navigate }) => {
 
     const cleanEmail = email.trim();
     if (!cleanEmail || !password) {
-      setErrorMsg('Please enter both your administrator email and password.');
+      setErrorMsg('Please enter both administrator email and password.');
       return;
     }
 
     setSubmitting(true);
     try {
-      const result = await loginAdmin(cleanEmail, password);
-      if (result.isAdmin) {
-        navigate('/admin');
-      } else {
-        setForbiddenError(true);
-        setErrorMsg('403 Forbidden: Access Denied. This account does not possess administrative privileges.');
-      }
+      await loginAdmin(cleanEmail, password);
+      navigate('/admin');
     } catch (err: unknown) {
       console.error('Admin login error:', err);
       const msg = err instanceof Error ? err.message : 'Authentication failed.';
-      if (msg.includes('invalid-credential') || msg.includes('user-not-found') || msg.includes('wrong-password') || msg.includes('INVALID_LOGIN_CREDENTIALS')) {
-        setErrorMsg('Invalid administrator credentials. Please check your email and password, or use the password reset option below.');
-      } else if (msg.includes('operation-not-allowed')) {
-        setErrorMsg('Email/Password provider is disabled in Firebase Console. Please enable Email/Password provider or sign in with Google.');
-      } else if (msg.includes('too-many-requests')) {
-        setErrorMsg('Too many unsuccessful attempts. Temporary lockout active. Please wait or reset password.');
+      if (msg.includes('invalid-credential') || msg.includes('user-not-found') || msg.includes('wrong-password')) {
+        setErrorMsg('Invalid administrator credentials.');
+      } else if (msg.includes('403') || msg.includes('Forbidden')) {
+        setForbiddenError(true);
       } else {
         setErrorMsg(msg);
       }
@@ -85,319 +76,237 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ navigate }) => {
     }
   };
 
-  const handleGoogleAdminSubmit = async () => {
+  const handleGoogleAdmin = async () => {
     setErrorMsg(null);
     setForbiddenError(false);
     setSubmitting(true);
     try {
-      const result = await loginAdminGoogle();
-      if (result.isAdmin) {
-        navigate('/admin');
-      } else {
-        setForbiddenError(true);
-        setErrorMsg('403 Forbidden: Access Denied. The Google account you authenticated with is not registered as an administrator.');
-      }
+      await loginAdminGoogle();
+      navigate('/admin');
     } catch (err: unknown) {
       console.error('Google Admin Login error:', err);
-      const msg = err instanceof Error ? err.message : 'Google authentication failed.';
-      setErrorMsg(msg);
+      const msg = err instanceof Error ? err.message : 'Google admin sign-in failed.';
+      if (msg.includes('403') || msg.includes('Forbidden')) {
+        setForbiddenError(true);
+      } else {
+        setErrorMsg(msg);
+      }
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handlePasswordReset = async (e: React.FormEvent) => {
+  const handleResetSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMsg(null);
     setResetSuccessMsg(null);
-
-    const targetEmail = resetEmail.trim() || email.trim();
-    if (!targetEmail) {
-      setErrorMsg('Please enter the administrator email address to send the password reset link.');
-      return;
-    }
+    setErrorMsg(null);
+    if (!resetEmail.trim()) return;
 
     setResetSubmitting(true);
     try {
-      await requestPasswordReset(targetEmail);
-      setResetSuccessMsg(`Password reset email dispatched to ${targetEmail}. Please check your inbox and spam folder.`);
+      await requestPasswordReset(resetEmail.trim());
+      setResetSuccessMsg(`Password reset instructions sent to ${resetEmail.trim()}. Check your inbox.`);
     } catch (err: unknown) {
-      console.error('Password reset error:', err);
-      const msg = err instanceof Error ? err.message : 'Unable to send password reset email.';
-      setErrorMsg(msg);
+      console.error('Reset error:', err);
+      setErrorMsg(err instanceof Error ? err.message : 'Failed to send reset email.');
     } finally {
       setResetSubmitting(false);
     }
   };
 
-  const handleSwitchToStudent = () => {
-    navigate('/dashboard');
-  };
-
-  const handleSignOutAndRetry = async () => {
-    await logoutUser();
-    setForbiddenError(false);
-    setErrorMsg(null);
-    setEmail('');
-    setPassword('');
-  };
-
   return (
-    <div className="min-h-screen bg-[#022544] text-[#FEFEFE] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 selection:bg-[#FECF35] selection:text-[#033D6B]">
-      <div className="max-w-md w-full bg-[#093D6C] border border-[#FEFEFE]/15 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
-        {/* Top return link */}
-        <div className="flex items-center justify-between pb-3 border-b border-[#FEFEFE]/10">
-          <button
-            onClick={() => navigate('/login')}
-            className="text-xs text-[#FEFEFE]/80 hover:text-[#FECF35] flex items-center gap-1.5 transition cursor-pointer"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Student login</span>
-          </button>
-          <span className="text-[10px] uppercase font-semibold tracking-wider text-[#FECF35] bg-[#033D6B] px-2.5 py-0.5 rounded border border-[#FECF35]/30">
-            Admin Portal
-          </span>
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 selection:bg-[#FECF35] selection:text-[#033D6B]">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center space-y-3">
+        <div className="inline-block cursor-pointer" onClick={() => navigate('/')}>
+          <IlmoraLogo variant="full" theme="dark" size="lg" />
         </div>
-
-        {/* Logo and Header */}
-        <div className="text-center space-y-3">
-          <div className="flex justify-center">
-            <IlmoraLogo variant="full" size="md" />
-          </div>
-          <div className="flex items-center justify-center gap-2 text-xs text-[#FECF35]">
-            <ShieldCheck className="w-4 h-4" />
-            <span className="font-medium tracking-wide">Administrator Clearance</span>
-          </div>
-          <h1 className="text-xl sm:text-2xl font-heading font-semibold text-[#FEFEFE]">
-            Administrator Sign In
-          </h1>
-          <p className="text-xs text-[#FEFEFE]/75 leading-relaxed">
-            Faculty and curriculum management portal. All access events are authenticated and verified against trusted administrator records.
-          </p>
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#033D6B] text-[#FECF35] text-[11px] font-bold uppercase tracking-wider">
+          <Sparkles className="w-3 h-3 text-[#FECF35]" />
+          <span>Administrator Control Access</span>
         </div>
+      </div>
 
-        {/* Forbidden 403 State for Authenticated Non-Admin Students */}
-        {forbiddenError && user && !isAdmin && (
-          <div className="p-4 rounded-xl bg-rose-950/70 border border-rose-700/60 text-rose-200 text-xs space-y-3">
-            <div className="flex items-start gap-2.5">
-              <ShieldAlert className="w-5 h-5 shrink-0 text-rose-400 mt-0.5" />
-              <div>
-                <strong className="block text-sm font-semibold text-rose-300">
-                  403 Forbidden — Access Denied
-                </strong>
-                <p className="text-rose-200/90 mt-1 leading-relaxed">
-                  You are signed in as <strong className="text-white">{user.email}</strong>, which does not possess administrative privileges.
+      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-md space-y-6">
+          {forbiddenError ? (
+            <div className="space-y-4 text-center">
+              <div className="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center mx-auto">
+                <ShieldAlert className="w-6 h-6" />
+              </div>
+              <div className="space-y-1">
+                <h2 className="text-lg font-heading font-bold text-slate-900">403 Access Forbidden</h2>
+                <p className="text-xs text-slate-600 leading-relaxed font-sans">
+                  The account ({user?.email || 'Current user'}) does not possess administrator clearance.
                 </p>
               </div>
-            </div>
-            <div className="flex items-center gap-2 pt-2 border-t border-rose-900/60">
-              <button
-                onClick={handleSwitchToStudent}
-                className="flex-1 py-2 px-3 rounded-lg bg-[#033D6B] hover:bg-[#07355c] text-[#FEFEFE] font-medium text-xs border border-[#FEFEFE]/20 transition cursor-pointer flex items-center justify-center gap-1.5"
-              >
-                <GraduationCap className="w-3.5 h-3.5 text-[#FECF35]" />
-                <span>Go to student view</span>
-              </button>
-              <button
-                onClick={handleSignOutAndRetry}
-                className="flex-1 py-2 px-3 rounded-lg bg-rose-700 hover:bg-rose-600 text-white font-medium text-xs transition cursor-pointer"
-              >
-                Sign out & switch
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* General Error Alert */}
-        {errorMsg && !forbiddenError && (
-          <div className="p-3.5 rounded-xl bg-rose-950/60 border border-rose-700/50 text-rose-200 text-xs flex items-start gap-2.5">
-            <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
-            <span className="leading-relaxed">{errorMsg}</span>
-          </div>
-        )}
-
-        {/* Password Reset Success Notice */}
-        {resetSuccessMsg && (
-          <div className="p-3.5 rounded-xl bg-emerald-950/60 border border-emerald-700/50 text-emerald-200 text-xs flex items-start gap-2.5">
-            <CheckCircle className="w-4 h-4 shrink-0 text-emerald-400 mt-0.5" />
-            <span className="leading-relaxed">{resetSuccessMsg}</span>
-          </div>
-        )}
-
-        {/* Admin Form */}
-        {(!user || isAdmin) && (
-          <form onSubmit={handleAdminSubmit} className="space-y-4">
-            <div>
-              <label className="block text-xs font-medium text-[#FEFEFE]/90 mb-1.5">
-                Administrator Email
-              </label>
-              <div className="relative">
-                <Mail className="w-4 h-4 text-[#FEFEFE]/45 absolute left-3.5 top-3 pointer-events-none" />
-                <input
-                  type="email"
-                  placeholder="admin@domain.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="username email"
-                  required
-                  className="w-full pl-10 pr-4 py-2.5 bg-[#033D6B] border border-[#FEFEFE]/20 rounded-lg text-sm text-[#FEFEFE] placeholder-[#FEFEFE]/40 focus:outline-none focus:ring-2 focus:ring-[#FECF35]/50 focus:border-[#FECF35] transition"
-                />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-medium text-[#FEFEFE]/90">
-                  Administrative Password
-                </label>
+              <div className="pt-2 space-y-2">
                 <button
-                  type="button"
-                  onClick={() => setShowResetBox(!showResetBox)}
-                  className="text-xs text-[#FECF35] hover:underline font-medium cursor-pointer transition flex items-center gap-1"
+                  onClick={async () => {
+                    await logoutUser();
+                    setForbiddenError(false);
+                  }}
+                  className="w-full py-2.5 rounded-xl bg-[#FECF35] text-[#033D6B] font-bold text-xs hover:bg-[#ebd02f] transition shadow-xs"
                 >
-                  <KeyRound className="w-3 h-3" />
-                  <span>{showResetBox ? 'Hide reset' : 'Reset password'}</span>
+                  Sign Out & Switch Account
                 </button>
-              </div>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-[#FEFEFE]/45 absolute left-3.5 top-3 pointer-events-none" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter administrator password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="current-password"
-                  required
-                  className="w-full pl-10 pr-11 py-2.5 bg-[#033D6B] border border-[#FEFEFE]/20 rounded-lg text-sm text-[#FEFEFE] placeholder-[#FEFEFE]/40 focus:outline-none focus:ring-2 focus:ring-[#FECF35]/50 focus:border-[#FECF35] transition"
-                />
                 <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-2.5 p-1 text-[#FEFEFE]/50 hover:text-[#FEFEFE] cursor-pointer transition"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  onClick={() => navigate('/dashboard')}
+                  className="w-full py-2.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold hover:bg-slate-200 transition"
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  Return to Student Dashboard
                 </button>
               </div>
             </div>
+          ) : showResetBox ? (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-base font-heading font-bold text-slate-900">Reset Admin Password</h2>
+                <button
+                  onClick={() => setShowResetBox(false)}
+                  className="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Back</span>
+                </button>
+              </div>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full py-2.5 px-4 rounded-lg bg-[#FECF35] text-[#033D6B] font-medium text-sm hover:bg-[#ebd02f] transition shadow disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
-            >
-              {submitting ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin text-[#033D6B]" />
-                  <span>Verifying clearance...</span>
-                </>
+              {resetSuccessMsg ? (
+                <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-2xl">
+                  {resetSuccessMsg}
+                </div>
               ) : (
-                <>
-                  <ShieldCheck className="w-4 h-4 text-[#033D6B]" />
-                  <span>Sign in to admin portal</span>
-                  <ArrowRight className="w-4 h-4 text-[#033D6B]" />
-                </>
+                <form onSubmit={handleResetSubmit} className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Admin Email</label>
+                    <input
+                      type="email"
+                      value={resetEmail}
+                      onChange={(e) => setResetEmail(e.target.value)}
+                      placeholder="admin@example.com"
+                      required
+                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={resetSubmitting}
+                    className="w-full py-2.5 rounded-xl bg-[#033D6B] text-white text-xs font-bold hover:bg-[#093D6C]"
+                  >
+                    {resetSubmitting ? 'Sending Link...' : 'Send Reset Password Link'}
+                  </button>
+                </form>
               )}
-            </button>
-          </form>
-        )}
-
-        {/* Password Reset Box */}
-        {showResetBox && (
-          <div className="p-4 rounded-xl bg-[#033D6B] border border-[#FEFEFE]/20 space-y-3">
-            <div className="flex items-center gap-2 text-xs font-semibold text-[#FECF35]">
-              <KeyRound className="w-4 h-4" />
-              <span>Send Admin Password Reset Link</span>
             </div>
-            <p className="text-[11px] text-[#FEFEFE]/75 leading-relaxed">
-              Enter the designated administrator email address to receive an official Firebase password reset link.
-            </p>
-            <div className="flex gap-2">
-              <input
-                type="email"
-                placeholder="admin@domain.com"
-                value={resetEmail || email}
-                onChange={(e) => setResetEmail(e.target.value)}
-                className="flex-1 px-3 py-2 bg-[#022544] border border-[#FEFEFE]/20 rounded-lg text-xs text-[#FEFEFE] placeholder-[#FEFEFE]/40 focus:outline-none focus:ring-1 focus:ring-[#FECF35]"
-              />
+          ) : (
+            <div className="space-y-5">
+              <div className="space-y-1 text-center">
+                <h2 className="text-xl font-heading font-bold text-slate-900">Admin Authentication</h2>
+                <p className="text-xs text-slate-500 font-sans">Authorized academic administrator login</p>
+              </div>
+
+              {errorMsg && (
+                <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-2xl flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+                  <span>{errorMsg}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleAdminSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Administrator Email</label>
+                  <div className="relative">
+                    <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="itxmerajkhan3109@gmail.com"
+                      required
+                      className="w-full pl-10 pr-4 py-2.5 bg-slate-50 hover:bg-slate-100/80 focus:bg-white border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-semibold text-slate-700">Password</label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setResetEmail(email);
+                        setShowResetBox(true);
+                      }}
+                      className="text-[11px] font-semibold text-[#033D6B] hover:underline"
+                    >
+                      Reset password?
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      required
+                      className="w-full pl-10 pr-10 py-2.5 bg-slate-50 hover:bg-slate-100/80 focus:bg-white border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full py-3 rounded-xl bg-[#FECF35] text-[#033D6B] font-bold text-xs hover:bg-[#ebd02f] transition shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 touch-target"
+                >
+                  {submitting ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin text-[#033D6B]" />
+                      <span>Verifying Admin Clearance...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Log In To Admin Panel</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+              </form>
+
+              <div className="relative flex items-center justify-center my-2">
+                <div className="border-t border-slate-200 w-full" />
+                <span className="bg-white px-3 text-[11px] text-slate-400 uppercase font-mono absolute">OR</span>
+              </div>
+
               <button
                 type="button"
-                onClick={handlePasswordReset}
-                disabled={resetSubmitting}
-                className="px-3 py-2 bg-[#FECF35] hover:bg-[#ebd02f] text-[#033D6B] font-medium text-xs rounded-lg transition disabled:opacity-50 cursor-pointer shrink-0"
+                onClick={handleGoogleAdmin}
+                disabled={submitting}
+                className="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition border border-slate-200 flex items-center justify-center gap-2 cursor-pointer"
               >
-                {resetSubmitting ? 'Sending...' : 'Send link'}
+                <ShieldCheck className="w-4 h-4 text-[#033D6B]" />
+                <span>Admin Google Sign-In</span>
               </button>
-            </div>
-          </div>
-        )}
 
-        {/* Divider */}
-        {(!user || isAdmin) && (
-          <>
-            <div className="relative my-2 text-center">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-[#FEFEFE]/10" />
+              <div className="pt-2 text-center text-xs text-slate-500 border-t border-slate-100">
+                <button
+                  onClick={() => navigate('/login')}
+                  className="text-xs font-semibold text-[#033D6B] hover:underline"
+                >
+                  ← Return to Student Login
+                </button>
               </div>
-              <span className="relative bg-[#093D6C] px-3 text-xs text-[#FEFEFE]/60">
-                Or authenticate via Google
-              </span>
             </div>
-
-            {/* Google Admin Sign In */}
-            <button
-              onClick={handleGoogleAdminSubmit}
-              disabled={submitting}
-              className="w-full py-2.5 px-4 rounded-lg bg-[#033D6B] hover:bg-[#07355c] border border-[#FEFEFE]/20 text-xs font-medium text-[#FEFEFE] transition flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50"
-            >
-              <svg className="w-4 h-4" viewBox="0 0 24 24">
-                <path
-                  fill="#4285F4"
-                  d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
-                />
-                <path
-                  fill="#EA4335"
-                  d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
-                />
-              </svg>
-              <span>Continue with Google (Admin)</span>
-            </button>
-          </>
-        )}
-
-        {/* Security Notice Footer */}
-        <div className="pt-3 border-t border-[#FEFEFE]/10 text-center space-y-2">
-          <p className="text-[11px] text-[#FEFEFE]/60 flex items-center justify-center gap-1.5">
-            <Lock className="w-3 h-3 text-[#FECF35] shrink-0" />
-            <span>Authorized staff only • All operations logged & verified</span>
-          </p>
-          <div className="flex items-center justify-center gap-3 text-xs text-[#FEFEFE]/70 pt-1">
-            <button
-              onClick={() => navigate('/login')}
-              className="text-[#FECF35] hover:underline transition cursor-pointer"
-            >
-              Student sign in
-            </button>
-            <span className="text-[#FEFEFE]/30">•</span>
-            <button
-              onClick={() => navigate('/')}
-              className="text-[#FEFEFE]/70 hover:text-[#FEFEFE] transition cursor-pointer"
-            >
-              Back to home
-            </button>
-          </div>
+          )}
         </div>
       </div>
     </div>
   );
 };
-

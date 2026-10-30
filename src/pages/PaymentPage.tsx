@@ -180,23 +180,23 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ siteSettings, navigate
 
   if (isPending) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-slate-900 border border-amber-800/80 rounded-3xl p-8 text-center space-y-4 shadow-2xl">
-          <Clock className="w-12 h-12 text-amber-400 mx-auto animate-pulse" />
-          <h2 className="text-xl font-bold text-white">Admission Approval Pending</h2>
-          <p className="text-xs text-slate-300 leading-relaxed">
-            Your initial student registration is currently being verified by the admissions committee. Once approved, you can purchase the annual membership here.
+      <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white border border-amber-200 rounded-3xl p-8 text-center space-y-4 shadow-md">
+          <Clock className="w-12 h-12 text-amber-500 mx-auto" />
+          <h2 className="text-xl font-bold font-heading text-slate-900">Admission Approval Pending</h2>
+          <p className="text-xs text-slate-600 leading-relaxed font-sans">
+            Your initial student registration is currently being verified by the admissions committee. Once approved, you can activate the annual membership pass.
           </p>
           <div className="pt-2 flex flex-col gap-2">
             <button
               onClick={() => navigate('/application-status')}
-              className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs"
+              className="w-full py-2.5 rounded-xl bg-[#FECF35] text-[#033D6B] font-bold text-xs shadow-xs"
             >
               Check Admission Status
             </button>
             <button
               onClick={() => navigate('/courses')}
-              className="w-full py-2.5 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold"
+              className="w-full py-2.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold"
             >
               Browse Course Catalog
             </button>
@@ -207,7 +207,7 @@ export const PaymentPage: React.FC<PaymentPageProps> = ({ siteSettings, navigate
   }
 
   return (
-    <div className="bg-[#022544] text-[#FEFEFE] min-h-screen py-10 px-4 sm:px-6 lg:px-8 selection:bg-[#FECF35] selection:text-[#033D6B]">
+    <div className="bg-[#F8FAFC] text-slate-900 min-h-screen py-8 px-4 sm:px-6 lg:px-8 selection:bg-[#FECF35] selection:text-[#033D6B]">
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Navigation & Header */}
         <div className="flex items-center justify-between">

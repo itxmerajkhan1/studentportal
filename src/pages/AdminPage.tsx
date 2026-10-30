@@ -35,8 +35,8 @@ import {
   Subject,
   Chapter,
 } from '../types';
+
 import { filterStudents, calculateMembershipExpiry } from '../utils/portalLogic';
-import { PdfUploadField } from '../components/PdfUploadField';
 import {
   ShieldAlert,
   Users,
@@ -885,23 +885,23 @@ export const AdminPage: React.FC<AdminPageProps> = ({
   }
 
   return (
-    <div className="bg-[#022544] text-[#FEFEFE] min-h-screen py-8 px-4 sm:px-6 lg:px-8 selection:bg-[#FECF35] selection:text-[#033D6B]">
+    <div className="bg-[#F8FAFC] text-slate-900 min-h-screen py-8 px-4 sm:px-6 lg:px-8 selection:bg-[#FECF35] selection:text-[#033D6B]">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Admin Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#FEFEFE]/10">
+        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-[#033D6B] border border-[#FECF35]/40 flex items-center justify-center text-[#FECF35] shadow-sm">
+            <div className="w-12 h-12 rounded-2xl bg-[#033D6B] text-[#FECF35] flex items-center justify-center shadow-xs shrink-0">
               <Sparkles className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-heading font-semibold text-[#FEFEFE]">Administrator control panel</h1>
-                <span className="text-[11px] font-medium px-2.5 py-0.5 rounded-md bg-[#033D6B] text-[#FECF35] border border-[#FECF35]/40 uppercase tracking-wider">
+                <h1 className="text-xl sm:text-2xl font-heading font-bold text-slate-900">Administrator Control Panel</h1>
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#FECF35]/20 text-[#033D6B] border border-[#FECF35]/40 uppercase tracking-wider">
                   Super Admin
                 </span>
               </div>
-              <p className="text-xs text-[#FEFEFE]/70">
-                Logged in as <strong className="text-[#FEFEFE]">{user?.email}</strong> • Academic moderation & video asset distribution
+              <p className="text-xs text-slate-600 font-sans">
+                Logged in as <strong className="text-slate-900 font-mono">{user?.email}</strong> • Academic moderation & video curriculum control
               </p>
             </div>
           </div>
@@ -1161,7 +1161,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#FEFEFE]/10">
-                      {filteredStudents.map((s) => (
+                      {filteredStudents.map((s: UserProfile) => (
                         <tr key={s.uid} className="hover:bg-[#033D6B]/50 transition">
                           <td className="py-3.5 px-4">
                             <div>
@@ -2794,14 +2794,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                   </div>
                 </div>
 
-                <PdfUploadField
-                  pdfNotesUrl={editingLesson.pdfNotesUrl}
-                  pdfStoragePath={editingLesson.pdfStoragePath}
-                  pdfFileName={editingLesson.pdfFileName}
-                  pdfFileSize={editingLesson.pdfFileSize}
-                  lessonId={editingLesson.id}
-                  onChange={(meta) => setEditingLesson({ ...editingLesson, ...meta })}
-                />
+
 
                 <div>
                   <label className="block font-semibold text-slate-300 mb-1">Summary / Concept Notes</label>
@@ -3269,16 +3262,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                   />
                 </div>
 
-                <div>
-                  <PdfUploadField
-                    pdfNotesUrl={editingCurriculumLecture.pdfNotesUrl}
-                    pdfStoragePath={editingCurriculumLecture.pdfStoragePath}
-                    pdfFileName={editingCurriculumLecture.pdfFileName}
-                    pdfFileSize={editingCurriculumLecture.pdfFileSize}
-                    lessonId={editingCurriculumLecture.id}
-                    onChange={(meta) => setEditingCurriculumLecture({ ...editingCurriculumLecture, ...meta })}
-                  />
-                </div>
+
 
                 <div>
                   <label className="block font-semibold text-slate-300 mb-1">Concept Summary / Board Objectives</label>

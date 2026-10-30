@@ -11,7 +11,6 @@ import {
   ArrowRight,
   LogOut,
   ShieldCheck,
-  GraduationCap,
 } from 'lucide-react';
 import { IlmoraLogo } from '../components/IlmoraLogo';
 import { OFFICIAL_CONTACT_PHONE, PUBLIC_CONTACT_EMAIL } from '../config/constants';
@@ -48,21 +47,18 @@ export const ApplicationStatusPage: React.FC<ApplicationStatusPageProps> = ({
     navigate('/');
   };
 
-  // If user is not logged in at all, direct them to login
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#022544] text-[#FEFEFE] flex items-center justify-center p-6">
-        <div className="max-w-md w-full bg-[#093D6C] border border-[#FEFEFE]/15 rounded-xl p-8 text-center space-y-4 shadow-sm">
-          <div className="flex justify-center">
-            <IlmoraLogo variant="icon" size="md" />
-          </div>
-          <h2 className="text-xl font-semibold text-[#FEFEFE] font-heading">Check Application Status</h2>
-          <p className="text-xs text-[#FEFEFE]/75">Please log in to review your admission status.</p>
+      <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex items-center justify-center p-6">
+        <div className="max-w-md w-full bg-white border border-slate-200 rounded-3xl p-8 text-center space-y-4 shadow-md">
+          <IlmoraLogo variant="full" theme="dark" size="md" className="mx-auto" />
+          <h2 className="text-xl font-bold font-heading text-slate-900">Check Application Status</h2>
+          <p className="text-xs text-slate-600 font-sans">Please log in to review your admission status.</p>
           <button
             onClick={() => navigate('/login')}
-            className="w-full py-2.5 rounded-lg bg-[#FECF35] hover:bg-[#ebd02f] text-[#033D6B] font-medium text-xs transition"
+            className="w-full py-2.5 rounded-xl bg-[#FECF35] text-[#033D6B] font-bold text-xs shadow-xs"
           >
-            Go to login
+            Sign In Here
           </button>
         </div>
       </div>
@@ -70,176 +66,128 @@ export const ApplicationStatusPage: React.FC<ApplicationStatusPageProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-[#022544] text-[#FEFEFE] py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
-      <div className="max-w-xl w-full bg-[#093D6C] border border-[#FEFEFE]/15 rounded-xl p-6 sm:p-8 shadow-sm space-y-6">
-        {/* Brand Logo & Status Header */}
-        <div className="text-center space-y-4">
-          <div className="flex justify-center">
-            <IlmoraLogo variant="full" theme="light" size="md" />
-          </div>
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 selection:bg-[#FECF35] selection:text-[#033D6B]">
+      <div className="sm:mx-auto sm:w-full sm:max-w-lg space-y-4 text-center">
+        <div className="inline-block cursor-pointer" onClick={() => navigate('/')}>
+          <IlmoraLogo variant="full" theme="dark" size="lg" />
+        </div>
+      </div>
 
-          {isAdmin ? (
-            <div className="w-14 h-14 rounded-xl bg-[#033D6B] text-[#FECF35] border border-[#FECF35]/40 flex items-center justify-center mx-auto">
-              <ShieldCheck className="w-8 h-8 text-[#FECF35]" />
-            </div>
-          ) : isApproved ? (
-            <div className="w-14 h-14 rounded-xl bg-emerald-950 text-emerald-300 border border-emerald-700/60 flex items-center justify-center mx-auto">
-              <CheckCircle2 className="w-8 h-8" />
-            </div>
-          ) : isRejected ? (
-            <div className="w-14 h-14 rounded-xl bg-rose-950 text-rose-300 border border-rose-700/60 flex items-center justify-center mx-auto">
-              <XCircle className="w-8 h-8" />
-            </div>
-          ) : isSuspended ? (
-            <div className="w-14 h-14 rounded-xl bg-rose-950 text-rose-300 border border-rose-700/60 flex items-center justify-center mx-auto">
-              <AlertOctagon className="w-8 h-8" />
-            </div>
-          ) : (
-            <div className="w-14 h-14 rounded-xl bg-[#033D6B] text-[#FECF35] border border-[#FECF35]/30 flex items-center justify-center mx-auto">
-              <Clock className="w-8 h-8 text-[#FECF35]" />
+      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-lg">
+        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-md space-y-6">
+          {refreshedNotice && (
+            <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-2xl text-center font-medium">
+              Profile status updated from server.
             </div>
           )}
 
-          <div>
-            <span className="text-[10px] uppercase font-semibold tracking-wider px-2.5 py-0.5 rounded bg-[#033D6B] text-[#FEFEFE]/80 border border-[#FEFEFE]/15">
-              Application ID: {user.uid.slice(0, 8).toUpperCase()}
-            </span>
-            <h1 className="text-2xl sm:text-3xl font-semibold text-[#FEFEFE] mt-2 font-heading">
-              {isAdmin
-                ? 'Administrator Account Active'
-                : isApproved
-                ? 'Admission Approved'
-                : isRejected
-                ? 'Application Not Approved'
-                : isSuspended
-                ? 'Account Suspended'
-                : 'Awaiting Administrator Approval'}
-            </h1>
-          </div>
-
-          <p className="text-xs sm:text-sm text-[#FEFEFE]/80 max-w-md mx-auto leading-relaxed">
-            {isAdmin
-              ? 'You have full privileged access to manage students, approve admissions, create courses, and configure the portal.'
-              : isApproved
-              ? 'Congratulations! Your admission has been verified by the academic administration. You have full access to the lecture catalog and video streams.'
-              : isRejected
-              ? 'Your application could not be verified with the provided information. Please see the note from administration below or contact support.'
-              : isSuspended
-              ? 'Your student access has been temporarily suspended by the administration. Please resolve any pending formalities.'
-              : 'Thank you for registering. For academic security and curriculum integrity, all student profiles are reviewed before video lecture access is granted.'}
-          </p>
-        </div>
-
-        {/* Rejection / Suspension Alert Note if applicable */}
-        {(isRejected || isSuspended) && profile?.rejectionReason && (
-          <div className="p-4 rounded-lg bg-rose-950/60 border border-rose-800 text-xs text-rose-200 space-y-1">
-            <span className="font-semibold text-rose-300">Administration Note:</span>
-            <p className="leading-relaxed">{profile.rejectionReason}</p>
-          </div>
-        )}
-
-        {/* Student Application Summary Card */}
-        <div className="bg-[#033D6B] border border-[#FEFEFE]/15 rounded-lg p-4 sm:p-5 space-y-3 text-xs">
-          <h2 className="font-semibold text-[#FEFEFE] uppercase tracking-wider text-[11px] pb-2 border-b border-[#FEFEFE]/15 font-heading">
-            Registered Profile Details
-          </h2>
-
-          <div className="grid grid-cols-2 gap-3 text-[#FEFEFE]/75">
-            <div>
-              <p className="text-[10px] uppercase text-[#FEFEFE]/60 font-medium">Student name</p>
-              <p className="text-[#FEFEFE] font-medium">{profile?.fullName || user.displayName || 'N/A'}</p>
-            </div>
-            <div>
-              <p className="text-[10px] uppercase text-[#FEFEFE]/60 font-medium">Registered email</p>
-              <p className="text-[#FEFEFE] font-medium truncate">{user.email}</p>
-            </div>
-            <div>
-              <p className="text-[10px] uppercase text-[#FEFEFE]/60 font-medium">Academic stream</p>
-              <p className="text-[#FECF35] font-medium">{profile?.academicLevel || 'Class 12'}</p>
-            </div>
-            <div>
-              <p className="text-[10px] uppercase text-[#FEFEFE]/60 font-medium">Mobile number</p>
-              <p className="text-[#FEFEFE] font-medium">{profile?.phoneNumber || 'N/A'}</p>
-            </div>
-          </div>
-
-          <div className="pt-2 border-t border-[#FEFEFE]/15 flex items-center justify-between">
-            <span className="text-[11px] text-[#FEFEFE]/70 font-medium">Approval status:</span>
-            <span
-              className={`px-2.5 py-0.5 rounded text-xs font-semibold uppercase tracking-wider ${
-                isAdmin || isApproved
-                  ? 'bg-emerald-950 text-emerald-300 border border-emerald-600'
-                  : isRejected || isSuspended
-                  ? 'bg-rose-950 text-rose-300 border border-rose-600'
-                  : 'bg-[#FECF35]/15 text-[#FECF35] border border-[#FECF35]/40'
-              }`}
-            >
-              {profile?.status || (isAdmin ? 'Admin' : 'Pending')}
-            </span>
-          </div>
-        </div>
-
-        {/* Refresh Feedback Message */}
-        {refreshedNotice && (
-          <div className="p-3 bg-[#033D6B] border border-[#FECF35]/40 text-[#FECF35] text-xs rounded-lg text-center">
-            Status refreshed from database.
-          </div>
-        )}
-
-        {/* Action Buttons */}
-        <div className="space-y-3">
-          {isApproved || isAdmin ? (
-            <button
-              onClick={() => navigate(isAdmin ? '/admin' : '/dashboard')}
-              className="w-full py-3 px-4 rounded-lg bg-[#FECF35] hover:bg-[#ebd02f] text-[#033D6B] font-medium text-sm transition shadow-sm cursor-pointer flex items-center justify-center gap-2"
-            >
-              <span>{isAdmin ? 'Enter Admin Control Panel' : 'Enter Student Learning Portal'}</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          ) : (
-            <div className="flex flex-col sm:flex-row gap-3">
+          {/* Approved State */}
+          {(isApproved || isAdmin) && (
+            <div className="space-y-4 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto">
+                <CheckCircle2 className="w-8 h-8" />
+              </div>
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full">
+                  Admission Approved
+                </span>
+                <h2 className="text-xl font-heading font-bold text-slate-900 pt-1">Welcome to ILMORA</h2>
+                <p className="text-xs text-slate-600 leading-relaxed font-sans">
+                  Your student admission account is active. You have full access to chapter-wise video lectures and student progress tools.
+                </p>
+              </div>
               <button
-                onClick={handleRefresh}
-                disabled={refreshing}
-                className="flex-1 py-2.5 px-4 rounded-lg bg-[#033D6B] hover:bg-[#022544] text-[#FEFEFE] font-medium text-xs transition border border-[#FEFEFE]/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                onClick={() => navigate(isAdmin ? '/admin' : '/dashboard')}
+                className="w-full py-3 rounded-xl bg-[#FECF35] text-[#033D6B] font-bold text-xs hover:bg-[#ebd02f] transition shadow-xs flex items-center justify-center gap-2 cursor-pointer touch-target"
               >
-                <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-                <span>{refreshing ? 'Checking...' : 'Check approval status'}</span>
+                <span>Enter Student Portal</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
-
-              <a
-                href={`https://wa.me/${supportPhone.replace(/[^0-9]/g, '')}?text=Assalam%20o%20Alaikum,%20I%20have%20registered%20on%20ILMORA%20with%20email%20${encodeURIComponent(
-                  user.email || ''
-                )}.%20Please%20verify%20my%20account.`}
-                target="_blank"
-                rel="noreferrer"
-                className="flex-1 py-2.5 px-4 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-medium text-xs transition flex items-center justify-center gap-2 text-center"
-              >
-                <Phone className="w-4 h-4" />
-                <span>Expedite via WhatsApp</span>
-              </a>
             </div>
           )}
 
-          <div className="flex items-center justify-between pt-2">
-            <button
-              onClick={() => navigate('/courses')}
-              className="text-xs text-[#FECF35] hover:underline font-medium cursor-pointer"
-            >
-              Browse course previews
-            </button>
-            <button
-              onClick={handleSignOut}
-              className="text-xs text-[#FEFEFE]/65 hover:text-rose-400 flex items-center gap-1.5 cursor-pointer font-medium"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              <span>Sign out</span>
-            </button>
-          </div>
+          {/* Pending State */}
+          {isPending && !isAdmin && !isApproved && (
+            <div className="space-y-4 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center mx-auto">
+                <Clock className="w-8 h-8" />
+              </div>
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 bg-amber-100 px-3 py-1 rounded-full">
+                  Under Review
+                </span>
+                <h2 className="text-xl font-heading font-bold text-slate-900 pt-1">Application In Progress</h2>
+                <p className="text-xs text-slate-600 leading-relaxed font-sans">
+                  Your admission request is currently under review by our academic administrator. Video streaming will unlock automatically upon verification.
+                </p>
+              </div>
 
-          <p className="text-[11px] text-center text-[#FEFEFE]/65 pt-2 border-t border-[#FEFEFE]/15">
-            Admissions helpline: <a href={`mailto:${supportEmail}`} className="text-[#FECF35] hover:underline">{supportEmail}</a> • <a href={`https://wa.me/${supportPhone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer" className="text-[#FECF35] hover:underline">{supportPhone}</a>
-          </p>
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-left space-y-1.5 text-xs">
+                <p className="font-semibold text-slate-900">Student Profile Submitted:</p>
+                <p className="text-slate-600 font-mono">Name: {profile?.fullName || user.email}</p>
+                <p className="text-slate-600 font-mono">Level: {profile?.academicLevel || 'FSc Student'}</p>
+              </div>
+
+              <div className="pt-2 flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={handleRefresh}
+                  disabled={refreshing}
+                  className="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 text-[#033D6B] ${refreshing ? 'animate-spin' : ''}`} />
+                  <span>Check Status Now</span>
+                </button>
+                <button
+                  onClick={handleSignOut}
+                  className="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 text-xs font-medium cursor-pointer"
+                >
+                  Sign Out
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Rejected / Suspended State */}
+          {(isRejected || isSuspended) && (
+            <div className="space-y-4 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center mx-auto">
+                <XCircle className="w-8 h-8" />
+              </div>
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-rose-800 bg-rose-100 px-3 py-1 rounded-full">
+                  {isSuspended ? 'Access Suspended' : 'Admission Rejected'}
+                </span>
+                <h2 className="text-xl font-heading font-bold text-slate-900 pt-1">Attention Required</h2>
+                <p className="text-xs text-slate-600 leading-relaxed font-sans">
+                  {isSuspended
+                    ? 'Your account access has been suspended. Please contact support.'
+                    : 'Your admission application could not be verified automatically. Contact our administration.'}
+                </p>
+              </div>
+
+              <button
+                onClick={handleSignOut}
+                className="w-full py-2.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold"
+              >
+                Sign Out
+              </button>
+            </div>
+          )}
+
+          {/* Support Helpline Card */}
+          <div className="pt-4 border-t border-slate-100 space-y-2 text-xs">
+            <p className="font-semibold text-slate-800 text-center">Admission Support Helpline</p>
+            <div className="p-3 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-2 text-slate-600 font-mono text-[11px]">
+              <span className="flex items-center gap-1.5">
+                <Phone className="w-3.5 h-3.5 text-[#033D6B]" />
+                <span>{supportPhone}</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Mail className="w-3.5 h-3.5 text-[#033D6B]" />
+                <span>{supportEmail}</span>
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

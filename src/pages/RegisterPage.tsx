@@ -11,9 +11,9 @@ import {
   AlertCircle,
   ArrowRight,
   ShieldCheck,
+  RefreshCw,
 } from 'lucide-react';
 import { IlmoraLogo } from '../components/IlmoraLogo';
-import { OFFICIAL_CONTACT_PHONE, PUBLIC_CONTACT_EMAIL, OFFICIAL_WHATSAPP_URL } from '../config/constants';
 
 interface RegisterPageProps {
   navigate: (route: string) => void;
@@ -58,29 +58,24 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ navigate }) => {
       setErrors(validation.errors);
       return;
     }
-    setErrors({});
-    setSubmitting(true);
 
+    setSubmitting(true);
     try {
       await registerStudent({
-        fullName: formData.fullName.trim(),
         email: formData.email.trim(),
         password: formData.password,
+        fullName: formData.fullName.trim(),
         phoneNumber: formData.phoneNumber.trim(),
         academicLevel: formData.academicLevel,
-        studentId: formData.studentId.trim(),
+        studentId: formData.studentId.trim() || undefined,
       });
-      // Registration successful! Redirect to Application Status Page
+
       navigate('/application-status');
     } catch (err: unknown) {
-      console.error('Registration failed:', err);
-      const msg = err instanceof Error ? err.message : 'Registration failed. Please check your credentials.';
-      if (msg.includes('operation-not-allowed')) {
-        setServerError('Email/Password registration is currently disabled in Firebase Console. Please enable "Email/Password" under Firebase Console -> Authentication -> Sign-in method, or use "Continue with Google Account".');
-      } else if (msg.includes('email-already-in-use')) {
-        setServerError('This email address is already registered. Please log in instead.');
-      } else if (msg.includes('weak-password')) {
-        setServerError('The password provided is too weak. Please choose a stronger password.');
+      console.error('Registration error:', err);
+      const msg = err instanceof Error ? err.message : 'Registration failed.';
+      if (msg.includes('email-already-in-use')) {
+        setServerError('This email address is already registered. Please sign in instead.');
       } else {
         setServerError(msg);
       }
@@ -89,123 +84,104 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ navigate }) => {
     }
   };
 
-  const handleGoogleSignUp = async () => {
+  const handleGoogleSignup = async () => {
     setServerError(null);
     setSubmitting(true);
     try {
       await loginGoogle();
       navigate('/application-status');
     } catch (err: unknown) {
-      console.error('Google Sign Up failed:', err);
-      const msg = err instanceof Error ? err.message : 'Google authentication failed.';
-      setServerError(msg);
+      console.error('Google Sign-up error:', err);
+      setServerError(err instanceof Error ? err.message : 'Google sign-up failed.');
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#022544] text-[#FEFEFE] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-xl w-full bg-[#093D6C] border border-[#FEFEFE]/15 rounded-xl p-6 sm:p-8 shadow-sm space-y-6">
-        {/* Header */}
-        <div className="text-center space-y-2 mb-6">
-          <div className="flex justify-center pb-1">
-            <IlmoraLogo variant="full" theme="light" size="md" />
-          </div>
-          <h1 className="text-2xl font-semibold text-[#FEFEFE] font-heading">
-            Student Admission Registration
-          </h1>
-          <p className="text-xs text-[#FEFEFE]/75">
-            Register your profile for academic enrollment. Once verified by our administrators, your lecture classroom is unlocked.
-          </p>
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 selection:bg-[#FECF35] selection:text-[#033D6B]">
+      <div className="sm:mx-auto sm:w-full sm:max-w-lg text-center space-y-3">
+        <div className="inline-block cursor-pointer" onClick={() => navigate('/')}>
+          <IlmoraLogo variant="full" theme="dark" size="lg" />
         </div>
+        <p className="text-xs text-slate-600 font-sans">
+          Online Student Admission Registration Form
+        </p>
+      </div>
 
-        {/* Server Error Alert */}
-        {serverError && (
-          <div className="p-3.5 rounded-lg bg-rose-950/80 border border-rose-800 text-rose-200 text-xs flex items-start gap-2.5">
-            <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
-            <span>{serverError}</span>
+      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-lg">
+        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-md space-y-6">
+          <div className="space-y-1 text-center">
+            <h1 className="text-xl font-heading font-bold text-slate-900">Student Registration</h1>
+            <p className="text-xs text-slate-500 font-sans">Fill in your academic profile to request video streaming access</p>
           </div>
-        )}
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Full Name */}
-          <div>
-            <label className="block text-xs font-medium text-[#FEFEFE]/90 mb-1">
-              Full name (as per Matric / BIE / FBISE records) *
-            </label>
-            <div className="relative">
-              <User className="w-4 h-4 text-[#FEFEFE]/50 absolute left-3.5 top-3" />
-              <input
-                type="text"
-                placeholder="e.g., Muhammad Hamza Khan"
-                value={formData.fullName}
-                onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                className={`w-full pl-10 pr-4 py-2.5 bg-[#033D6B] border rounded-lg text-sm text-[#FEFEFE] placeholder-[#FEFEFE]/40 focus:outline-none focus:ring-2 transition ${
-                  errors.fullName ? 'border-rose-500 focus:ring-rose-500/40' : 'border-[#FEFEFE]/20 focus:ring-[#FECF35]/50'
-                }`}
-              />
+          {serverError && (
+            <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-2xl flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+              <span>{serverError}</span>
             </div>
-            {errors.fullName && <p className="text-[11px] text-rose-400 mt-1">{errors.fullName}</p>}
-          </div>
+          )}
 
-          {/* Email Address */}
-          <div>
-            <label className="block text-xs font-medium text-[#FEFEFE]/90 mb-1">
-              Active email address *
-            </label>
-            <div className="relative">
-              <Mail className="w-4 h-4 text-[#FEFEFE]/50 absolute left-3.5 top-3" />
-              <input
-                type="email"
-                placeholder="student@example.com"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className={`w-full pl-10 pr-4 py-2.5 bg-[#033D6B] border rounded-lg text-sm text-[#FEFEFE] placeholder-[#FEFEFE]/40 focus:outline-none focus:ring-2 transition ${
-                  errors.email ? 'border-rose-500 focus:ring-rose-500/40' : 'border-[#FEFEFE]/20 focus:ring-[#FECF35]/50'
-                }`}
-              />
-            </div>
-            {errors.email && <p className="text-[11px] text-rose-400 mt-1">{errors.email}</p>}
-          </div>
-
-          {/* Phone Number */}
-          <div>
-            <label className="block text-xs font-medium text-[#FEFEFE]/90 mb-1">
-              Pakistani mobile / WhatsApp number *
-            </label>
-            <div className="relative">
-              <Phone className="w-4 h-4 text-[#FEFEFE]/50 absolute left-3.5 top-3" />
-              <input
-                type="tel"
-                placeholder="0300-1234567 or +923001234567"
-                value={formData.phoneNumber}
-                onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                className={`w-full pl-10 pr-4 py-2.5 bg-[#033D6B] border rounded-lg text-sm text-[#FEFEFE] placeholder-[#FEFEFE]/40 focus:outline-none focus:ring-2 transition ${
-                  errors.phoneNumber ? 'border-rose-500 focus:ring-rose-500/40' : 'border-[#FEFEFE]/20 focus:ring-[#FECF35]/50'
-                }`}
-              />
-            </div>
-            <p className="text-[10px] text-[#FEFEFE]/60 mt-0.5">Used by administration for instant admission verification.</p>
-            {errors.phoneNumber && <p className="text-[11px] text-rose-400 mt-1">{errors.phoneNumber}</p>}
-          </div>
-
-          {/* Academic Level & Optional Student ID */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <form onSubmit={handleSubmit} className="space-y-4 text-xs">
             <div>
-              <label className="block text-xs font-medium text-[#FEFEFE]/90 mb-1">
-                Class / academic stream *
-              </label>
+              <label className="block font-semibold text-slate-700 mb-1">Full Name *</label>
               <div className="relative">
-                <BookOpen className="w-4 h-4 text-[#FEFEFE]/50 absolute left-3.5 top-3 pointer-events-none" />
+                <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="e.g. Muhammad Ali"
+                  value={formData.fullName}
+                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 hover:bg-slate-100/80 focus:bg-white border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none"
+                />
+              </div>
+              {errors.fullName && <p className="text-[11px] text-rose-600 mt-1">{errors.fullName}</p>}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Email Address *</label>
+                <div className="relative">
+                  <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="email"
+                    placeholder="student@example.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 hover:bg-slate-100/80 focus:bg-white border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none"
+                  />
+                </div>
+                {errors.email && <p className="text-[11px] text-rose-600 mt-1">{errors.email}</p>}
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">WhatsApp / Phone *</label>
+                <div className="relative">
+                  <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="tel"
+                    placeholder="0300 1234567"
+                    value={formData.phoneNumber}
+                    onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 hover:bg-slate-100/80 focus:bg-white border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none"
+                  />
+                </div>
+                {errors.phoneNumber && <p className="text-[11px] text-rose-600 mt-1">{errors.phoneNumber}</p>}
+              </div>
+            </div>
+
+            <div>
+              <label className="block font-semibold text-slate-700 mb-1">Academic Stream / Class *</label>
+              <div className="relative">
+                <BookOpen className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <select
                   value={formData.academicLevel}
                   onChange={(e) => setFormData({ ...formData, academicLevel: e.target.value })}
-                  className="w-full pl-10 pr-4 py-2.5 bg-[#033D6B] border border-[#FEFEFE]/20 rounded-lg text-xs text-[#FEFEFE] focus:outline-none focus:ring-2 focus:ring-[#FECF35]/50 transition appearance-none cursor-pointer"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 hover:bg-slate-100/80 focus:bg-white border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none"
                 >
                   {academicOptions.map((opt) => (
-                    <option key={opt} value={opt} className="bg-[#033D6B] text-white">
+                    <option key={opt} value={opt}>
                       {opt}
                     </option>
                   ))}
@@ -213,150 +189,85 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ navigate }) => {
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-[#FEFEFE]/90 mb-1">
-                College roll no. / ID (optional)
-              </label>
-              <div className="relative">
-                <Hash className="w-4 h-4 text-[#FEFEFE]/50 absolute left-3.5 top-3" />
-                <input
-                  type="text"
-                  placeholder="e.g. GC-2024-912"
-                  value={formData.studentId}
-                  onChange={(e) => setFormData({ ...formData, studentId: e.target.value })}
-                  className="w-full pl-10 pr-4 py-2.5 bg-[#033D6B] border border-[#FEFEFE]/20 rounded-lg text-sm text-[#FEFEFE] placeholder-[#FEFEFE]/40 focus:outline-none focus:ring-2 focus:ring-[#FECF35]/50 transition"
-                />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Password *</label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="password"
+                    placeholder="Min 6 characters"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 hover:bg-slate-100/80 focus:bg-white border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none"
+                  />
+                </div>
+                {errors.password && <p className="text-[11px] text-rose-600 mt-1">{errors.password}</p>}
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Confirm Password *</label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="password"
+                    placeholder="Repeat password"
+                    value={formData.confirmPassword}
+                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 hover:bg-slate-100/80 focus:bg-white border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none"
+                  />
+                </div>
+                {errors.confirmPassword && <p className="text-[11px] text-rose-600 mt-1">{errors.confirmPassword}</p>}
               </div>
             </div>
+
+            <button
+              type="submit"
+              disabled={submitting}
+              className="w-full py-3 rounded-xl bg-[#FECF35] text-[#033D6B] font-bold text-xs hover:bg-[#ebd02f] transition shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 touch-target mt-2"
+            >
+              {submitting ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin text-[#033D6B]" />
+                  <span>Submitting Registration...</span>
+                </>
+              ) : (
+                <>
+                  <span>Submit Admission Form</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="relative flex items-center justify-center my-2">
+            <div className="border-t border-slate-200 w-full" />
+            <span className="bg-white px-3 text-[11px] text-slate-400 uppercase font-mono absolute">OR</span>
           </div>
 
-          {/* Passwords */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-medium text-[#FEFEFE]/90 mb-1">
-                Create password *
-              </label>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-[#FEFEFE]/50 absolute left-3.5 top-3" />
-                <input
-                  type="password"
-                  placeholder="Min 6 characters"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className={`w-full pl-10 pr-4 py-2.5 bg-[#033D6B] border rounded-lg text-sm text-[#FEFEFE] placeholder-[#FEFEFE]/40 focus:outline-none focus:ring-2 transition ${
-                    errors.password ? 'border-rose-500 focus:ring-rose-500/40' : 'border-[#FEFEFE]/20 focus:ring-[#FECF35]/50'
-                  }`}
-                />
-              </div>
-              {errors.password && <p className="text-[11px] text-rose-400 mt-1">{errors.password}</p>}
-            </div>
+          <button
+            type="button"
+            onClick={handleGoogleSignup}
+            disabled={submitting}
+            className="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition border border-slate-200 flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <ShieldCheck className="w-4 h-4 text-[#033D6B]" />
+            <span>Fast Sign Up with Google</span>
+          </button>
 
-            <div>
-              <label className="block text-xs font-medium text-[#FEFEFE]/90 mb-1">
-                Confirm password *
-              </label>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-[#FEFEFE]/50 absolute left-3.5 top-3" />
-                <input
-                  type="password"
-                  placeholder="Re-enter password"
-                  value={formData.confirmPassword}
-                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                  className={`w-full pl-10 pr-4 py-2.5 bg-[#033D6B] border rounded-lg text-sm text-[#FEFEFE] placeholder-[#FEFEFE]/40 focus:outline-none focus:ring-2 transition ${
-                    errors.confirmPassword ? 'border-rose-500 focus:ring-rose-500/40' : 'border-[#FEFEFE]/20 focus:ring-[#FECF35]/50'
-                  }`}
-                />
-              </div>
-              {errors.confirmPassword && <p className="text-[11px] text-rose-400 mt-1">{errors.confirmPassword}</p>}
-            </div>
-          </div>
-
-          {/* Notice about approval */}
-          <div className="p-3.5 rounded-lg bg-[#033D6B] border border-[#FEFEFE]/15 text-xs text-[#FEFEFE]/85 space-y-1">
-            <div className="flex items-center gap-1.5 font-medium text-[#FECF35]">
-              <ShieldCheck className="w-4 h-4 text-[#FECF35]" />
-              <span>Admin verification policy</span>
-            </div>
-            <p className="text-[11px]">
-              Your account status will default to <strong>"Pending Approval"</strong> upon submission. The administrative team reviews registrations promptly to authorize course and video streaming.
+          <div className="pt-2 text-center text-xs text-slate-600 border-t border-slate-100">
+            <p>
+              Already registered?{' '}
+              <button
+                type="button"
+                onClick={() => navigate('/login')}
+                className="font-bold text-[#033D6B] hover:underline cursor-pointer"
+              >
+                Sign In Here
+              </button>
             </p>
           </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full py-2.5 px-4 rounded-lg bg-[#FECF35] hover:bg-[#ebd02f] text-[#033D6B] font-medium text-sm transition shadow-sm disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
-          >
-            {submitting ? (
-              <span>Submitting application...</span>
-            ) : (
-              <>
-                <span>Submit admission application</span>
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
-          </button>
-        </form>
-
-        {/* Divider */}
-        <div className="relative my-4 text-center">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-[#FEFEFE]/15" />
-          </div>
-          <span className="relative bg-[#093D6C] px-3 text-xs text-[#FEFEFE]/60">
-            Or register with Google
-          </span>
         </div>
-
-        {/* Google Sign In */}
-        <button
-          onClick={handleGoogleSignUp}
-          disabled={submitting}
-          className="w-full py-2.5 px-4 rounded-lg bg-[#033D6B] hover:bg-[#022544] border border-[#FEFEFE]/20 text-xs font-medium text-[#FEFEFE] transition flex items-center justify-center gap-2 cursor-pointer"
-        >
-          <svg className="w-4 h-4" viewBox="0 0 24 24">
-            <path
-              fill="#4285F4"
-              d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"
-            />
-            <path
-              fill="#34A853"
-              d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"
-            />
-            <path
-              fill="#FBBC05"
-              d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
-            />
-            <path
-              fill="#EA4335"
-              d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
-            />
-          </svg>
-          <span>Continue with Google Account</span>
-        </button>
-
-        {/* Footer links */}
-        <p className="text-center text-xs text-[#FEFEFE]/75 mt-4">
-          Already registered an account?{' '}
-          <button
-            onClick={() => navigate('/login')}
-            className="text-[#FECF35] hover:underline font-medium cursor-pointer"
-          >
-            Log in here
-          </button>
-        </p>
-
-        <p className="text-center text-[11px] text-[#FEFEFE]/65 pt-4 border-t border-[#FEFEFE]/15">
-          Admissions inquiry:{' '}
-          <a href={`mailto:${PUBLIC_CONTACT_EMAIL}`} className="text-[#FECF35] hover:underline">
-            {PUBLIC_CONTACT_EMAIL}
-          </a>{' '}
-          • WhatsApp{' '}
-          <a href={OFFICIAL_WHATSAPP_URL} target="_blank" rel="noreferrer" className="text-[#FECF35] hover:underline">
-            {OFFICIAL_CONTACT_PHONE}
-          </a>
-        </p>
       </div>
     </div>
   );
