@@ -115,6 +115,25 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
   throw new Error(JSON.stringify(errInfo));
 }
 
+/**
+ * Recursively cleans Firestore document payloads by stripping `undefined` values
+ * and validating primitive types, preventing setDoc / updateDoc errors.
+ */
+export function sanitizeFirestorePayload<T extends Record<string, any>>(data: T): Record<string, any> {
+  const sanitized: Record<string, any> = {};
+  for (const [key, val] of Object.entries(data)) {
+    if (val === undefined) {
+      continue;
+    }
+    if (val !== null && typeof val === 'object' && !Array.isArray(val) && !(val instanceof Date)) {
+      sanitized[key] = sanitizeFirestorePayload(val);
+    } else {
+      sanitized[key] = val;
+    }
+  }
+  return sanitized;
+}
+
 // User Profile Operations
 export async function fetchUserProfile(uid: string): Promise<UserProfile | null> {
   const path = `users/${uid}`;
@@ -241,13 +260,14 @@ export async function saveCourse(course: Omit<Course, 'id'> & { id?: string }): 
   const courseId = course.id || `course_${Date.now()}`;
   const path = `courses/${courseId}`;
   try {
-    const payload = {
+    const rawPayload = {
       ...course,
       id: courseId,
       updatedAt: new Date().toISOString(),
       createdAt: course.createdAt || new Date().toISOString(),
     };
-    await setDoc(doc(db, 'courses', courseId), payload);
+    const payload = sanitizeFirestorePayload(rawPayload);
+    await setDoc(doc(db, 'courses', courseId), payload, { merge: true });
     return courseId;
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, path);
@@ -283,13 +303,14 @@ export async function saveSubject(subject: Omit<Subject, 'id'> & { id?: string }
   const subjectId = subject.id || `subj_${Date.now()}`;
   const path = `subjects/${subjectId}`;
   try {
-    const payload = {
+    const rawPayload = {
       ...subject,
       id: subjectId,
       updatedAt: new Date().toISOString(),
       createdAt: subject.createdAt || new Date().toISOString(),
     };
-    await setDoc(doc(db, 'subjects', subjectId), payload);
+    const payload = sanitizeFirestorePayload(rawPayload);
+    await setDoc(doc(db, 'subjects', subjectId), payload, { merge: true });
     return subjectId;
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, path);
@@ -329,13 +350,14 @@ export async function saveChapter(chapter: Omit<Chapter, 'id'> & { id?: string }
   const chapterId = chapter.id || `chap_${Date.now()}`;
   const path = `chapters/${chapterId}`;
   try {
-    const payload = {
+    const rawPayload = {
       ...chapter,
       id: chapterId,
       updatedAt: new Date().toISOString(),
       createdAt: chapter.createdAt || new Date().toISOString(),
     };
-    await setDoc(doc(db, 'chapters', chapterId), payload);
+    const payload = sanitizeFirestorePayload(rawPayload);
+    await setDoc(doc(db, 'chapters', chapterId), payload, { merge: true });
     return chapterId;
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, path);
@@ -386,12 +408,31 @@ export async function saveLesson(lesson: Omit<Lesson, 'id'> & { id?: string }): 
   const lessonId = lesson.id || `lesson_${Date.now()}`;
   const path = `lessons/${lessonId}`;
   try {
-    const payload = {
+    const rawPayload: Record<string, any> = {
       ...lesson,
       id: lessonId,
+      updatedAt: new Date().toISOString(),
       createdAt: lesson.createdAt || new Date().toISOString(),
     };
-    await setDoc(doc(db, 'lessons', lessonId), payload);
+
+    // Ensure pdfFileSize is a valid rounded byte count, or null when absent/falsy
+    if (typeof rawPayload.pdfFileSize === 'number' && !isNaN(rawPayload.pdfFileSize) && rawPayload.pdfFileSize > 0) {
+      rawPayload.pdfFileSize = Math.round(rawPayload.pdfFileSize);
+    } else {
+      rawPayload.pdfFileSize = null;
+    }
+
+    // Default string fields to empty strings or clean defaults instead of undefined
+    if (rawPayload.subjectId === undefined) rawPayload.subjectId = '';
+    if (rawPayload.chapterId === undefined) rawPayload.chapterId = '';
+    if (rawPayload.pdfNotesUrl === undefined) rawPayload.pdfNotesUrl = '';
+    if (rawPayload.pdfStoragePath === undefined) rawPayload.pdfStoragePath = '';
+    if (rawPayload.pdfFileName === undefined) rawPayload.pdfFileName = '';
+    if (rawPayload.description === undefined) rawPayload.description = '';
+
+    const payload = sanitizeFirestorePayload(rawPayload);
+
+    await setDoc(doc(db, 'lessons', lessonId), payload, { merge: true });
     return lessonId;
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, path);

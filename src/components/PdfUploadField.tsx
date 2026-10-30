@@ -6,13 +6,13 @@ interface PdfUploadFieldProps {
   pdfNotesUrl?: string;
   pdfStoragePath?: string;
   pdfFileName?: string;
-  pdfFileSize?: number;
+  pdfFileSize?: number | null;
   lessonId?: string;
   onChange: (meta: {
     pdfNotesUrl: string;
     pdfStoragePath?: string;
     pdfFileName?: string;
-    pdfFileSize?: number;
+    pdfFileSize?: number | null;
   }) => void;
 }
 
@@ -87,7 +87,7 @@ export const PdfUploadField: React.FC<PdfUploadFieldProps> = ({
       pdfNotesUrl: '',
       pdfStoragePath: '',
       pdfFileName: '',
-      pdfFileSize: undefined,
+      pdfFileSize: null,
     });
     setErrorMsg(null);
   };

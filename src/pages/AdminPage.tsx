@@ -178,6 +178,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({
   // Lesson Modal
   const [lessonModalOpen, setLessonModalOpen] = useState(false);
   const [editingLesson, setEditingLesson] = useState<Partial<Lesson> | null>(null);
+  const [savingLesson, setSavingLesson] = useState(false);
+  const [savingCurriculumLecture, setSavingCurriculumLecture] = useState(false);
 
   // Announcement Modal
   const [announcementModalOpen, setAnnouncementModalOpen] = useState(false);
@@ -546,22 +548,33 @@ export const AdminPage: React.FC<AdminPageProps> = ({
   // Lesson Save & Delete
   const handleSaveLesson = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingLesson?.title || !editingLesson.courseId || !editingLesson.videoUrl) return;
+    if (!editingLesson?.title || !editingLesson.courseId || !editingLesson.videoUrl) {
+      setFeedbackMsg('Please fill in required fields: Title, Course, and Video URL.');
+      setTimeout(() => setFeedbackMsg(null), 4000);
+      return;
+    }
+    setSavingLesson(true);
     try {
+      const cleanPdfSize = typeof editingLesson.pdfFileSize === 'number' && !isNaN(editingLesson.pdfFileSize) && editingLesson.pdfFileSize > 0
+        ? Math.round(editingLesson.pdfFileSize)
+        : null;
+
       await saveLesson({
         id: editingLesson.id,
         courseId: editingLesson.courseId,
+        subjectId: editingLesson.subjectId || '',
+        chapterId: editingLesson.chapterId || '',
         chapterTitle: editingLesson.chapterTitle || 'Chapter 1: Foundations',
-        title: editingLesson.title,
-        description: editingLesson.description || '',
-        videoUrl: editingLesson.videoUrl,
+        title: editingLesson.title.trim(),
+        description: editingLesson.description ? editingLesson.description.trim() : '',
+        videoUrl: editingLesson.videoUrl.trim(),
         videoProvider: editingLesson.videoProvider || 'youtube',
         durationMinutes: Number(editingLesson.durationMinutes) || 30,
         order: Number(editingLesson.order) || 1,
         pdfNotesUrl: editingLesson.pdfNotesUrl || '',
         pdfStoragePath: editingLesson.pdfStoragePath || '',
         pdfFileName: editingLesson.pdfFileName || '',
-        pdfFileSize: editingLesson.pdfFileSize,
+        pdfFileSize: cleanPdfSize,
         isPublished: editingLesson.isPublished ?? true,
       });
       await onRefreshData();
@@ -569,8 +582,13 @@ export const AdminPage: React.FC<AdminPageProps> = ({
       setEditingLesson(null);
       setFeedbackMsg('Lesson saved successfully.');
       setTimeout(() => setFeedbackMsg(null), 3000);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Error saving lesson:', err);
+      const msg = err instanceof Error ? err.message : 'Failed to save lesson.';
+      setFeedbackMsg(`Save error: ${msg}`);
+      setTimeout(() => setFeedbackMsg(null), 5000);
+    } finally {
+      setSavingLesson(false);
     }
   };
 
@@ -744,34 +762,48 @@ export const AdminPage: React.FC<AdminPageProps> = ({
   // Curriculum Handlers: Lectures
   const handleSaveCurriculumLecture = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingCurriculumLecture?.title) return;
+    if (!editingCurriculumLecture?.title) {
+      setFeedbackMsg('Please provide a lecture title.');
+      setTimeout(() => setFeedbackMsg(null), 4000);
+      return;
+    }
+    setSavingCurriculumLecture(true);
     try {
       const chap = adminChapters.find((c) => c.id === editingCurriculumLecture.chapterId);
+      const cleanPdfSize = typeof editingCurriculumLecture.pdfFileSize === 'number' && !isNaN(editingCurriculumLecture.pdfFileSize) && editingCurriculumLecture.pdfFileSize > 0
+        ? Math.round(editingCurriculumLecture.pdfFileSize)
+        : null;
+
       await saveLesson({
         id: editingCurriculumLecture.id,
         courseId: editingCurriculumLecture.courseId || courses[0]?.id || 'course-phy-12',
-        subjectId: editingCurriculumLecture.subjectId,
-        chapterId: editingCurriculumLecture.chapterId,
+        subjectId: editingCurriculumLecture.subjectId || '',
+        chapterId: editingCurriculumLecture.chapterId || '',
         chapterTitle: chap ? chap.title : editingCurriculumLecture.chapterTitle || 'Chapter 1',
-        title: editingCurriculumLecture.title,
-        description: editingCurriculumLecture.description || '',
-        videoUrl: editingCurriculumLecture.videoUrl || '',
+        title: editingCurriculumLecture.title.trim(),
+        description: editingCurriculumLecture.description ? editingCurriculumLecture.description.trim() : '',
+        videoUrl: editingCurriculumLecture.videoUrl ? editingCurriculumLecture.videoUrl.trim() : '',
         videoProvider: (editingCurriculumLecture.videoProvider as any) || 'youtube',
         durationMinutes: Number(editingCurriculumLecture.durationMinutes) || 30,
         order: Number(editingCurriculumLecture.order) || 1,
         pdfNotesUrl: editingCurriculumLecture.pdfNotesUrl || '',
         pdfStoragePath: editingCurriculumLecture.pdfStoragePath || '',
         pdfFileName: editingCurriculumLecture.pdfFileName || '',
-        pdfFileSize: editingCurriculumLecture.pdfFileSize,
+        pdfFileSize: cleanPdfSize,
         isPublished: editingCurriculumLecture.isPublished ?? true,
       });
       await onRefreshData();
       setCurriculumLectureModalOpen(false);
       setEditingCurriculumLecture(null);
-      setFeedbackMsg(`Lecture "${editingCurriculumLecture.title}" saved.`);
+      setFeedbackMsg(`Lecture "${editingCurriculumLecture.title}" saved successfully.`);
       setTimeout(() => setFeedbackMsg(null), 3000);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Failed to save lecture:', err);
+      const msg = err instanceof Error ? err.message : 'Failed to save lecture.';
+      setFeedbackMsg(`Save error: ${msg}`);
+      setTimeout(() => setFeedbackMsg(null), 5000);
+    } finally {
+      setSavingCurriculumLecture(false);
     }
   };
 
@@ -2797,19 +2829,28 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                 <div className="flex items-center justify-end gap-2 pt-3">
                   <button
                     type="button"
+                    disabled={savingLesson}
                     onClick={() => {
                       setLessonModalOpen(false);
                       setEditingLesson(null);
                     }}
-                    className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 cursor-pointer"
+                    className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 cursor-pointer disabled:opacity-50"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-xl bg-cyan-400 text-slate-950 font-bold cursor-pointer"
+                    disabled={savingLesson}
+                    className="px-5 py-2 rounded-xl bg-cyan-400 text-slate-950 font-bold cursor-pointer hover:bg-cyan-300 disabled:opacity-50 flex items-center gap-1.5"
                   >
-                    Save Lecture
+                    {savingLesson ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        <span>Saving...</span>
+                      </>
+                    ) : (
+                      <span>Save Lecture</span>
+                    )}
                   </button>
                 </div>
               </form>
@@ -3266,19 +3307,28 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                 <div className="flex items-center justify-end gap-2 pt-3">
                   <button
                     type="button"
+                    disabled={savingCurriculumLecture}
                     onClick={() => {
                       setCurriculumLectureModalOpen(false);
                       setEditingCurriculumLecture(null);
                     }}
-                    className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 cursor-pointer"
+                    className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 cursor-pointer disabled:opacity-50"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-xl bg-cyan-400 text-slate-950 font-bold cursor-pointer"
+                    disabled={savingCurriculumLecture}
+                    className="px-5 py-2 rounded-xl bg-cyan-400 text-slate-950 font-bold cursor-pointer hover:bg-cyan-300 disabled:opacity-50 flex items-center gap-1.5"
                   >
-                    Save Lecture
+                    {savingCurriculumLecture ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        <span>Saving...</span>
+                      </>
+                    ) : (
+                      <span>Save Lecture</span>
+                    )}
                   </button>
                 </div>
               </form>

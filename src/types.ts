@@ -94,7 +94,7 @@ export interface Lesson {
   pdfNotesUrl?: string;
   pdfStoragePath?: string;
   pdfFileName?: string;
-  pdfFileSize?: number;
+  pdfFileSize?: number | null;
   isPublished: boolean;
   createdAt?: string;
   updatedAt?: string;
