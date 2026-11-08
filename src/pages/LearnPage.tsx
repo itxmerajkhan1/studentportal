@@ -73,6 +73,33 @@ export const LearnPage: React.FC<LearnPageProps> = ({
   const prevLesson = currentIndex > 0 ? courseLessons[currentIndex - 1] : null;
   const nextLesson = currentIndex >= 0 && currentIndex < courseLessons.length - 1 ? courseLessons[currentIndex + 1] : null;
 
+  const handleTimeUpdate = async (seconds: number) => {
+    if (!user || !currentLesson) return;
+    try {
+      await saveLessonProgress(
+        user.uid,
+        currentLesson.courseId || '',
+        currentLesson.id,
+        isCompleted,
+        seconds,
+        currentLesson.subjectId,
+        currentLesson.chapterId
+      );
+      onProgressUpdated({
+        userId: user.uid,
+        courseId: currentLesson.courseId || '',
+        subjectId: currentLesson.subjectId,
+        chapterId: currentLesson.chapterId,
+        lessonId: currentLesson.id,
+        completed: isCompleted,
+        lastWatchedSeconds: seconds,
+        updatedAt: new Date().toISOString(),
+      });
+    } catch (err) {
+      console.warn('Failed to update watch time:', err);
+    }
+  };
+
   const handleToggleComplete = async () => {
     if (!user || !currentLesson) return;
     setSavingProgress(true);
@@ -83,7 +110,7 @@ export const LearnPage: React.FC<LearnPageProps> = ({
         currentLesson.courseId || '',
         currentLesson.id,
         newStatus,
-        0,
+        currentProgress?.lastWatchedSeconds || 0,
         currentLesson.subjectId,
         currentLesson.chapterId
       );
@@ -94,6 +121,7 @@ export const LearnPage: React.FC<LearnPageProps> = ({
         chapterId: currentLesson.chapterId,
         lessonId: currentLesson.id,
         completed: newStatus,
+        lastWatchedSeconds: currentProgress?.lastWatchedSeconds || 0,
         updatedAt: new Date().toISOString(),
       });
     } catch (err) {
@@ -174,11 +202,14 @@ export const LearnPage: React.FC<LearnPageProps> = ({
         <div className="flex-1 space-y-6 overflow-y-auto">
           {canStreamVideo ? (
             <VideoPlayer
+              key={currentLesson.id}
               videoUrl={currentLesson.videoUrl}
               videoProvider={currentLesson.videoProvider || 'youtube'}
               title={currentLesson.title}
               isCompleted={isCompleted}
+              initialTimeSeconds={currentProgress?.lastWatchedSeconds || 0}
               onToggleComplete={handleToggleComplete}
+              onTimeUpdate={handleTimeUpdate}
               onPrevLesson={prevLesson ? () => navigate(`/learn/${prevLesson.id}`) : undefined}
               onNextLesson={nextLesson ? () => navigate(`/learn/${nextLesson.id}`) : undefined}
               hasPrev={!!prevLesson}
