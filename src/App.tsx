@@ -26,6 +26,7 @@ import { ShieldAlert, Loader2 } from 'lucide-react';
 import {
   fetchPublishedCourses,
   fetchAllCoursesAdmin,
+  fetchAllLessons,
   fetchAnnouncements,
   fetchSiteSettings,
   fetchUserProgress,
@@ -104,6 +105,14 @@ function MainApp() {
       } catch (err) {
         console.warn('Notice loading courses:', err);
         setCourses([]);
+      }
+
+      try {
+        const lessonList = await fetchAllLessons(isAdmin);
+        setLessons(lessonList || []);
+      } catch (err) {
+        console.warn('Notice loading lessons:', err);
+        setLessons([]);
       }
 
       try {

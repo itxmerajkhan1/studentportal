@@ -70,18 +70,52 @@
       "properties": {
         "id": { "type": "string", "maxLength": 64 },
         "courseId": { "type": "string", "maxLength": 64 },
-        "chapterTitle": { "type": "string", "maxLength": 120 },
-        "title": { "type": "string", "maxLength": 180, "minLength": 2 },
+        "subjectId": { "type": "string", "maxLength": 64 },
+        "chapterId": { "type": "string", "maxLength": 64 },
+        "chapterTitle": { "type": "string", "maxLength": 150 },
+        "title": { "type": "string", "maxLength": 250, "minLength": 1 },
         "description": { "type": "string", "maxLength": 3000 },
-        "videoUrl": { "type": "string", "maxLength": 500 },
+        "videoUrl": { "type": "string", "maxLength": 2000 },
         "videoProvider": { "type": "string", "enum": ["youtube", "vimeo", "direct", "storage"] },
+        "videoStoragePath": { "type": "string", "maxLength": 500 },
+        "videoFileName": { "type": "string", "maxLength": 250 },
+        "videoFileSize": { "type": "number" },
         "durationMinutes": { "type": "number" },
         "order": { "type": "number" },
-        "pdfNotesUrl": { "type": "string", "maxLength": 500 },
+        "pdfNotesUrl": { "type": "string", "maxLength": 1000 },
+        "pdfStoragePath": { "type": "string", "maxLength": 500 },
+        "pdfFileName": { "type": "string", "maxLength": 250 },
+        "pdfFileSize": { "type": "number" },
         "isPublished": { "type": "boolean" },
-        "createdAt": { "type": "string", "format": "date-time" }
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["courseId", "chapterTitle", "title", "videoUrl", "isPublished", "order"]
+      "required": ["title", "isPublished", "order"]
+    },
+    "Subject": {
+      "title": "Subject",
+      "description": "Academic subject curriculum entity",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "name": { "type": "string", "maxLength": 100 },
+        "academicLevel": { "type": "string", "maxLength": 60 },
+        "isPublished": { "type": "boolean" }
+      },
+      "required": ["name", "academicLevel", "isPublished"]
+    },
+    "Chapter": {
+      "title": "Chapter",
+      "description": "Chapter grouping under a subject",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "subjectId": { "type": "string", "maxLength": 64 },
+        "title": { "type": "string", "maxLength": 150 },
+        "chapterNumber": { "type": "number" },
+        "isPublished": { "type": "boolean" }
+      },
+      "required": ["subjectId", "title", "chapterNumber", "isPublished"]
     },
     "LessonProgress": {
       "title": "LessonProgress",
@@ -90,12 +124,14 @@
       "properties": {
         "userId": { "type": "string", "maxLength": 128 },
         "courseId": { "type": "string", "maxLength": 64 },
+        "subjectId": { "type": "string", "maxLength": 64 },
+        "chapterId": { "type": "string", "maxLength": 64 },
         "lessonId": { "type": "string", "maxLength": 64 },
         "completed": { "type": "boolean" },
         "lastWatchedSeconds": { "type": "number" },
         "updatedAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["userId", "courseId", "lessonId", "completed"]
+      "required": ["userId", "lessonId", "completed"]
     },
     "Announcement": {
       "title": "Announcement",
@@ -157,13 +193,21 @@
       "schema": { "$ref": "#/entities/PaymentRequest" },
       "description": "Student payment receipts and manual verification submissions"
     },
+    "/subjects/{subjectId}": {
+      "schema": { "$ref": "#/entities/Subject" },
+      "description": "Academic subjects list"
+    },
+    "/chapters/{chapterId}": {
+      "schema": { "$ref": "#/entities/Chapter" },
+      "description": "Syllabus chapters linked to subjects"
+    },
     "/courses/{courseId}": {
       "schema": { "$ref": "#/entities/Course" },
       "description": "Courses with subject, level, instructor, and publication state"
     },
     "/lessons/{lessonId}": {
       "schema": { "$ref": "#/entities/Lesson" },
-      "description": "Lectures and video materials linked to courses"
+      "description": "Lectures and video materials linked to courses or subjects"
     },
     "/users/{userId}/progress/{lessonId}": {
       "schema": { "$ref": "#/entities/LessonProgress" },
@@ -180,6 +224,10 @@
     "/admins/{adminId}": {
       "schema": { "$ref": "#/entities/AdminRecord" },
       "description": "Authorized administrators list"
+    },
+    "/test/{docId}": {
+      "schema": { "type": "object" },
+      "description": "Firestore connection diagnostic test path"
     }
   }
 }

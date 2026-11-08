@@ -56,13 +56,17 @@ export const storage = getStorage(app, firebaseConfig.storageBucket);
 export const DESIGNATED_ADMIN_EMAIL = ADMIN_AUTH_EMAIL;
 
 // Test connection on boot per Firebase guidelines
-export async function testConnection() {
+export async function testConnection(): Promise<boolean> {
   try {
-    await getDocFromServer(doc(db, 'test', 'connection'));
+    const testDoc = await getDocFromServer(doc(db, 'test', 'connection'));
+    return testDoc.exists();
   } catch (error) {
     if (error instanceof Error && error.message.includes('the client is offline')) {
-      console.error('Please check your Firebase configuration.');
+      console.warn('Firebase client is offline. Verify your network or Firebase project configuration.');
+    } else {
+      console.info('Firebase connection active (test collection check complete).');
     }
+    return false;
   }
 }
 testConnection();
@@ -374,6 +378,21 @@ export async function deleteChapterDoc(chapterId: string): Promise<void> {
 }
 
 // Lesson Operations
+export async function fetchAllLessons(isAdmin = false): Promise<Lesson[]> {
+  const path = 'lessons';
+  try {
+    let q = query(collection(db, 'lessons'));
+    if (!isAdmin) {
+      q = query(collection(db, 'lessons'), where('isPublished', '==', true));
+    }
+    const snap = await getDocs(q);
+    const list = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Lesson, 'id'>) }));
+    return list.sort((a, b) => (a.order || 0) - (b.order || 0));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.LIST, path);
+  }
+}
+
 export async function fetchLessonsForCourse(courseId: string): Promise<Lesson[]> {
   const path = 'lessons';
   try {
@@ -422,12 +441,24 @@ export async function saveLesson(lesson: Omit<Lesson, 'id'> & { id?: string }): 
       rawPayload.pdfFileSize = null;
     }
 
+    if (typeof rawPayload.videoFileSize === 'number' && !isNaN(rawPayload.videoFileSize) && rawPayload.videoFileSize > 0) {
+      rawPayload.videoFileSize = Math.round(rawPayload.videoFileSize);
+    } else {
+      rawPayload.videoFileSize = null;
+    }
+
     // Default string fields to empty strings or clean defaults instead of undefined
+    if (rawPayload.courseId === undefined) rawPayload.courseId = '';
     if (rawPayload.subjectId === undefined) rawPayload.subjectId = '';
     if (rawPayload.chapterId === undefined) rawPayload.chapterId = '';
+    if (rawPayload.chapterTitle === undefined) rawPayload.chapterTitle = 'General Chapter';
     if (rawPayload.pdfNotesUrl === undefined) rawPayload.pdfNotesUrl = '';
     if (rawPayload.pdfStoragePath === undefined) rawPayload.pdfStoragePath = '';
     if (rawPayload.pdfFileName === undefined) rawPayload.pdfFileName = '';
+    if (rawPayload.videoUrl === undefined) rawPayload.videoUrl = '';
+    if (rawPayload.videoStoragePath === undefined) rawPayload.videoStoragePath = '';
+    if (rawPayload.videoFileName === undefined) rawPayload.videoFileName = '';
+    if (rawPayload.videoProvider === undefined) rawPayload.videoProvider = 'youtube';
     if (rawPayload.description === undefined) rawPayload.description = '';
 
     const payload = sanitizeFirestorePayload(rawPayload);
@@ -445,6 +476,79 @@ export async function deleteLessonDoc(lessonId: string): Promise<void> {
     await deleteDoc(doc(db, 'lessons', lessonId));
   } catch (error) {
     handleFirestoreError(error, OperationType.DELETE, path);
+  }
+}
+
+export interface UploadVideoResult {
+  downloadUrl: string;
+  storagePath: string;
+  fileName: string;
+  fileSize: number;
+}
+
+export async function uploadLectureVideo(
+  file: File,
+  lessonId: string,
+  onProgress?: (progressPercent: number) => void
+): Promise<UploadVideoResult> {
+  if (!file.type.startsWith('video/') && !file.name.match(/\.(mp4|webm|mov|mkv|avi|m4v)$/i)) {
+    throw new Error('Only video files (MP4, WebM, MOV, MKV) are accepted.');
+  }
+
+  // Max 500 MB file limit
+  const maxBytes = 500 * 1024 * 1024;
+  if (file.size > maxBytes) {
+    throw new Error('Video file size exceeds the 500 MB limit.');
+  }
+
+  const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+  const storagePath = `videos/${lessonId || 'lecture'}_${Date.now()}_${cleanName}`;
+  const fileRef = ref(storage, storagePath);
+
+  const uploadTask = uploadBytesResumable(fileRef, file, {
+    contentType: file.type || 'video/mp4',
+    customMetadata: {
+      originalName: file.name,
+      uploadedAt: new Date().toISOString(),
+      uploadedBy: auth.currentUser?.email || 'admin',
+    },
+  });
+
+  return new Promise((resolve, reject) => {
+    uploadTask.on(
+      'state_changed',
+      (snapshot) => {
+        const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        if (onProgress) onProgress(progress);
+      },
+      (error) => {
+        console.error('Firebase Storage video upload failed:', error);
+        reject(error);
+      },
+      async () => {
+        try {
+          const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
+          resolve({
+            downloadUrl,
+            storagePath,
+            fileName: file.name,
+            fileSize: file.size,
+          });
+        } catch (err) {
+          reject(err);
+        }
+      }
+    );
+  });
+}
+
+export async function deleteLectureVideo(storagePath: string): Promise<void> {
+  if (!storagePath) return;
+  try {
+    const fileRef = ref(storage, storagePath);
+    await deleteObject(fileRef);
+  } catch (err) {
+    console.warn('Could not delete video storage file at path:', storagePath, err);
   }
 }
 

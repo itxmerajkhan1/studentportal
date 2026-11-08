@@ -37,6 +37,7 @@ import {
 } from '../types';
 
 import { filterStudents, calculateMembershipExpiry } from '../utils/portalLogic';
+import { VideoUploadField } from '../components/VideoUploadField';
 import {
   ShieldAlert,
   Users,
@@ -567,8 +568,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({
         chapterTitle: editingLesson.chapterTitle || 'Chapter 1: Foundations',
         title: editingLesson.title.trim(),
         description: editingLesson.description ? editingLesson.description.trim() : '',
-        videoUrl: editingLesson.videoUrl.trim(),
+        videoUrl: editingLesson.videoUrl ? editingLesson.videoUrl.trim() : '',
         videoProvider: editingLesson.videoProvider || 'youtube',
+        videoStoragePath: editingLesson.videoStoragePath || '',
+        videoFileName: editingLesson.videoFileName || '',
+        videoFileSize: editingLesson.videoFileSize || null,
         durationMinutes: Number(editingLesson.durationMinutes) || 30,
         order: Number(editingLesson.order) || 1,
         pdfNotesUrl: editingLesson.pdfNotesUrl || '',
@@ -784,6 +788,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({
         description: editingCurriculumLecture.description ? editingCurriculumLecture.description.trim() : '',
         videoUrl: editingCurriculumLecture.videoUrl ? editingCurriculumLecture.videoUrl.trim() : '',
         videoProvider: (editingCurriculumLecture.videoProvider as any) || 'youtube',
+        videoStoragePath: editingCurriculumLecture.videoStoragePath || '',
+        videoFileName: editingCurriculumLecture.videoFileName || '',
+        videoFileSize: editingCurriculumLecture.videoFileSize || null,
         durationMinutes: Number(editingCurriculumLecture.durationMinutes) || 30,
         order: Number(editingCurriculumLecture.order) || 1,
         pdfNotesUrl: editingCurriculumLecture.pdfNotesUrl || '',
@@ -2757,41 +2764,25 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                   />
                 </div>
 
+                <VideoUploadField
+                  lessonId={editingLesson.id}
+                  videoUrl={editingLesson.videoUrl || ''}
+                  videoProvider={editingLesson.videoProvider}
+                  videoStoragePath={editingLesson.videoStoragePath}
+                  videoFileName={editingLesson.videoFileName}
+                  onVideoChange={(data) => {
+                    setEditingLesson((prev) => (prev ? { ...prev, ...data } : prev));
+                  }}
+                />
+
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Video Streaming URL</label>
+                  <label className="block font-semibold text-slate-300 mb-1">Duration (Minutes)</label>
                   <input
-                    type="url"
-                    placeholder="https://www.youtube.com/embed/... or direct MP4 URL"
-                    value={editingLesson.videoUrl || ''}
-                    onChange={(e) => setEditingLesson({ ...editingLesson, videoUrl: e.target.value })}
-                    required
+                    type="number"
+                    value={editingLesson.durationMinutes || 30}
+                    onChange={(e) => setEditingLesson({ ...editingLesson, durationMinutes: Number(e.target.value) })}
                     className="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white"
                   />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block font-semibold text-slate-300 mb-1">Video Provider</label>
-                    <select
-                      value={editingLesson.videoProvider || 'youtube'}
-                      onChange={(e) => setEditingLesson({ ...editingLesson, videoProvider: e.target.value as any })}
-                      className="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white"
-                    >
-                      <option value="youtube">YouTube Embed / Unlisted</option>
-                      <option value="vimeo">Vimeo Embed</option>
-                      <option value="direct">Direct MP4 Video</option>
-                      <option value="storage">Firebase Storage Protected</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block font-semibold text-slate-300 mb-1">Duration (Minutes)</label>
-                    <input
-                      type="number"
-                      value={editingLesson.durationMinutes || 30}
-                      onChange={(e) => setEditingLesson({ ...editingLesson, durationMinutes: Number(e.target.value) })}
-                      className="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white"
-                    />
-                  </div>
                 </div>
 
 
@@ -3226,19 +3217,18 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block font-semibold text-slate-300 mb-1">Video Stream URL</label>
-                    <input
-                      type="text"
-                      placeholder="https://www.youtube.com/embed/..."
-                      value={editingCurriculumLecture.videoUrl || ''}
-                      onChange={(e) => setEditingCurriculumLecture({ ...editingCurriculumLecture, videoUrl: e.target.value })}
-                      className="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white"
-                    />
-                    <p className="text-[10px] text-slate-500 mt-0.5">Leave blank if lecture is scheduled/in production.</p>
-                  </div>
+                <VideoUploadField
+                  lessonId={editingCurriculumLecture.id}
+                  videoUrl={editingCurriculumLecture.videoUrl || ''}
+                  videoProvider={editingCurriculumLecture.videoProvider as any}
+                  videoStoragePath={editingCurriculumLecture.videoStoragePath}
+                  videoFileName={editingCurriculumLecture.videoFileName}
+                  onVideoChange={(data) => {
+                    setEditingCurriculumLecture((prev) => (prev ? { ...prev, ...data } : prev));
+                  }}
+                />
 
+                <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block font-semibold text-slate-300 mb-1">Duration (Minutes)</label>
                     <input
@@ -3249,17 +3239,17 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                       className="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white"
                     />
                   </div>
-                </div>
 
-                <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Lecture Order #</label>
-                  <input
-                    type="number"
-                    value={editingCurriculumLecture.order ?? 1}
-                    onChange={(e) => setEditingCurriculumLecture({ ...editingCurriculumLecture, order: Number(e.target.value) })}
-                    required
-                    className="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white"
-                  />
+                  <div>
+                    <label className="block font-semibold text-slate-300 mb-1">Lecture Order #</label>
+                    <input
+                      type="number"
+                      value={editingCurriculumLecture.order ?? 1}
+                      onChange={(e) => setEditingCurriculumLecture({ ...editingCurriculumLecture, order: Number(e.target.value) })}
+                      required
+                      className="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white"
+                    />
+                  </div>
                 </div>
 
 

@@ -7,6 +7,11 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Connection Test Document
+    match /test/{docId} {
+      allow read: if true;
+    }
+
     // Helper functions
     function isValidId(id) {
       return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
@@ -31,7 +36,9 @@ service cloud.firestore {
     function isAdmin() {
       return isSignedIn() && (
         exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
-        request.auth.token.email == "itxmerajkhan3109@gmail.com"
+        request.auth.token.email == "itxmerajkhan3109@gmail.com" ||
+        request.auth.token.email == "itxmairajkhan@gmail.com" ||
+        request.auth.token.email == "itxmirajkhan@gmail.com"
       );
     }
 
@@ -68,29 +75,28 @@ service cloud.firestore {
     }
 
     function isValidCourse(data) {
-      return data.title is string && data.title.size() >= 3 && data.title.size() <= 150
-        && data.subject is string && data.subject.size() <= 60
+      return data.title is string && data.title.size() >= 2 && data.title.size() <= 200
+        && data.subject is string && data.subject.size() <= 100
         && data.academicLevel is string && data.academicLevel.size() <= 60
-        && data.instructor is string && data.instructor.size() <= 100
         && data.isPublished is bool;
     }
 
     function isValidSubject(data) {
-      return data.name is string && data.name.size() >= 2 && data.name.size() <= 100
+      return data.name is string && data.name.size() >= 1 && data.name.size() <= 100
         && data.academicLevel is string && data.academicLevel.size() <= 60
         && data.isPublished is bool;
     }
 
     function isValidChapter(data) {
       return data.subjectId is string && data.subjectId.size() <= 64
-        && data.title is string && data.title.size() >= 2 && data.title.size() <= 150
+        && data.title is string && data.title.size() >= 1 && data.title.size() <= 150
         && data.chapterNumber is number
         && data.isPublished is bool;
     }
 
     function isValidLesson(data) {
-      return (data.courseId is string || data.subjectId is string)
-        && data.title is string && data.title.size() >= 2 && data.title.size() <= 180
+      return (data.courseId is string || data.subjectId is string || data.chapterId is string)
+        && data.title is string && data.title.size() >= 1 && data.title.size() <= 250
         && data.isPublished is bool;
     }
 
@@ -119,8 +125,6 @@ service cloud.firestore {
         incoming().keys().hasAll(['uid', 'fullName', 'email', 'phoneNumber', 'academicLevel', 'role', 'status'])
       );
 
-      // Student can only update their profile info; cannot change role, status, membershipStatus, or expiry
-      // Admin can update status, rejectionReason, role, membershipStatus, membershipExpiresAt, or student details
       allow update: if (
         (isOwner(userId) && (
           incoming().diff(existing()).affectedKeys().hasOnly(['fullName', 'phoneNumber', 'academicLevel', 'studentId', 'updatedAt'])
@@ -176,9 +180,7 @@ service cloud.firestore {
 
     // Lessons collection
     match /lessons/{lessonId} {
-      // List metadata allowed for signed-in users if published (or admin)
       allow list: if (isSignedIn() && resource.data.isPublished == true) || isAdmin();
-      // Protected get: approved students or admin can access published lectures
       allow get: if ((resource.data.isPublished == true) && isApprovedStudent()) || isAdmin();
       allow create, update: if isAdmin() && isValidLesson(incoming());
       allow delete: if isAdmin();
@@ -200,7 +202,9 @@ service cloud.firestore {
     match /admins/{adminId} {
       allow get, list: if isSignedIn();
       allow create, update, delete: if isAdmin() || (
-        request.auth.token.email == "itxmerajkhan3109@gmail.com"
+        request.auth.token.email == "itxmerajkhan3109@gmail.com" ||
+        request.auth.token.email == "itxmairajkhan@gmail.com" ||
+        request.auth.token.email == "itxmirajkhan@gmail.com"
       );
     }
   }

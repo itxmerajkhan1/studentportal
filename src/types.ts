@@ -89,6 +89,9 @@ export interface Lesson {
   description: string;
   videoUrl: string;
   videoProvider?: 'youtube' | 'vimeo' | 'direct' | 'storage';
+  videoStoragePath?: string;
+  videoFileName?: string;
+  videoFileSize?: number | null;
   durationMinutes: number;
   order: number;
   pdfNotesUrl?: string;
